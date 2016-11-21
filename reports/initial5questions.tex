@@ -1,0 +1,80 @@
+\documentclass[a4paper]{article}
+
+\title{Argumentation for cooperative pathfinding}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Problem}
+When multiple mobile robots share the same space they need to be able to plan
+paths that not only avoids collisions with obstacles, but also with each other.
+This field of research is called `cooperative pathfinding'. Simply taking the
+Cartesian product of all the agent's state spaces results in an exponential
+increase of the size of the state space as the number of agents grow. Smart
+algorithms are necessary to constrain the size of the problem.
+
+\section*{State of the art}
+There are several paradigms in the field of cooperative pathfinding:
+
+\subsection*{Centralized}
+In this paradigm a central processor computes the paths for all agents. The
+current best method is known as Operator Decomposition (OD), instead of taking
+the Cartesian product of all agent's state spaces it plans for each agent in
+turn per time step. This causes the problem to be linear in the number of agents
+instead of being exponential. The algorithm will always find the most optimal
+solution if there is one.
+
+\subsection*{Decentralized}
+Another common approach is to let each agent find its most optimal path on its
+own. Commonly some priority order is decided beforehand, agents with a lower
+priority are tasked with avoiding the agents with a higher priority. The ability
+of this method to find a solution depends on the priority order that was picked.
+
+\subsection*{Environment-based}
+One method of using the environment for cooperative pathfinding is to register
+the movements of agents at each position in the environment. When another agent
+visits the same position it will tend to move in the direction that agents
+previously moved in. This results in `roads' on which agents all move in the
+same direction. Collision avoidance is implied by this, unfortunately it can
+lead to long paths when agents need to take a detour because they cross some
+heavy traffic area.
+
+There is also a purely reactive environment based cooperative pathfinding
+technique called Optimal Reciprocal Collision Avoidance (ORCA) in which agents
+are assumed to all share the same rules for collision avoidance. Agents observe
+each other's current velocity and will change their own velocity according to
+the rules previously set when they are on a collision course with another agent
+in $\tau$ seconds. Because all agents use the same rules it can be predicted
+what other agents will do and thus future collisions can be avoided as well.
+When this is combined with other pathfinding techniques it is computationally
+efficient (hundreds or thousands of agents can be controlled in real time) but
+it can lead to suboptimal solutions because of the reactive nature.
+
+\section*{New idea}
+An argumentation based approach may add some robustness to cooperative
+pathfinding. Agents can share information about each other, and information
+about agents that are not part of the system. That way agents can still infer
+each other's (future) actions and respond to those.
+
+\section*{Results}
+The expected results are a system that is able to still find a (partial)
+solution even if a portion of the agents in the system are not controlled by
+it. This is in contrast to the state of the art algorithms which assume that
+all agents are controlled by it and that will not find a solution if too large a
+proportion is not controlled by it.
+
+\section*{Relevance}
+Most of the algorithms in the field of cooperative pathfinding do well in
+finding solutions for a group of agents, they even perform well when 80\% of
+nodes in a graph are occupied. Some outright require all agents to use the same
+method while with most it is implied. In situations like traffic this is not
+always possible, even if all cars where autonomous then individual manufacturers
+might not agree on which algorithms to use. When adding human drivers then there
+are agents in play that could not even communicate with other agents about their
+planned paths. This means that existing algorithms might find solutions that do
+not work in these kinds of situations.
+
+\end{document}

@@ -4,6 +4,8 @@
 *.pdf
 *.log
 *.toc
+*.bbl
+*.blg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,6 +1,9 @@
 \documentclass[a4paper]{article}
 
-\title{Literature Overview}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{MSc Project Literature Overview}
 \author{Xeryus Stokkel}
 \date{}
 
@@ -10,10 +13,65 @@
 
 \section{Complete Algorithms for Cooperative Pathfinding 
 Problems\cite{standley2010}}
+Standley proposes two methods of tackling the state space explosion of 
+cooperative pathfinding. The first is known as Operator Decomposition (OD) 
+which decreases the complexity of the problem by introducing sub-time-step 
+planning to A*. Planning for multiple agents at the same time is usually done 
+by taking the Cartesian product of their state-spaces and searching that, this 
+has the downside that the branching factor grows exponentially in the number of 
+agents. Standley instead has one planning sub-step per agent, this reduces the 
+growth of the branching from exponential to linear, but also increases the 
+depth of the solution in the search linearly in the number of agents. This is 
+however less of a problem.
+
+OD is realised by letting the current state be described as location-action 
+pairs for all agents instead of just their locations. Only one agent is given 
+an action during each planning steps, leading to incomplete states (not all 
+agents have an action). This has the benefit of decreasing the branching factor 
+as only the possible actions of one agent have to be considered. It also has 
+the benefit of decreasing the required computation for when the heuristic 
+distance to the goal would increase. When the heuristic distance increases as 
+the result of an agent's action then the new (partial) state will be lower on 
+the priority queue and thus the algorithm is less likely to spend computational 
+power searching in the wrong direction.
+
+The second part of the paper relates to Independence Detection (ID). This 
+decreases the required computation by allowing independent subgroups to plan 
+without regard for the other agents, this also has the benefit of decreasing 
+the state space. This is achieved by initially assigning all agents to their 
+own group. Each group plans independently of the others, but if two groups have 
+a conflict then one group has to make a new plan in which it avoids the 
+conflict. If it is not possible to find a new plan then the groups are merged 
+and a solution like OD is used to plan for all agents in the group 
+collectively. OD and ID can be used independent from each other.
+
 
 \section{Formalizing Value-Guided Argumentation for Ethical Systems 
 Design\cite{verheij2016}}
+In this paper Verheij starts to tackle the problem of ethical systems design. 
+He does this by introducing a formal method for evaluating an argument based on 
+the values that it promotes. At the same time he also connects it to the logic 
+and structure of the argument.
 
+\section{Cooperative pathfinding\cite{silver2005}}
+Before OD+ID the state of the art was WHCA* as introduced by Silver. First he 
+introduces Cooperative A* where agents plan independent from each other, but 
+they do note their actions in a reservation table to let other agents know 
+about their actions. Next he introduces Hierarchical Cooperative A* (HCA*). 
+Here an abstract domain is added where agents can plan without regard for the 
+reservation table. HCA* also makes use of Reverse Resumable A* (RRA*) to 
+calculate the optimal path through the abstract domain, but when the agent runs 
+into other agents then RRA* can be used to quickly find an alternative path. 
+
+Finally Windowed Hierarchical Cooperative A* (WHCA*) is introduced to prevent 
+several of the problems introduced by the algorithms above. Using WHCA* agents 
+plan up to a certain depth (the window) using cooperative search, while the 
+rest of the search is done in the abstract domain where agents don't consider 
+each other. While agents execute their plans the position of the window will 
+periodically be updated so that agents can respond to the non-cooperative part 
+of the plans of the other agents.
+
+\nocite{*}
 \bibliographystyle{plain}
 \bibliography{biblio}
 

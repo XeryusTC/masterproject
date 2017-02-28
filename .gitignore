@@ -1,3 +1,5 @@
+*.png
+
 # # LaTeX
 *.aux
 *.synctex.gz

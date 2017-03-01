@@ -31,6 +31,24 @@ class World:
                     fill="black")
         return im
 
+    @property
+    def passable(self):
+        return [pos for pos in self.world
+            if self.world[pos] == World.WorldData.PASSABLE]
+
+    def neighbours(self, pos):
+        NEIGHBOURS = ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1),
+            (0, 1), (1, 1))
+        neighbours = []
+        for n in NEIGHBOURS:
+            neighbour = pos[0] + n[0], pos[1] + n[1]
+            if neighbour not in self.world:
+                continue
+            if self.world[neighbour] == World.WorldData.OBSTACLE:
+                continue
+            neighbours.append(neighbour)
+        return neighbours
+
 
 if __name__ == '__main__':
     w = World(32, 32, 0.2)

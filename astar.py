@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import random
 import heapq
+from math import sqrt
 from PIL import ImageDraw
 
 import world
@@ -9,7 +10,10 @@ neighbours = ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1),
     (-1, 1))
 
 def h(pos, goal):
-    return min(abs(pos[0] - goal[0]), abs(pos[1] - goal[1]))
+    return max(abs(pos[0] - goal[0]), abs(pos[1] - goal[1]))
+
+def cost(a, b):
+    return sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
 def astar(world, start, goal):
     closed_set = set()
@@ -29,7 +33,7 @@ def astar(world, start, goal):
             if neighbour in closed_set:
                 continue
 
-            score = g[cur] + 1
+            score = g[cur] + cost(cur, neighbour)
             # We found a longer path, ignore it
             if neighbour in g and score >= g[neighbour]:
                 continue
@@ -45,6 +49,41 @@ def reverse_path(pos, came_from):
         path.append(pos)
     path.reverse()
     return path
+
+def astar_animation(w, start, goal):
+    closed_set = set()
+    open_set = []
+    came_from = {}
+    g = {start: 0}
+    heapq.heappush(open_set, (0, start))
+    im = w.as_image()
+    im.save('astar00000.png')
+    i = 0
+
+    while open_set:
+        i = i + 1
+        cur = heapq.heappop(open_set)[1]
+        if cur == goal:
+            path = reverse_path(goal, came_from)
+            frame = draw_path(im.copy(), start, goal, path)
+            frame.save('astar%05d.png' % i)
+            return path
+
+        closed_set.add(cur)
+        for neighbour in w.neighbours(cur):
+            if neighbour in closed_set:
+                continue
+
+            score = g[cur] + cost(cur, neighbour)
+            if neighbour in g and score >= g[neighbour]:
+                continue
+            came_from[neighbour] = cur
+            g[neighbour] = score
+            heapq.heappush(open_set, (score + h(neighbour, goal), neighbour))
+        path = reverse_path(cur, came_from)
+        frame = draw_path(im.copy(), start, cur, path)
+        frame.save('astar%05d.png' % i)
+    return None
 
 def draw_path(im, start, goal, path, scale=10):
     draw = ImageDraw.Draw(im)
@@ -73,3 +112,5 @@ if __name__ == '__main__':
     im = w.as_image()
     im = draw_path(im, start, goal, path)
     im.save('astar.png')
+
+    astar_animation(w, start, goal)

@@ -101,6 +101,27 @@ def draw_path(im, start, goal, path, scale=10):
 
     return im
 
+def animate_path(image, path, scale=10):
+    # Draw initial
+    for i in range(10):
+        im = draw_path(image.copy(), path[0], path[-1], path, scale)
+        im.save('path%05d.png' % i)
+
+    # Draw the path
+    for step in range(len(path)):
+        im = draw_path(image.copy(), path[step], path[-1], path[step:], scale)
+        im.save('path%05d.png' % (step + 10))
+
+    # Draw last step
+    im = image.copy()
+    draw = ImageDraw.Draw(im)
+    goal = path[-1]
+    draw.ellipse((goal[0]*scale+1, goal[1]*scale+1, (goal[0]+1)*scale-1,
+        (goal[1]+1)*scale-1), outline=(0, 255, 0))
+    for i in range(10):
+        im.save('path%05d.png' % int(step + i + 11))
+
+
 if __name__ == '__main__':
     w = world.World(32, 32, 0.2)
     start = random.choice(w.passable)
@@ -110,7 +131,8 @@ if __name__ == '__main__':
     path = astar(w, start, goal)
 
     im = w.as_image()
-    im = draw_path(im, start, goal, path)
-    im.save('astar.png')
+    im_path = draw_path(im.copy(), start, goal, path)
+    im_path.save('astar.png')
 
-    astar_animation(w, start, goal)
+    path = astar_animation(w, start, goal)
+    animate_path(im.copy(), path)

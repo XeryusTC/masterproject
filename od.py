@@ -41,7 +41,8 @@ class State:
 
 
 def main(agents):
-    w = world.World(8, 8, 0.2)
+    w = world.World(16, 16, 0.2)
+    w.as_image().save('od.png')
     starts = tuple(random.choice(w.passable) for i in range(agents))
     goals  = tuple(random.choice(w.passable) for i in range(agents))
     print('starts:', starts)
@@ -51,7 +52,13 @@ def main(agents):
     paths = od(agents, w, starts, goals)
     end_time = timeit.default_timer()
     print('paths:', paths)
-    print(f'elapsed time: {(end_time - start_time) * 1000:.4}ms')
+    print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+
+def heur_dist(rra_heur, goals, positions):
+    cost = 0
+    for i in range(len(rra_heur)):
+        cost += rra_heur[goals[i]].dist(positions[i])
+    return cost
 
 def od(agents, w, starts, goals):
     start_state = tuple(State(s) for s in starts)
@@ -69,9 +76,7 @@ def od(agents, w, starts, goals):
         heur[goals[i]] = RRAstar(w, starts[i], goals[i])
 
     # Display predicted cost
-    pred_cost = 0
-    for i in range(agents):
-        pred_cost += heur[goals[i]].dist(starts[i])
+    pred_cost = heur_dist(heur, goals, starts)
     print('predicted cost:', pred_cost)
 
     while open_set:
@@ -94,6 +99,7 @@ def od(agents, w, starts, goals):
             count += 1
             new_state = tuple(State(s.pos, s.action) for s in current)
             new_state[agent].action = action
+            # Check if the action is valid
             if action != Actions.wait and \
                 new_state[agent].new_pos() not in w.neighbours(new_state[agent].pos):
                 continue
@@ -117,11 +123,11 @@ def od(agents, w, starts, goals):
                         break
                 else:
                     # No duplicate found, add this one
-                    h = 0
-                    for i in range(agents):
-                        h += heur[goals[i]].dist(new_state[i].new_pos())
+                    h = heur_dist(heur, goals,
+                        tuple(s.new_pos() for s in new_state))
                     heapq.heappush(open_set, (score + h, count, 0, new_state))
                     came_from[new_state] = current
+            # Create intermediate state
             else:
                 # If we found a longer path, ignore it
                 if new_state in g and score >= g[new_state]:

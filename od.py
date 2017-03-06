@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import enum
 import heapq
+from PIL import ImageDraw
 import random
 import sys
 import timeit
@@ -54,6 +55,9 @@ def main(agents):
     print('paths:', paths)
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 
+    paths_im = draw_paths(w.as_image().copy(), paths)
+    paths_im.save('paths.png')
+
 def heur_dist(rra_heur, goals, positions):
     cost = 0
     for i in range(len(rra_heur)):
@@ -90,7 +94,7 @@ def od(agents, w, starts, goals):
                 print('open set size:  ', len(open_set))
                 print('closed set size:', len(closed_set))
                 print('final cost:     ', f)
-                return True
+                return reverse_paths(state, came_from)
             # If we haven't then add the standard state to the closed set
             closed_set.add(current)
 
@@ -123,10 +127,10 @@ def od(agents, w, starts, goals):
                         break
                 else:
                     # No duplicate found, add this one
-                    h = heur_dist(heur, goals,
-                        tuple(s.new_pos() for s in new_state))
+                    simple_state = tuple(s.new_pos() for s in new_state)
+                    h = heur_dist(heur, goals, simple_state)
                     heapq.heappush(open_set, (score + h, count, 0, new_state))
-                    came_from[new_state] = current
+                    came_from[simple_state] = tuple(s.pos for s in current)
             # Create intermediate state
             else:
                 # If we found a longer path, ignore it
@@ -142,6 +146,32 @@ def od(agents, w, starts, goals):
             g[new_state] = score
     return None
 
+def reverse_paths(state, came_from):
+    path = [state]
+    while state in came_from:
+        state = came_from[state]
+        path.append(state)
+    path = tuple(zip(*reversed(path)))
+    return path
+
+def draw_paths(image, paths, scale=10):
+    draw = ImageDraw.Draw(image)
+
+    # Draw start and end points
+    for path in paths:
+        draw.ellipse((path[0][0]*scale+1, path[0][1]*scale+1,
+            (path[0][0]+1)*scale-1, (path[0][1]+1)*scale-1),
+            outline=(0, 255, 0))
+        draw.ellipse((path[-1][0]*scale+1, path[-1][1]*scale+1,
+            (path[-1][0]+1)*scale-1, (path[-1][1]+1)*scale-1),
+            outline=(255, 0, 0))
+
+        length = len(path)
+        for i in range(length - 1):
+            color = (int(255*i/length), int(255*(length-i)/length), 0)
+            draw.line(((path[i][0]+.5)*scale, (path[i][1]+.5)*scale,
+                (path[i+1][0]+.5)*scale, (path[i+1][1]+.5)*scale), fill=color)
+    return image
 
 if __name__ == '__main__':
     try:

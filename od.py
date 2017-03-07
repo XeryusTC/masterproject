@@ -43,7 +43,8 @@ class State:
 
 def main(agents):
     w = world.World(16, 16, 0.2)
-    w.as_image().save('od.png')
+    w_im = w.as_image()
+    w_im.save('od.png')
     starts = tuple(random.choice(w.passable) for i in range(agents))
     goals  = tuple(random.choice(w.passable) for i in range(agents))
     print('starts:', starts)
@@ -55,8 +56,10 @@ def main(agents):
     print('paths:', paths)
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 
-    paths_im = draw_paths(w.as_image().copy(), paths)
+    paths_im = draw_paths(w_im.copy(), paths)
     paths_im.save('paths.png')
+
+    animate_paths(w_im.copy(), paths)
 
 def heur_dist(rra_heur, goals, positions):
     cost = 0
@@ -159,12 +162,12 @@ def draw_paths(image, paths, scale=10):
 
     # Draw start and end points
     for path in paths:
-        draw.ellipse((path[0][0]*scale+1, path[0][1]*scale+1,
-            (path[0][0]+1)*scale-1, (path[0][1]+1)*scale-1),
-            outline=(0, 255, 0))
         draw.ellipse((path[-1][0]*scale+1, path[-1][1]*scale+1,
             (path[-1][0]+1)*scale-1, (path[-1][1]+1)*scale-1),
             outline=(255, 0, 0))
+        draw.ellipse((path[0][0]*scale+1, path[0][1]*scale+1,
+            (path[0][0]+1)*scale-1, (path[0][1]+1)*scale-1),
+            outline=(0, 255, 0))
 
         length = len(path)
         for i in range(length - 1):
@@ -172,6 +175,28 @@ def draw_paths(image, paths, scale=10):
             draw.line(((path[i][0]+.5)*scale, (path[i][1]+.5)*scale,
                 (path[i+1][0]+.5)*scale, (path[i+1][1]+.5)*scale), fill=color)
     return image
+
+def animate_paths(image, paths, scale=10):
+    frame = 0
+    for i in range(10):
+        im = draw_paths(image.copy(), paths, scale)
+        im.save(f'od_path{frame:05}.png')
+        frame += 1
+
+    for step in range(len(paths[0])):
+        im = draw_paths(image.copy(), (p[step:] for p in paths))
+        im.save(f'od_path{frame:05}.png')
+        frame += 1
+
+    im = image.copy()
+    draw = ImageDraw.Draw(im)
+    for path in paths:
+        draw.ellipse((path[-1][0]*scale+1, path[-1][1]*scale+1,
+            (path[-1][0]+1)*scale-1, (path[-1][1]+1)*scale-1),
+            outline=(0, 255, 0))
+    for i in range(10):
+        im.save(f'od_path{frame:05}.png')
+        frame += 1
 
 if __name__ == '__main__':
     try:

@@ -69,7 +69,6 @@ def heur_dist(rra_heur, goals, positions):
 
 def od(agents, w, starts, goals):
     start_state = tuple(State(s) for s in starts)
-    print(start_state)
     count = 0
     closed_set = set()
     open_set = []
@@ -109,6 +108,8 @@ def od(agents, w, starts, goals):
             # Check if the action is valid
             if action != Actions.wait and \
                 new_state[agent].new_pos() not in w.neighbours(new_state[agent].pos):
+                continue
+            if not valid_action(new_state, agent):
                 continue
 
             # If the agent is in its goal position and the action is wait
@@ -156,6 +157,31 @@ def reverse_paths(state, came_from):
         path.append(state)
     path = tuple(zip(*reversed(path)))
     return path
+
+def valid_action(state, agent):
+    pos = state[agent].pos
+    new_pos = state[agent].new_pos()
+    for i in range(agent):
+        # Check if the agents are near each other
+        if abs(state[i].pos[0] - state[agent].pos[0]) > 2 or \
+                abs(state[i].pos[1] - state[agent].pos[1]) > 2:
+            continue
+        other_pos = state[i].pos
+        other_new_pos = state[i].new_pos()
+        # Same location
+        if other_new_pos == new_pos:
+            return False
+        # Swapping position
+        if other_pos == new_pos and pos == other_new_pos:
+            return False
+        # Crossing edge
+        if (other_pos[0] == pos[0] and new_pos[0] == other_new_pos[0]
+            and other_pos[1] == new_pos[1] and pos[1] == other_new_pos[1]):
+            return False
+        if (other_pos[1] == pos[1] and new_pos[1] == other_new_pos[1]
+            and other_pos[0] == new_pos[0] and pos[0] == other_new_pos[0]):
+            return False
+    return True
 
 def draw_paths(image, paths, scale=10):
     draw = ImageDraw.Draw(image)

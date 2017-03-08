@@ -39,14 +39,9 @@ class World:
     def neighbours(self, pos):
         NEIGHBOURS = ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1),
             (0, 1), (1, 1))
-        neighbours = []
-        for n in NEIGHBOURS:
-            neighbour = pos[0] + n[0], pos[1] + n[1]
-            if neighbour not in self.world:
-                continue
-            if self.world[neighbour] == World.WorldData.OBSTACLE:
-                continue
-            neighbours.append(neighbour)
+        neighbours = [(pos[0] + n[0], pos[1] + n[1]) for n in NEIGHBOURS]
+        neighbours = [n for n in neighbours
+            if n in self.world and self.world[n] == World.WorldData.PASSABLE]
         return neighbours
 
 

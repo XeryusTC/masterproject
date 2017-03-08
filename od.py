@@ -29,7 +29,7 @@ class State:
         return f"{self.pos}:{self.action}"
 
     def __eq__(self, other):
-        return self.pos == other.pos and self.action == other.action
+        return self.action == other.action and self.pos == other.pos
 
     def __hash__(self):
         return hash((self.pos, self.action))
@@ -102,7 +102,6 @@ def od(agents, w, starts, goals):
 
         # Add all possible actions
         for action in Actions:
-            count += 1
             new_state = tuple(State(s.pos, s.action) for s in current)
             new_state[agent].action = action
             # Check if the action is valid
@@ -112,6 +111,7 @@ def od(agents, w, starts, goals):
             if not valid_action(new_state, agent):
                 continue
 
+            count += 1
             # If the agent is in its goal position and the action is wait
             # then there should be no cost
             if action == Actions.wait and new_state[agent].pos == goals[agent]:

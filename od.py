@@ -183,46 +183,62 @@ def valid_action(state, agent):
             return False
     return True
 
-def draw_paths(image, paths, scale=10):
+def draw_paths(image, paths, scale=10, colors=None):
+    if colors is None:
+        colors = generate_colors(len(paths))
     draw = ImageDraw.Draw(image)
 
     # Draw start and end points
-    for path in paths:
+    for j in range(len(paths)):
+        #print(j, colors)
+        path = paths[j]
+        color = colors[j]
         draw.ellipse((path[-1][0]*scale+1, path[-1][1]*scale+1,
             (path[-1][0]+1)*scale-1, (path[-1][1]+1)*scale-1),
-            outline=(255, 0, 0))
+            outline=color[1]) # Goal
         draw.ellipse((path[0][0]*scale+1, path[0][1]*scale+1,
             (path[0][0]+1)*scale-1, (path[0][1]+1)*scale-1),
-            outline=(0, 255, 0))
+            outline=color[0]) # Agent
 
-        length = len(path)
-        for i in range(length - 1):
-            color = (int(255*i/length), int(255*(length-i)/length), 0)
+        l = len(path)
+        for i in range(l - 1):
+            c = (int(color[1][0]*i/l) + int(color[0][0]*(l-1)/l),
+                 int(color[1][1]*i/l) + int(color[0][1]*(l-1)/l),
+                 int(color[1][2]*i/l) + int(color[0][2]*(l-1)/l))
             draw.line(((path[i][0]+.5)*scale, (path[i][1]+.5)*scale,
-                (path[i+1][0]+.5)*scale, (path[i+1][1]+.5)*scale), fill=color)
+                (path[i+1][0]+.5)*scale, (path[i+1][1]+.5)*scale), fill=c)
     return image
 
 def animate_paths(image, paths, scale=10):
+    colors = generate_colors(len(paths))
     frame = 0
     for i in range(10):
-        im = draw_paths(image.copy(), paths, scale)
+        im = draw_paths(image.copy(), paths, scale, colors)
         im.save(f'od_path{frame:05}.png')
         frame += 1
 
     for step in range(len(paths[0])):
-        im = draw_paths(image.copy(), (p[step:] for p in paths))
+        im = draw_paths(image.copy(), tuple(p[step:] for p in paths), scale,
+            colors)
         im.save(f'od_path{frame:05}.png')
         frame += 1
 
     im = image.copy()
     draw = ImageDraw.Draw(im)
-    for path in paths:
+    for i in range(len(paths)):
+        path = paths[i]
+        color = colors[i][0]
         draw.ellipse((path[-1][0]*scale+1, path[-1][1]*scale+1,
             (path[-1][0]+1)*scale-1, (path[-1][1]+1)*scale-1),
-            outline=(0, 255, 0))
+            outline=color)
     for i in range(10):
         im.save(f'od_path{frame:05}.png')
         frame += 1
+
+def generate_colors(n):
+    rand = random.randrange
+    return tuple(((rand(192), rand(192), 0), (0, rand(192), rand(192)))
+        for i in range(n))
 
 if __name__ == '__main__':
     try:

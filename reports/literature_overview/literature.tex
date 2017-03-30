@@ -12,94 +12,214 @@
 \maketitle
 
 \section{Cooperative pathfinding}
+Cooperative pathfinding is the field of study that aims to find methods of
+finding conflict free paths for groups of agents. Given a connected grid and a
+group of $k$ agents with initial positions $s_1, \ldots, s_k$ and goal
+positions $g_1, \ldots, g_k$, a set of paths is conflict free iff all agents
+$a$ have a path from $s_a$ to $g_a$ without any two agents ever occupying
+the same position at the same time, or moving along crossing edges at the same
+time. Each agent can take one of $b+1$ actions, where $b$ is the current number
+of nodes the agent can move into, there is also a \textit{wait} action where an
+agent does not move. Agents are allowed to move at the same time and are
+allowed to move to a position if the currently occupying agent also moves in
+the current time step. The naive approach to this problem takes the Cartesian
+product of all $k$ state spaces and applies a search algorithm like A* to that.
+This results in a branching factor of $(b+1)^k$, the branching factor grows
+exponentially in the number of agents and the problem quickly becomes
+intractable even with efficient search algorithms like A* \cite{sharon2013}.
+There are a few categories that methods tackling this problem fall into.
+Centralised methods use one single processor to calculate the paths for all
+agents. Decoupled methods let each agent plan its own path and enforces a
+hierarchy on the agents so that agents lower in the hierarchy need to give way
+to agents higher in the priority. There are also reactive methods that will
+only solve conflicts when they occur during plan execution
+
+One method called Operator Decomposition (OD) deals with the intractability of
+the problem is by considering the possible moves of each agent on their own
+\cite{standley2010,standley2011}. Instead of taking the Cartesian product of
+the agents' state spaces it assigns actions to agents individually. This leads
+to two different kind of states: in standard states no agent has been assigned
+an action; in intermediate states some of the agents have been assigned an
+action, when all agents are assigned an action it results in a new standard
+state. Because intermediate states are considered individually the algorithm is
+less likely to expand standard states that are sub-optimal and thus fewer
+states are generated. The result of this is that the branching factor becomes
+$(b+1)$, but that the depth of the solution in the search tree grows with a
+linear factor $k$. OD is a complete and optimal algorithm, meaning that it will
+always find a solution if one exists, and it will find the best solution.
+
+On its own OD is not always very efficient, so an additional algorithm called
+Independence Detection (ID) was introduced \cite{standley2010}. Before planning
+takes place all agents are placed in their own group. Planning then takes
+place, when the paths for two groups conflict then one group is tasked with
+finding a new conflict free path. If this also fails then the groups are merged
+and a new plan is formed for the group using OD. This process continues until a
+set of conflict free paths for all agents has been found. Several variants on
+ID+OD have been proposed, leading to the Optimal Anytime algorithm
+\cite{standley2011} which will quickly find a solution and can then spend more
+time on improving the solution.
+
+Another method is called the Increasing Cost Tree Search (ICTS) which is a
+two-fold search method \cite{sharon2013}. It consists of a high-level search on
+an Increasing Cost Tree (ICT) which has a root node which contains the optimal
+path costs for each individual agent. Each child node increases the path cost
+for one of the agents, so each level in the tree increases the sum of the path
+costs by one. This tree is searched using breadth-first search, each node in
+the tree will be searched using a low-level search. This low level search
+generates all paths for each agents that is equal to the cost in the current
+ICT node, it will then try to find a conflict free combination of these paths.
+If such a set of paths exists then the algorithm is done, otherwise the
+high-level search will continue to the next node in the ICT. Pruning can be
+used to decrease the amount of duplicate nodes in the ICT, but it is possible
+to use ID as well.
+
+The above algorithms all fall into the centralized category of solutions, these
+can become very slow because of the state-space explosion. Decoupled methods
+reduce the calculation time by considering each agent separately. They
+generally use the same approach; they start with constructing optimal plans for
+each agent independently of each other. Next they impose a hierarchy on the
+agents, usually this is done by assigning them unique priorities. Finally the
+agents make a new plan but this time they will consider all agents with a
+higher priority as moving obstacles. This leads to a set of conflict free
+plans. Finding the optimal priority order is a combinatorial problem
+\cite{bennewitz2002}. A common algorithm of assigning priorities first
+retrieves a dependence hierarchy from the first step, then priorities can be
+assigned such that agents have a priority that is higher than that of agents
+that may block them. Circular dependencies may mean that multiple priority
+schemes may have to be tried. The quality of the final solution depends highly
+on the priority ordering employed, some of the possible priority schemes may
+not even lead to a solution.
 
 \section{Argumentation}
-Argumentation has long been studied by philosophers, but it has been used in 
-the field of Artificial Intelligence as well. In AI it has mainly been used in 
-legal argumentation (AI \& Law), defeasible reasoning and multi-agent systems. 
-One of the main pillars is non-monotonic logic. A logic is non-monotonic when a 
-conclusion that follows based on the premises does not necessarily hold any 
-more when additional premises are added \cite{vaneemeren2014}. A classic 
-example of this is that birds can fly, so when you see a bird you assume that 
-it can fly. However, when you're told that the bird is a penguin and that 
-penguins can't fly then you will no longer conclude that the bird can fly. An 
-argument is defeasible when it can be defeated by other arguments, in the 
+Argumentation has long been studied by philosophers, but it has been used in
+the field of Artificial Intelligence as well. In AI it has mainly been used in
+legal argumentation (AI \& Law), defeasible reasoning and multi-agent systems.
+One of the main pillars is non-monotonic logic. A logic is non-monotonic when a
+conclusion that follows based on the premises does not necessarily hold any
+more when additional premises are added \cite{vaneemeren2014}. A classic
+example of this is that birds can fly, so when you see a bird you assume that
+it can fly. However, when you're told that the bird is a penguin and that
+penguins can't fly then you will no longer conclude that the bird can fly. An
+argument is defeasible when it can be defeated by other arguments, in the
 previous example the fact that the bird that you see can fly is defeasible.
 
-Pollock distinguishes two different types of defeating arguments 
-\cite{pollock1995}. \emph{Rebutting defeaters} attack an argument directly and 
-give a reason for an opposite argument. \emph{Undercutting defeaters} do not 
-attack an argument directly, instead they attack the relation between an 
-argument and its support. The standard example given by Pollock is about an 
-object that looks red: "The ball looks red to John" is a support for John to 
-believe that the ball is red, but there may be a red light shining on the ball. 
-This is a undercutting defeater because it does not attack the conclusion 
-directly, instead it attacks the relation between the observation and the 
-conclusion that the ball is red, after all, a white object with a red light 
+Pollock distinguishes two different types of defeating arguments
+\cite{pollock1995}. \emph{Rebutting defeaters} attack an argument directly and
+give a reason for an opposite argument. \emph{Undercutting defeaters} do not
+attack an argument directly, instead they attack the relation between an
+argument and its support. The standard example given by Pollock is about an
+object that looks red: "The ball looks red to John" is a support for John to
+believe that the ball is red, but there may be a red light shining on the ball.
+This is a undercutting defeater because it does not attack the conclusion
+directly, instead it attacks the relation between the observation and the
+conclusion that the ball is red, after all, a white object with a red light
 shining on it will also look red.
 
-Other researchers have formulated additional forms of defeaters, but they can 
+Other researchers have formulated additional forms of defeaters, but they can
 be distilled into three main forms \cite{vaneemeren2014}:
 \begin{description}
-	\item[Undermining defeaters] attack the premises or assumptions of an 
+	\item[Undermining defeaters] These attack the premises or assumptions of an
 	argument.
-	\item[Undercutting defeaters] attack the connection between a set of 
+	\item[Undercutting defeaters] They attack the connection between a set of
 	reasons and the conclusion in an argument.
-	\item[Rebutting defeaters] attack an argument in favour of an opposite 
-	conclusion.
+	\item[Rebutting defeaters] Raise an argument in favour of an opposite
+	conclusion, thereby attacking an argument.
 \end{description}
 
-A formal model of argumentation that introduces a structure to ease the 
-computation of validity in arguments has been proposed in a highly influential 
-paper by Dung \cite{dung1995}. This work focused mainly on the argument attacks 
-as a formal relation, giving the model the name of abstract argumentation. The 
-main concept is the \emph{argumentation framework}, a directed graph in which 
-the nodes form arguments and the edges between them represent one argument 
-attacking another. An important concept that Dung introduced was that of 
-admissibility of sets of arguments. A set of arguments is admissible when it is 
-conflict free and acceptable. A set being conflict free means that no argument 
-in the set attacks another argument in the set. Acceptability means that when 
-an argument is attacked by another argument outside of the set, then the set 
-attacks that argument. In other words the admissible set defends itself from 
-attacking arguments. On top of this Dung formulated other semantics. The 
-preferred extension is the set theoretically maximal admissible set, that is, 
-it is the largest possible admissible set such that adding one argument from 
-the argumentation framework would make it not admissible. There is also the 
-stable extension, this is an admissible set that attacks all arguments that are 
+A formal model of argumentation that introduces a structure to ease the
+computation of validity in arguments has been proposed in a highly influential
+paper by Dung \cite{dung1995}. This work focused mainly on the argument attacks
+as a formal relation, giving the model the name of abstract argumentation. The
+main concept is the \emph{argumentation framework}, a directed graph in which
+the nodes form arguments and the edges between them represent one argument
+attacking another. An important concept that Dung introduced was that of
+admissibility of sets of arguments. A set of arguments is admissible when it is
+conflict free and acceptable. A set being conflict free means that no argument
+in the set attacks another argument in the set. Acceptability means that when
+an argument is attacked by another argument outside of the set, then the set
+attacks that argument. In other words the admissible set defends itself from
+attacking arguments. On top of this Dung formulated other semantics. The
+preferred extension is the set theoretically maximal admissible set, that is,
+it is the largest possible admissible set such that adding one argument from
+the argumentation framework would make it not admissible. There is also the
+stable extension, this is an admissible set that attacks all arguments that are
 not in the set.
 
-One important notion of an argumentation framework is that of the grounded 
-extension. This extension is simple to compute by labelling the arguments in 
+One important notion of an argumentation framework is that of the grounded
+extension. This extension is simple to compute by labelling the arguments in
 the argumentation framework as `justified' or `defeated':
 \begin{enumerate}
-	\item All unlabelled arguments $\alpha$ in the framework can be labelled as 
-	`justified' if all arguments that attack $\alpha$ are labelled as 
-	`defeated'. Note that when $\alpha$ is not attacked that it can then also 
+	\item All unlabelled arguments $\alpha$ in the framework can be labelled as
+	`justified' if all arguments that attack $\alpha$ are labelled as
+	`defeated'. Note that when $\alpha$ is not attacked that it can then also
 	be labelled as `justified'.
-	\item All unlabelled arguments $\alpha$ in the framework that are attacked 
+	\item All unlabelled arguments $\alpha$ in the framework that are attacked
 	by an argument that has been labelled `justified' is labelled as `defeated'.
 	\item Steps 1 and 2 are repeated until all arguments have been labelled.
 \end{enumerate}
-A finite argumentation framework is labelled in a finite amount of steps. All 
-arguments that have been labelled as `justified' are included in the grounded 
-extension. All arguments that have been labelled `defeated' are not included in 
+A finite argumentation framework is labelled in a finite amount of steps. All
+arguments that have been labelled as `justified' are included in the grounded
+extension. All arguments that have been labelled `defeated' are not included in
 the grounded extension.
 
 \subsection{Dialogues}
-Multiple agents can have an argument through a dialogue. Walton and 
-Krabbe \cite{walton1995} proposed a typology of main dialogues that humans 
-partake in. They distinguish six main types of dialogues, it should be noted 
-that the list of dialogue types is not exhaustive. In \emph{information 
-seeking} dialogues some of the participating agents aim to gather information 
-from another agent that knows the anser. In \emph{inquiry} dialogues a group of 
-agents collectively seeks an answer to a question to which non of the 
-participating agents knows the answer on its own. \emph{Deliberation} dialogues 
-are about what course of action to take in a given situation. A 
-\emph{persuasion} dialogue occurs when an agent tries to convince on or 
-multiple other agents of its position. It is successful when the other agent(s) 
-adopt its position. Participants of \emph{negotiation} dialogues try to find a 
-division of a scarce resource that all agents can be satisfied with. Finally 
-\emph{eristic} dialogues are a verbal substitute for fighting.
+Multiple agents can have an argument through a dialogue. Walton and
+Krabbe \cite{walton1995} proposed a typology of main dialogues that humans
+partake in. They distinguish six main types of dialogues, it should be noted
+that the list of dialogue types is not exhaustive. In \emph{information
+seeking} dialogues some of the participating agents aim to gather information
+from another agent that knows the anser. In \emph{inquiry} dialogues a group of
+agents collectively seeks an answer to a question to which non of the
+participating agents knows the answer on its own. \emph{Deliberation} dialogues
+are about what course of action to take in a given situation. A
+\emph{persuasion} dialogue occurs when an agent tries to convince on or
+multiple other agents of its position. It is successful when the other agent(s)
+adopt its position. Participants of \emph{negotiation} dialogues try to find a
+division of a scarce resource that all agents can be satisfied with. Finally
+\emph{eristic} dialogues are a verbal substitute for fighting. Note that most
+actual dialogues combine these dialogue types.
+
+Dialogues are often analysed in a game-theoretic sense, where the utterances
+that agents can make are analogous to the moves in a game. Which utterances are
+appropriate at each moment is then defined by the rules of the game. Most of
+the research into dialogues follows this approach
+\cite{prakken2006,prakken2009}. Most dialogue systems have a two language
+set-up. The first is the topic language which is about what agents are
+discussing and is usually a logical language, it defines the context of the
+dialogue. The second language is the communication language which specifies
+which utterances can be made, what effects they have and the rules of outcome.
+This latter language is at the core of dialogue games. Most dialogue systems
+have the following syntax in common \cite{prakken2006,prakken2009,mcburney2009}.
+\begin{description}
+	\item[Commencement rules] Rules that concern when and how a dialogue can
+	start and what its context is.
+	\item[Locution rules] Which utterances are permitted are known as the
+	locution rules. They may also define when an utterance is obligatory.
+	Common locutions include asserting propositions, questioning or contesting
+	assertions and justifying previous assertions after they have been
+	questioned.
+	\item[Commitments] Some locutions incur commitments on an agent which are
+	subsequently put into the agent's commitment store. A dialogue system may
+	limit which utterances an agent can make based on what is in its commitment
+	store.
+	\item[Speaker order] Most dialogue systems specify an order in which agents
+	can speak, this can range from agents alternating turns to each agent being
+	allowed to make an utterance at any time.
+	\item[Outcome rules] These determine what the outcome of the dialogue is.
+	Some systems define an outcome while the dialogue may continue and lead to
+	a different outcome at a later point.
+\end{description}
+
+One model of deliberation dialogues is presented in \cite{mcburney2007}. It
+consists of eight stages, starting with an \textbf{Open} stage and ending with
+a \textbf{Close} stage. The other stages can occur multiple times during a
+dialogue in any valid order. During the dialogue agents will collect the
+preferences, goals and other constraints that need to be considered. Agents
+will then propose common plans of action, when multiple plans have been
+proposed agents can specify which they prefer. At some points an agent can
+recommend a plan after which all agents will vote for that plan. The dialogue
+requires unanimity before the recommended plan is adopted, but it allows for a
+voting mechanism to pick the most preferred plan among many.
 
 \bibliographystyle{plain}
 \bibliography{biblio}

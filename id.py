@@ -122,10 +122,7 @@ def group_od(w, group):
                 if new_state in g and score >= g[new_state]:
                     continue
                 # Check if the standard state is already in the open set
-                for _, _, _, candidate in open_set:
-                    if candidate == new_state:
-                        break
-                else:
+                if new_state not in g:
                     # No duplicate found, add this one
                     simple_state = tuple(s.new_pos() for s in new_state)
                     h = od.heur_dist(group.heur, group.goals, simple_state)
@@ -184,6 +181,8 @@ def path_conflicts(path1, path2):
             and old_pos2[0] == new_pos1[0] and old_pos1[0] == new_pos2[0]):
             return True
     # Check if the longer path goes through the goal of the shorter
+    if len(path1) == 0: # When a path has 0 length i doesn't exist
+        i = 0
     for j in range(i, len(path2)):
         if path2[j] == path1[i]:
             return True

@@ -101,20 +101,13 @@ def od(agents, w, starts, goals):
             closed_set.add(current)
 
         # Add all possible actions
-        for action in Actions:
-            new_state = tuple(State(s.pos, s.action) for s in current)
-            new_state[agent].action = action
-            # Check if the action is valid
-            if action != Actions.wait and \
-                new_state[agent].new_pos() not in w.neighbours(new_state[agent].pos):
-                continue
-            if not valid_action(new_state, agent):
-                continue
-
+        successors = next_states(current, w, agent)
+        for new_state in successors:
             count += 1
             # If the agent is in its goal position and the action is wait
             # then there should be no cost
-            if action == Actions.wait and new_state[agent].pos == goals[agent]:
+            if new_state[agent].action == Actions.wait and \
+                    new_state[agent].pos == goals[agent]:
                 score = g[current]
             else:
                 score = g[current] + 1
@@ -126,10 +119,7 @@ def od(agents, w, starts, goals):
                 if new_state in g and score >= g[new_state]:
                     continue
                 # Check if the standard state is already in the open set
-                for _, _, _, candidate in open_set:
-                    if candidate == new_state:
-                        break
-                else:
+                if new_state not in g:
                     # No duplicate found, add this one
                     simple_state = tuple(s.new_pos() for s in new_state)
                     h = heur_dist(heur, goals, simple_state)
@@ -149,6 +139,22 @@ def od(agents, w, starts, goals):
                     (score + h, count, agent + 1, new_state))
             g[new_state] = score
     return None
+
+def next_states(state, w, agent):
+    new_states = []
+    neighbours = w.neighbours(state[agent].pos)
+    for action in Actions:
+        new_state = tuple(State(s.pos, s.action) for s in state)
+        new_state[agent].action = action
+        # Check if the action is valid
+        if (action != Actions.wait and
+            new_state[agent].new_pos() not in neighbours):
+            continue
+        if not valid_action(new_state, agent):
+            continue
+        new_states.append(new_state)
+
+    return new_states
 
 def reverse_paths(state, came_from):
     path = [state]

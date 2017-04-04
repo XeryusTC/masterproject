@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import heapq
+import imageio
 import random
 import sys
 import timeit
@@ -7,6 +8,10 @@ import timeit
 from rra_star import RRAstar
 import od
 from simulation import util, visualisation
+
+class NoPathsFoundException(Exception):
+    pass
+
 
 class Group:
     def __init__(self, starts, goals, w):
@@ -37,8 +42,14 @@ def main(agents):
     print('goals: ', goals)
 
     paths = odid(agents, world, starts, goals)
+
+    print('Writing visualisations')
     vis = visualisation.Visualisation(world, scale=20)
-    vis.draw_paths('odid.mkv', paths, frames_per_step=10)
+    frames = vis.draw_paths('odid.mkv', paths, frames_per_step=10)
+
+    # Draw individual frames
+    for i in range(len(frames)):
+        imageio.imwrite('frames/%05d.png' % i, frames[i])
 
 def odid(agents, w, starts, goals):
     conflict = True
@@ -54,13 +65,30 @@ def odid(agents, w, starts, goals):
     # Merge groups and solve conflicts
     conflict = group_conflicts(groups)
     while conflict:
-        # Merge groups
         group1, group2 = conflict
+        # Try to replan the conflicting groups
+        print('Replanning for group', group1)
+        try:
+            groups[group2].paths = group_od(w, groups[group2],
+                groups[group1].paths)
+            conflict = group_conflicts(groups)
+        except NoPathsFoundException:
+            print('No path found')
+            pass # Do merging if no valid path is found
+        else:
+            if conflict and group2 not in conflict: # Successfully replanned
+                continue
+            elif not conflict:
+                break
+
+        # Merge groups
+        print('Merging groups', group1, 'and', group2)
         groups[group1].merge(groups[group2])
         del groups[group2]
         end_time = timeit.default_timer()
         print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
-        print('After merge:', tuple(groups[i].size for i in range(len(groups))))
+        print('After merge:', tuple(groups[i].size
+            for i in range(len(groups))))
         # Calculate new paths for the merged groups
         groups[group1].paths = group_od(w, groups[group1])
         conflict = group_conflicts(groups)
@@ -73,49 +101,40 @@ def odid(agents, w, starts, goals):
         paths += group.paths
     return paths
 
-def group_od(w, group):
+def group_od(w, group, conflicting_paths=None):
     start_state = tuple(od.State(s) for s in group.starts)
     count = 0
     closed_set = set()
     open_set = []
     came_from = {}
     g = {start_state: 0}
-    heapq.heappush(open_set, (0, count, 0, start_state))
+    heapq.heappush(open_set, (0, count, 0, 0, start_state))
     agents = len(group.starts)
 
     # Display predicted cost
     pred_cost = od.heur_dist(group.heur, group.goals, group.starts)
-    print('predicted cost:', pred_cost)
 
     while open_set:
-        f, _, agent, current = heapq.heappop(open_set)
+        f, _, agent, time_step, current = heapq.heappop(open_set)
 
         # Check if we've reached the goal
         if agent == 0:
             state = tuple(s.pos for s in current)
             if state == tuple(group.goals):
-                print('open set size:  ', len(open_set))
-                print('closed set size:', len(closed_set))
-                print('final cost:     ', f)
                 return od.reverse_paths(state, came_from)
             # Add the standard state to the closed set
             closed_set.add(current)
 
         # Add all possible actions
-        for action in od.Actions:
-            new_state = tuple(od.State(s.pos, s.action) for s in current)
-            new_state[agent].action = action
-            # Check if the action is valid
-            if action != od.Actions.wait and \
-                new_state[agent].new_pos() not in w.neighbours(new_state[agent].pos):
-                    continue
-            if not od.valid_action(new_state, agent):
-                continue
-
+        successors = od.next_states(current, w, agent)
+        if conflicting_paths is not None:
+            successors = filter_successors(successors, agent, time_step,
+                conflicting_paths)
+        for new_state in successors:
             count += 1
             # If the agent is in its goal and the action is wait then there
             # should be no cost
-            if action == od.Actions.wait and \
+            if new_state[agent].action == od.Actions.wait and \
                 new_state[agent].pos == group.goals[agent]:
                 score = g[current]
             else:
@@ -132,7 +151,8 @@ def group_od(w, group):
                     # No duplicate found, add this one
                     simple_state = tuple(s.new_pos() for s in new_state)
                     h = od.heur_dist(group.heur, group.goals, simple_state)
-                    heapq.heappush(open_set, (score + h, count, 0, new_state))
+                    heapq.heappush(open_set,
+                        (score + h, count, 0, time_step+1, new_state))
                     came_from[simple_state] = tuple(s.pos for s in current)
             # Create intermediate state
             else:
@@ -141,13 +161,25 @@ def group_od(w, group):
                     continue
                 h = 0
                 for i in range(agent + 1):
-                    h += group.heur[group.goals[i]].dist(new_state[i].new_pos())
+                    h += group.heur[group.goals[i]].dist(
+                        new_state[i].new_pos())
                 for i in range(agent + 1, agents):
                     h += group.heur[group.goals[i]].dist(new_state[i].pos)
                 heapq.heappush(open_set,
-                    (score + h, count, agent + 1, new_state))
+                    (score + h, count, agent + 1, time_step, new_state))
             g[new_state] = score
-    raise Exception('No paths found')
+    raise NoPathsFoundException()
+
+def filter_successors(successors, agent, time_step, other_paths):
+    new_succ = []
+    for state in successors:
+        for path in other_paths:
+            if len(path) <= time_step:
+                new_succ.append(state)
+            elif not path_conflicts(path[time_step:],
+                    (state[agent].pos, state[agent].new_pos())):
+                new_succ.append(state)
+    return new_succ
 
 def group_conflicts(groups):
     for group1 in range(len(groups)):

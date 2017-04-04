@@ -6,7 +6,7 @@ import timeit
 
 from rra_star import RRAstar
 import od
-import world
+from simulation import util, visualisation
 
 class Group:
     def __init__(self, starts, goals, w):
@@ -32,13 +32,13 @@ class Group:
 
 
 def main(agents):
-    w = world.World(16, 16, 0.2)
-    starts = tuple(random.choice(w.passable) for i in range(agents))
-    goals  = tuple(random.choice(w.passable) for i in range(agents))
+    world, starts, goals = util.generate_problem(agents, 16, 16, 0.2)
     print('starts:', starts)
     print('goals: ', goals)
 
-    paths = odid(agents, w, starts, goals)
+    paths = odid(agents, world, starts, goals)
+    vis = visualisation.Visualisation(world, scale=20)
+    vis.draw_paths('odid.mkv', paths, frames_per_step=10)
 
 def odid(agents, w, starts, goals):
     conflict = True
@@ -59,13 +59,19 @@ def odid(agents, w, starts, goals):
         groups[group1].merge(groups[group2])
         del groups[group2]
         end_time = timeit.default_timer()
-        print('After merge:', tuple(groups[i].size for i in range(len(groups))))
         print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+        print('After merge:', tuple(groups[i].size for i in range(len(groups))))
         # Calculate new paths for the merged groups
         groups[group1].paths = group_od(w, groups[group1])
         conflict = group_conflicts(groups)
     end_time = timeit.default_timer()
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+
+    # Flatten paths
+    paths = []
+    for group in groups:
+        paths += group.paths
+    return paths
 
 def group_od(w, group):
     start_state = tuple(od.State(s) for s in group.starts)
@@ -181,7 +187,7 @@ def path_conflicts(path1, path2):
             and old_pos2[0] == new_pos1[0] and old_pos1[0] == new_pos2[0]):
             return True
     # Check if the longer path goes through the goal of the shorter
-    if len(path1) == 0: # When a path has 0 length i doesn't exist
+    if len(path1) <= 1: # When a path has 0 length i doesn't exist
         i = 0
     for j in range(i, len(path2)):
         if path2[j] == path1[i]:

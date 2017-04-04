@@ -45,11 +45,7 @@ def main(agents):
 
     print('Writing visualisations')
     vis = visualisation.Visualisation(world, scale=20)
-    frames = vis.draw_paths('odid.mkv', paths, frames_per_step=10)
-
-    # Draw individual frames
-    for i in range(len(frames)):
-        imageio.imwrite('frames/%05d.png' % i, frames[i])
+    frames = vis.draw_paths('odid.mkv', paths)
 
 def odid(agents, w, starts, goals):
     conflict = True
@@ -67,7 +63,7 @@ def odid(agents, w, starts, goals):
     while conflict:
         group1, group2 = conflict
         # Try to replan the conflicting groups
-        print('Replanning for group', group1)
+        print('Replanning for group', group2)
         try:
             groups[group2].paths = group_od(w, groups[group2],
                 groups[group1].paths)
@@ -196,11 +192,11 @@ def path_conflicts(path1, path2):
     if len(path1) > len(path2):
         path1, path2 = path2, path1
 
-    for i in range(len(path1)-1):
+    for i in range(len(path1)):
         old_pos1 = path1[i]
         old_pos2 = path2[i]
-        new_pos1 = path1[i+1]
-        new_pos2 = path2[i+1]
+        new_pos1 = path1[i] if i == len(path1) - 1 else path1[i+1]
+        new_pos2 = path2[i] if i == len(path2) - 1 else path2[i+1]
 
         if abs(old_pos1[0] - old_pos2[0]) > 2 or \
            abs(old_pos1[1] - old_pos2[1]) > 2:

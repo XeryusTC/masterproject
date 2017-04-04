@@ -44,7 +44,7 @@ def main(agents):
     paths = odid(agents, world, starts, goals)
 
     print('Writing visualisations')
-    vis = visualisation.Visualisation(world, scale=20)
+    vis = visualisation.Visualisation(world, agents, scale=20)
     frames = vis.draw_paths('odid.mkv', paths)
 
 def odid(agents, w, starts, goals):

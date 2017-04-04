@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import imageio
 import numpy as np
+import random
 from PIL import Image, ImageDraw
 
 class Visualisation():
-    colors = ('#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3',
-              '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39',
-              '#ffeb3b', '#ffc107', '#ff9800', '#ff5722', '#795548', '#9e9e9e',
-              '#607d8b')
-    def __init__(self, world, scale=10):
+    def __init__(self, world, agents, scale=10):
         self.scale = scale
         self.world = world
+        self.colors = tuple((random.randrange(192), random.randrange(192),
+            random.randrange(192)) for i in range(agents))
 
     @property
     def world(self):

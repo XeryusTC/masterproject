@@ -44,3 +44,9 @@ class SimulationTests(TestCase):
         paths = (((1,1), (0,0)), ((1,0), (0,1)))
         conflicts = util.paths_conflict(paths)
         self.assertEqual(conflicts, [{'path1': 0, 'path2': 1, 'time': 0}])
+
+    def test_paths_conflict_when_going_through_end_point(self):
+        paths = (((0,0), (1, 1), (2,2), (3,3)),
+                 ((2,1), (2,2)))
+        conflicts = util.paths_conflict(paths)
+        self.assertEqual(conflicts, [{'path1': 0, 'path2': 1, 'time': 2}])

@@ -41,7 +41,7 @@ def main(agents):
     print('starts:', starts)
     print('goals: ', goals)
 
-    paths = odid(agents, world, starts, goals)
+    paths = odid2(agents, world, starts, goals)
 
     print('Writing visualisations')
     vis = visualisation.Visualisation(world, agents, scale=20)
@@ -221,6 +221,73 @@ def path_conflicts(path1, path2):
         if path2[j] == path1[i]:
             return True
     return False
+
+def odid2(agents, w, starts, goals):
+    conflicted = []
+    old_conflicts = []
+    groups = list(Group([starts[i]], [goals[i]], w) for i in range(agents))
+
+    start_time = timeit.default_timer()
+    # Initial planning
+    for group in groups:
+        group.paths = group_od(w, group)
+
+    conflicted = groups_conflict(groups)
+    print(conflicted)
+    while conflicted:
+        group1, group2 = conflicted[0]
+        print('Found conflict between', group1, 'and', group2)
+        if (group1, group2) not in old_conflicts:
+            print('Replanning for group', group1)
+            old_conflicts.append((group1, group2))
+            old_paths = groups[group1].paths
+            try:
+                groups[group1].paths = group_od(w, groups[group1],
+                                        groups[group2].paths)
+            except NoPathsFoundException:
+                print('NO PATH FOUND')
+                pass
+            # See if this solved the problem
+            if groups_conflict([groups[group1], groups[group2]]):
+                print('Replanning for group', group2)
+                groups[group1].paths = old_paths
+                groups[group2].paths = group_od(w, groups[group2],
+                                            groups[group1].paths)
+            conflicted = groups_conflict(groups)
+
+        # Conflict still not resolved, merge groups
+        if (group1, group2) in conflicted:
+            end_time = timeit.default_timer()
+            print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+            print('Merging groups', group1, 'and', group2)
+            groups[group1].merge(groups[group2])
+            del groups[group2]
+            print('After merge:', tuple(groups[i].size
+                for i in range(len(groups))))
+            groups[group1].paths = group_od(w, groups[group1])
+            # Remove stored conflict
+            old_conflicts = [c for c in old_conflicts if c != (group1, group2)]
+        conflicted = groups_conflict(groups)
+
+    end_time = timeit.default_timer()
+    print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+
+    # Flatten paths
+    paths = []
+    for group in groups:
+        paths += group.paths
+    return paths
+
+def groups_conflict(groups):
+    num_groups = len(groups)
+    conflicts = []
+    for group1 in range(num_groups):
+        for group2 in range(group1+1, num_groups):
+            for path1 in groups[group1].paths:
+                for path2 in groups[group2].paths:
+                    if util.paths_conflict([path1, path2]):
+                        conflicts.append((group1, group2))
+    return conflicts
 
 if __name__ == '__main__':
     try:

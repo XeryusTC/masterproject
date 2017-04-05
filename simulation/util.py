@@ -12,12 +12,13 @@ def generate_problem(agents, width, height, obstacles=0.2):
 
 def paths_conflict(paths):
     agents = len(paths)
-    max_length = max(len(path) for path in paths)
     conflicts = []
 
-    for time in range(max_length - 1):
-        for i in range(agents):
-            for j in range(i+1, agents):
+    for i in range(agents):
+        for j in range(i+1, agents):
+            min_length = min(len(paths[i]), len(paths[j]))
+            max_length = max(len(paths[i]), len(paths[j]))
+            for time in range(min_length - 1):
                 ox0 = paths[i][time][0]
                 oy0 = paths[i][time][1]
                 ox1 = paths[j][time][0]
@@ -40,4 +41,16 @@ def paths_conflict(paths):
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
                 if oy0 == oy1 and ny0 == ny1 and nx0 == ox1 and ox0 == nx1:
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
+            # Check if one agent goes through the endpoint of the other
+            if min_length != max_length:
+                if len(paths[i]) < len(paths[j]):
+                    shortest = paths[i]
+                    longest  = paths[j]
+                else:
+                    shortest = paths[j]
+                    longest  = paths[i]
+                for time in range(min_length, max_length):
+                    if shortest[-1] == longest[time]:
+                        conflicts.append({'path1': i, 'path2': j,
+                            'time': time})
     return conflicts

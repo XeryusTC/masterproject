@@ -97,7 +97,7 @@ def odid(agents, w, starts, goals):
         paths += group.paths
     return paths
 
-def group_od(w, group, conflicting_paths=None):
+def group_od(w, group, conflicting_paths=None, max_length=None):
     start_state = tuple(od.State(s) for s in group.starts)
     count = 0
     closed_set = set()
@@ -112,12 +112,14 @@ def group_od(w, group, conflicting_paths=None):
 
     while open_set:
         f, _, agent, time_step, current = heapq.heappop(open_set)
+        if max_length and time_step > max_length:
+            continue
 
         # Check if we've reached the goal
         if agent == 0:
             state = tuple(s.pos for s in current)
             if state == tuple(group.goals):
-                return od.reverse_paths(state, came_from)
+                return reverse_paths(state + (time_step,), came_from)
             # Add the standard state to the closed set
             closed_set.add(current)
 
@@ -149,7 +151,8 @@ def group_od(w, group, conflicting_paths=None):
                     h = od.heur_dist(group.heur, group.goals, simple_state)
                     heapq.heappush(open_set,
                         (score + h, count, 0, time_step+1, new_state))
-                    came_from[simple_state] = tuple(s.pos for s in current)
+                    came_from[simple_state + (time_step + 1,)] = tuple(s.pos
+                        for s in current) + (time_step,)
             # Create intermediate state
             else:
                 # if we found a longer path, ignore it
@@ -176,6 +179,14 @@ def filter_successors(successors, agent, time_step, other_paths):
                     (state[agent].pos, state[agent].new_pos())):
                 new_succ.append(state)
     return new_succ
+
+def reverse_paths(state, came_from):
+    path = [(state[0],)]
+    while state in came_from:
+        state = came_from[state]
+        path.append((state[0],))
+    path = tuple(zip(*reversed(path)))
+    return path
 
 def group_conflicts(groups):
     for group1 in range(len(groups)):
@@ -233,26 +244,31 @@ def odid2(agents, w, starts, goals):
         group.paths = group_od(w, group)
 
     conflicted = groups_conflict(groups)
-    print(conflicted)
     while conflicted:
-        group1, group2 = conflicted[0]
+        print('conflicted groups:', conflicted)
+        group1, group2 = random.choice(conflicted)
         print('Found conflict between', group1, 'and', group2)
         if (group1, group2) not in old_conflicts:
             print('Replanning for group', group1)
+            # Get maximum length of groups
+            max_length = max(len(path)
+                for path in groups[group1].paths + groups[group2].paths)
             old_conflicts.append((group1, group2))
             old_paths = groups[group1].paths
             try:
                 groups[group1].paths = group_od(w, groups[group1],
-                                        groups[group2].paths)
+                    groups[group2].paths, max_length=max_length)
             except NoPathsFoundException:
-                print('NO PATH FOUND')
                 pass
             # See if this solved the problem
             if groups_conflict([groups[group1], groups[group2]]):
                 print('Replanning for group', group2)
                 groups[group1].paths = old_paths
-                groups[group2].paths = group_od(w, groups[group2],
-                                            groups[group1].paths)
+                try:
+                    groups[group2].paths = group_od(w, groups[group2],
+                        groups[group1].paths, max_length=max_length)
+                except NoPathsFoundException:
+                    pass
             conflicted = groups_conflict(groups)
 
         # Conflict still not resolved, merge groups

@@ -63,10 +63,10 @@ class Visualisation():
                     pos = (cur_pos[0] + (next_pos[0] - cur_pos[0]) * inter,
                            cur_pos[1] + (next_pos[1] - cur_pos[1]) * inter)
                     # Draw agent
-                    ellipse = (pos[0] * self.scale + 1,
-                               pos[1] * self.scale + 1,
-                               (pos[0] + 1) * self.scale - 1,
-                               (pos[1] + 1 ) * self.scale - 1)
+                    ellipse = (pos[0] * self.scale + .2 * self.scale,
+                               pos[1] * self.scale + .2 * self.scale,
+                               (pos[0] + 1) * self.scale - .2 * self.scale,
+                               (pos[1] + 1) * self.scale - .2 * self.scale)
                     draw.ellipse(ellipse, self.colors[i], self.colors[i])
                     # Draw remaining path
                     offset = .5 * self.scale

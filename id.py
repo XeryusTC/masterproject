@@ -37,7 +37,7 @@ class Group:
 
 
 def main(agents):
-    world, starts, goals = util.generate_problem(agents, 16, 16, 0.2)
+    world, starts, goals = util.generate_problem(agents, 32, 32, 0.2)
     print('starts:', starts)
     print('goals: ', goals)
 
@@ -245,15 +245,21 @@ def odid2(agents, w, starts, goals):
 
     conflicted = groups_conflict(groups)
     while conflicted:
-        print('conflicted groups:', conflicted)
+        #print('conflicted groups:', conflicted)
         group1, group2 = random.choice(conflicted)
         print('Found conflict between', group1, 'and', group2)
         if (group1, group2) not in old_conflicts:
+            old_conflicts.append((group1, group2))
+            # Replan for the smallest group first
+            if groups[group1].size > groups[group2].size:
+                group1, group2 = group2, group1
+                swapped = True
+            else:
+                swapped = False
             print('Replanning for group', group1)
             # Get maximum length of groups
             max_length = max(len(path)
                 for path in groups[group1].paths + groups[group2].paths)
-            old_conflicts.append((group1, group2))
             old_paths = groups[group1].paths
             try:
                 groups[group1].paths = group_od(w, groups[group1],
@@ -269,6 +275,9 @@ def odid2(agents, w, starts, goals):
                         groups[group1].paths, max_length=max_length)
                 except NoPathsFoundException:
                     pass
+            # Swap groups back
+            if swapped:
+                group1, group2, group2, group1
             conflicted = groups_conflict(groups)
 
         # Conflict still not resolved, merge groups

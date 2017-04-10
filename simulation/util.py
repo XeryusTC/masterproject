@@ -4,6 +4,10 @@ import random
 
 from .world import World
 
+class NoPathsFoundException(Exception):
+    pass
+
+
 def generate_problem(agents, width, height, obstacles=0.2):
     world = World(width, height, obstacles)
     starts = random.sample(world.passable, agents)

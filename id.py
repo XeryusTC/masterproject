@@ -9,9 +9,7 @@ from rra_star import RRAstar
 import od
 from simulation import util, visualisation
 
-class NoPathsFoundException(Exception):
-    pass
-
+NoPathsFoundException = util.NoPathsFoundException
 
 class Group:
     def __init__(self, starts, goals, w):

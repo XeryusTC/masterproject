@@ -2,7 +2,7 @@
 import imageio
 import numpy as np
 import random
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 class Visualisation():
     def __init__(self, world, agents, scale=10):
@@ -36,6 +36,7 @@ class Visualisation():
         step_size = 1 / float(frames_per_step)
         imseq = []
         max_length = max(len(path) for path in paths)
+        font = ImageFont.load_default()
 
         # Create base image (it contains end positions)
         end_im = self._world_im.copy()
@@ -76,6 +77,11 @@ class Visualisation():
                             pos[1] * self.scale + offset) for
                         pos in paths[i][step+1:]]
                     draw.line(path, self.colors[i])
+                    # Draw the agent number
+                    offset = .25 * self.scale
+                    draw.text((pos[0] * self.scale + offset,
+                               pos[1] * self.scale + offset),
+                              str(i), 'white', align='center')
 
                 # Add the frame to the final animation
                 imseq.append(np.asarray(frame))

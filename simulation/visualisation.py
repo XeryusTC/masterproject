@@ -36,7 +36,6 @@ class Visualisation():
         step_size = 1 / float(frames_per_step)
         imseq = []
         max_length = max(len(path) for path in paths)
-        font = ImageFont.load_default()
 
         # Create base image (it contains end positions)
         end_im = self._world_im.copy()
@@ -78,9 +77,8 @@ class Visualisation():
                         pos in paths[i][step+1:]]
                     draw.line(path, self.colors[i])
                     # Draw the agent number
-                    offset = .25 * self.scale
-                    draw.text((pos[0] * self.scale + offset,
-                               pos[1] * self.scale + offset),
+                    draw.text(((pos[0] + .25) * self.scale + offset,
+                               (pos[1] + .25) * self.scale + offset),
                               str(i), 'white', align='center')
 
                 # Add the frame to the final animation
@@ -88,3 +86,54 @@ class Visualisation():
         # Output the animation
         imageio.mimwrite(filename, imseq, fps=24)
         return imseq
+
+    def draw_paths_with_conflicts(self, paths, conflicts):
+        max_length = max(len(path) for path in paths)
+
+        # Start by getting world image
+        im = self._world_im.copy()
+        draw = ImageDraw.Draw(im)
+
+        # Get number of conflicts per square
+        conflict_positions = {}
+        for conflict in conflicts:
+            try:
+                pos = paths[conflict['path1']][conflict['time']]
+            except IndexError:
+                pos = paths[conflict['path2']][conflict['time']]
+            try:
+                conflict_positions[pos] += 1
+            except KeyError:
+                conflict_positions[pos] = 1
+        max_conflicts = max(conflict_positions.values())
+        weight = int(255 / max_conflicts)
+        # Draw conflicts
+        for pos, num in conflict_positions.items():
+            draw.rectangle(((pos[0] + .1) * self.scale,
+                            (pos[1] + .1)* self.scale,
+                            (pos[0] + .9) * self.scale,
+                            (pos[1] + .9) * self.scale),
+                            fill=((weight * num),0,0))
+
+        # Draw agents and paths
+        for i in range(len(paths)):
+            # Goal
+            pos = paths[i][-1]
+            ellipse = ((pos[0] + .2) * self.scale, (pos[1] + .2) * self.scale,
+                       (pos[0] + .8) * self.scale, (pos[1] + .8) * self.scale)
+            draw.ellipse(ellipse, outline=self.colors[i])
+            # Path
+            path = [((pos[0] + .5) * self.scale, (pos[1] + .5) * self.scale)
+                    for pos in paths[i]]
+            draw.line(path, self.colors[i])
+            # Agent
+            pos = paths[i][0]
+            ellipse = ((pos[0] + .2) * self.scale, (pos[1] + .2) * self.scale,
+                       (pos[0] + .8) * self.scale, (pos[1] + .8) * self.scale)
+            draw.ellipse(ellipse, self.colors[i], self.colors[i])
+            # Draw agent number
+            draw.text(((pos[0] + .25) * self.scale,
+                       (pos[1] + .25) * self.scale),
+                      str(i), 'white')
+
+        return im

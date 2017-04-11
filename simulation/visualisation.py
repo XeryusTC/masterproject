@@ -105,7 +105,7 @@ class Visualisation():
                 conflict_positions[pos] += 1
             except KeyError:
                 conflict_positions[pos] = 1
-        max_conflicts = max(conflict_positions.values())
+        max_conflicts = max(conflict_positions.values(), default=1)
         weight = int(255 / max_conflicts)
         # Draw conflicts
         for pos, num in conflict_positions.items():

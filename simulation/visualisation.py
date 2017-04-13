@@ -29,6 +29,12 @@ class Visualisation():
                               ((x+1)*self.scale, (y+1)*self.scale),
                               (x*self.scale, (y+1)*self.scale)),
                               fill="black")
+        for x in range(self.world.width):
+            draw.line((x*self.scale, 0, x*self.scale,
+                       self.world.height*self.scale), fill='#ccc')
+        for y in range(self.world.height):
+            draw.line((0, y*self.scale, self.world.width*self.scale,
+                       y*self.scale), fill='#ccc')
 
     def draw_paths(self, filename, paths, frames_per_step=None):
         if frames_per_step is None:

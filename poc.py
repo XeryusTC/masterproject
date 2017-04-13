@@ -35,12 +35,13 @@ class Agent:
             closed_set.add(cur)
             for successor in self._successors(cur, time_step):
                 # Skip successor in closed list
-                if successor in closed_set:
+                if successor in closed_set and successor != cur:
                     continue
 
                 score = g[cur] + 1
                 # Ignore a path if it is longer
-                if successor in g and score >= g[successor]:
+                if successor in g and score >= g[successor] \
+                    and successor != cur:
                     continue
                 came_from[time_step + 1, successor] = (time_step, cur)
                 g[successor] = score
@@ -54,8 +55,11 @@ class Agent:
         for successor in successors:
             for other_agent in self.prio:
                 path = other_agent.path
-                if util.paths_conflict([path[time:] + [path[-1]],
-                    (pos, successor)]):
+                if len(path[time:]) >= 2:
+                    paths = [path[time:time + 2], (pos, successor)]
+                else:
+                    paths = [[path[-1]], (pos, successor)]
+                if util.paths_conflict(paths):
                     break
             else:
                 filtered.append(successor)
@@ -64,13 +68,9 @@ class Agent:
 
     def _reverse_path(self, state, came_from):
         path = [state[1]]
-        last_time = state[0]
         while state in came_from:
             state = came_from[state]
-            # Add the state multiple times if we need to wait
-            for i in range(last_time - state[0]):
-                path.append(state[1])
-            last_time = state[0]
+            path.append(state[1])
         path.reverse()
         return path
 
@@ -132,8 +132,6 @@ def main(num_agents):
     conflicts = util.paths_conflict(paths)
     vis = visualisation.Visualisation(world, num_agents, scale=20)
     vis.draw_paths('poc.mkv', paths)
-    conflict_im = vis.draw_paths_with_conflicts(paths, conflicts)
-    conflict_im.save('poc_conflicts.png')
 
 if __name__ == '__main__':
     try:

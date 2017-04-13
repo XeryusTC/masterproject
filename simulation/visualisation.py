@@ -68,6 +68,10 @@ class Visualisation():
                                (pos[0] + 1) * self.scale - .2 * self.scale,
                                (pos[1] + 1) * self.scale - .2 * self.scale)
                     draw.ellipse(ellipse, self.colors[i], self.colors[i])
+                    # Draw the agent number
+                    draw.text(((pos[0] + .25) * self.scale,
+                               (pos[1] + .25) * self.scale),
+                              str(i), 'white', align='center')
                     # Draw remaining path
                     offset = .5 * self.scale
                     path = [(pos[0] * self.scale + offset,
@@ -76,10 +80,6 @@ class Visualisation():
                             pos[1] * self.scale + offset) for
                         pos in paths[i][step+1:]]
                     draw.line(path, self.colors[i])
-                    # Draw the agent number
-                    draw.text(((pos[0] + .25) * self.scale + offset,
-                               (pos[1] + .25) * self.scale + offset),
-                              str(i), 'white', align='center')
 
                 # Add the frame to the final animation
                 imseq.append(np.asarray(frame))

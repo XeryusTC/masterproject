@@ -38,12 +38,12 @@ def paths_conflict(paths):
                 if nx0 == nx1 and ny0 == ny1:
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
                 # Swapping position
-                if ox0 == nx1 and oy0 == ny1 and ox1 == nx0 and oy1 == ny0:
+                elif ox0 == nx1 and oy0 == ny1 and ox1 == nx0 and oy1 == ny0:
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
                 # Crossing edge
-                if ox0 == ox1 and nx0 == nx1 and nx0 == oy1 and oy0 == ny1:
+                elif ox0 == ox1 and nx0 == nx1 and ny0 == oy1 and oy0 == ny1:
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
-                if oy0 == oy1 and ny0 == ny1 and nx0 == ox1 and ox0 == nx1:
+                elif oy0 == oy1 and ny0 == ny1 and nx0 == ox1 and ox0 == nx1:
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
             # Check if one agent goes through the endpoint of the other
             if min_length != max_length:

@@ -15,6 +15,7 @@ class Agent:
         self.goal = goal
         self.h = RRAstar(world, start, goal)
         self.path = []
+        self.prio = set()
 
     def plan(self):
         self.path = self._astar()
@@ -32,7 +33,7 @@ class Agent:
                 return self._reverse_path((time_step, cur), came_from)
 
             closed_set.add(cur)
-            for successor in self._successors(cur):
+            for successor in self._successors(cur, time_step):
                 # Skip successor in closed list
                 if successor in closed_set:
                     continue
@@ -47,8 +48,19 @@ class Agent:
                     (score + self.h.dist(successor), time_step + 1, successor))
         raise util.NoPathsFoundException()
 
-    def _successors(self, pos):
-        return [pos] + self.world.neighbours(pos)
+    def _successors(self, pos, time):
+        successors = [pos] + self.world.neighbours(pos)
+        filtered = []
+        for successor in successors:
+            for other_agent in self.prio:
+                path = other_agent.path
+                if util.paths_conflict([path[time:] + [path[-1]],
+                    (pos, successor)]):
+                    break
+            else:
+                filtered.append(successor)
+
+        return filtered
 
     def _reverse_path(self, state, came_from):
         path = [state[1]]
@@ -79,9 +91,10 @@ def main(num_agents):
         paths.append(agent.path)
 
     conflicts = util.paths_conflict(paths)
-    conflict_sets = {}
+    print(conflicts)
     while conflicts:
         print(f'Conflicts found: {len(conflicts)}')
+        conflict_sets = {}
         for conflict in conflicts:
             # Find time and place of conflict
             try:
@@ -98,16 +111,27 @@ def main(num_agents):
         # Randomly get an order for the conflict
         for conflict in conflict_sets:
             conflict_sets[conflict] = list(conflict_sets[conflict])
-        pprint(conflict_sets)
-        conflicts = False
+            for agent in range(len(conflict_sets[conflict])):
+                conflict_sets[conflict][agent].prio.update(
+                    conflict_sets[conflict][:agent])
 
+        # Replan for all agents
+        for agent in agents:
+            agent.plan()
+        paths = [agent.path for agent in agents]
+        conflicts = util.paths_conflict(paths)
+
+    # Get final paths
+    paths = list(agent.path for agent in agents)
+    conflicts = util.paths_conflict(paths)
+    print(f'Final conflicts found: {len(conflicts)}')
     end_time = timeit.default_timer()
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 
     print('Making visualisation')
     conflicts = util.paths_conflict(paths)
     vis = visualisation.Visualisation(world, num_agents, scale=20)
-    #vis.draw_paths('poc.mkv', paths)
+    vis.draw_paths('poc.mkv', paths)
     conflict_im = vis.draw_paths_with_conflicts(paths, conflicts)
     conflict_im.save('poc_conflicts.png')
 

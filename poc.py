@@ -205,7 +205,7 @@ def simple_poc(agents):
         for conflict in conflict_sets:
             conflict_sets[conflict] = list(conflict_sets[conflict])
             for agent in range(len(conflict_sets[conflict])):
-                conflict_sets[conflict][agent].prio.update(
+                conflict_sets[conflict][agent].stable_prio.extend(
                     conflict_sets[conflict][:agent])
 
         # Replan for all agents

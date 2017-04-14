@@ -45,56 +45,6 @@ def main(agents):
     vis = visualisation.Visualisation(world, agents, scale=20)
     frames = vis.draw_paths('odid.mkv', paths)
 
-def odid(agents, w, starts, goals):
-    conflict = True
-    groups = []
-    for i in range(agents):
-        groups.append(Group([starts[i]], [goals[i]], w))
-
-    start_time = timeit.default_timer()
-    # Initial planning
-    for i in range(agents):
-        groups[i].paths = group_od(w, groups[i])
-
-    # Merge groups and solve conflicts
-    conflict = group_conflicts(groups)
-    while conflict:
-        group1, group2 = conflict
-        # Try to replan the conflicting groups
-        print('Replanning for group', group2)
-        try:
-            groups[group2].paths = group_od(w, groups[group2],
-                groups[group1].paths)
-            conflict = group_conflicts(groups)
-        except NoPathsFoundException:
-            print('No path found')
-            pass # Do merging if no valid path is found
-        else:
-            if conflict and group2 not in conflict: # Successfully replanned
-                continue
-            elif not conflict:
-                break
-
-        # Merge groups
-        print('Merging groups', group1, 'and', group2)
-        groups[group1].merge(groups[group2])
-        del groups[group2]
-        end_time = timeit.default_timer()
-        print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
-        print('After merge:', tuple(groups[i].size
-            for i in range(len(groups))))
-        # Calculate new paths for the merged groups
-        groups[group1].paths = group_od(w, groups[group1])
-        conflict = group_conflicts(groups)
-    end_time = timeit.default_timer()
-    print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
-
-    # Flatten paths
-    paths = []
-    for group in groups:
-        paths += group.paths
-    return paths
-
 def group_od(w, group, conflicting_paths=None, max_length=None):
     start_state = tuple(od.State(s) for s in group.starts)
     count = 0

@@ -36,3 +36,10 @@ should be part of this.
 The results for all A\* searches can possibly be cached to speed up the result,
 but it may also mean that moves that are not allowed are retained in the
 came\_from table. This direction should probably be investigated.
+
+2017-04-15
+==========
+It may be beneficial to remove agents from each other's priority list before
+trying to resolve a conflict. Investigation with statistical analysis may be
+necessary to see if this is true. It seems that the PoC algorithm can find a
+solution more often when agents are removed from the priority list.

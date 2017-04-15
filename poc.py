@@ -21,6 +21,7 @@ class Agent:
         self.priorities = []
         self.stable_prio = []
         self._actual_prio = set()
+        self.old_conflicts = set()
 
     def plan(self):
         self.path = self._astar()
@@ -83,26 +84,44 @@ class Agent:
     def __repr__(self):
         return f'{self.start}-{self.goal}'
 
+
 class Conflict:
     def __init__(self, position, time, agents):
         self.position = position
         self.time = time
         self.agents = agents
-        self.resolved = False
+        self.solution = None
 
     def __repr__(self):
         return f'<{self.time:2d} {self.position} {self.agents}>'
+
+    def __eq__(self, other):
+        return (self.position == other.position
+            and self.time == other.time
+            and self.agents == other.agents)
+
+    def __hash__(self):
+        return hash((self.position, self.time, tuple(self.agents)))
 
     def resolve(self):
         # If this is not the first conflict for an agent then don't bother
         for agent in self.agents:
             if agent.conflicts[0] != self:
                 return
+        # Check if this conflict has occurred before
+        out = None
+        for conflict in agent.old_conflicts:
+            if conflict == self:
+                out = conflict.solution
+                break
         # Generate all possible orderings
         orderings = itertools.permutations(self.agents)
         best_ordering = None
         best_makespan = 9999
         for ordering in orderings:
+            # Skip ordering if it occurred before
+            if ordering == out:
+                continue
             # Replan for agents according to this permutation
             for agent_idx in range(len(ordering)):
                 ordering[agent_idx].priorities = list(ordering[:agent_idx])
@@ -116,8 +135,7 @@ class Conflict:
         for agent in range(len(best_ordering)):
             best_ordering[agent].stable_prio += best_ordering[:agent]
             best_ordering[agent].plan()
-        # Mark that this conflict is resolved
-        self.resolved = True
+        self.solution = best_ordering
 
 
 def main(num_agents):
@@ -162,9 +180,18 @@ def poc(agents):
                 conflict = agent.conflicts[0]
             except IndexError:
                 continue
+            # Clear agents from each others priorities before resolving
+            for agent1 in conflict.agents:
+                agent1.stable_prio = list(set(agent1.stable_prio))
+                for agent2 in conflict.agents:
+                    try:
+                        agent1.stable_prio.remove(agent2)
+                    except ValueError:
+                        pass # Ignore if agent is not in the list
             conflict.resolve()
             for agent in conflict.agents:
                 agent.conflicts.remove(conflict)
+                agent.old_conflicts.add(conflict)
 
         # Calculate the final paths
         paths = [agent.path for agent in agents]

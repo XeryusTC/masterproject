@@ -116,6 +116,8 @@ def od(agents, w, starts, goals):
             if agent == agents - 1:
                 new_state = tuple(State(s.new_pos()) for s in new_state)
                 # Don't add it if it already exists
+                if new_state in closed_set:
+                    continue
                 if new_state in g and score >= g[new_state]:
                     continue
                 # Check if the standard state is already in the open set

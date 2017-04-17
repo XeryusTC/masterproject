@@ -35,7 +35,7 @@ class Group:
 
 
 def main(agents):
-    world, starts, goals = util.generate_problem(agents, 32, 32, 0.2)
+    world, starts, goals = util.generate_problem(agents, 16, 16, 0.2)
     print('starts:', starts)
     print('goals: ', goals)
 
@@ -88,9 +88,12 @@ def group_od(w, group, conflicting_paths=None, max_length=None):
 
             # Create a standard state if necessary
             if agent == agents - 1:
+                has_wait = any(s.action == od.Actions.wait for s in new_state)
                 new_state = tuple(od.State(s.new_pos()) for s in new_state)
                 # Don't add it if it already exists
-                if new_state in g and score >= g[new_state]:
+                if new_state in closed_set and not has_wait:
+                    continue
+                if new_state in g and score >= g[new_state] and not has_wait:
                     continue
                 # Check if the standard state is already in the open set
                 if new_state not in g:
@@ -123,7 +126,7 @@ def filter_successors(successors, agent, time_step, other_paths):
         for path in other_paths:
             if len(path) <= time_step:
                 new_succ.append(state)
-            elif not path_conflicts(path[time_step:],
+            elif not path_conflicts(path[time_step:time_step+2],
                     (state[agent].pos, state[agent].new_pos())):
                 new_succ.append(state)
     return new_succ

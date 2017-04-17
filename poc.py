@@ -118,6 +118,7 @@ class Conflict:
         orderings = itertools.permutations(self.agents)
         best_ordering = None
         best_makespan = 9999
+        best_length = 9999
         for ordering in orderings:
             # Skip ordering if it occurred before
             if ordering == out:
@@ -127,11 +128,12 @@ class Conflict:
                 ordering[agent_idx].priorities = list(ordering[:agent_idx])
                 ordering[agent_idx].plan()
             # Find the makespan of the new solution
-            makespan = max(len(agent.path) for agent in self.agents)
-            if makespan < best_makespan:
-                best_makespan = makespan
+            length = sum(len(agent.path) for agent in self.agents)
+            if length < best_length:
+                best_length = length
                 best_ordering = ordering
         # Finally, let the agents replan with the added priorities
+        print('best', best_ordering)
         for agent in range(len(best_ordering)):
             best_ordering[agent].stable_prio += best_ordering[:agent]
             best_ordering[agent].plan()
@@ -152,7 +154,6 @@ def main(num_agents):
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 
     print('Making visualisation')
-    conflicts = util.paths_conflict(paths)
     vis = visualisation.Visualisation(world, num_agents, scale=20)
     vis.draw_paths('poc.mkv', paths)
 

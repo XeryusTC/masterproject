@@ -132,10 +132,10 @@ def filter_successors(successors, agent, time_step, other_paths):
     return new_succ
 
 def reverse_paths(state, came_from):
-    path = [(state[0],)]
+    path = [state[:-1]]
     while state in came_from:
         state = came_from[state]
-        path.append((state[0],))
+        path.append(state[:-1])
     path = tuple(zip(*reversed(path)))
     return path
 

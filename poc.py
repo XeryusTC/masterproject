@@ -163,8 +163,14 @@ def poc(agents):
         agent.plan()
         paths.append(agent.path)
 
+    count = 0
     conflicts = util.paths_conflict(paths)
+    vis = visualisation.Visualisation(agents[0].world, len(agents), scale=20)
     while conflicts:
+        print('Exporting conflicts')
+        im = vis.draw_paths_with_conflicts(paths, conflicts)
+        im.save(f'conflict_{count:05}.png')
+        count += 1
         print(f'Conflicts found: {len(conflicts)}')
         pprint(conflicts)
         # Add the conflicts to the agents
@@ -198,6 +204,9 @@ def poc(agents):
         paths = [agent.path for agent in agents]
         conflicts = util.paths_conflict(paths)
     print(f'Final conflicts found: {len(conflicts)}')
+    # Output final conflict free paths
+    im = vis.draw_paths_with_conflicts(paths, conflicts)
+    im.save(f'conflict_{count:05}.png')
     return paths
 
 def find_conflicts(agents, conflicts):

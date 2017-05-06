@@ -23,7 +23,8 @@ of nodes the agent can move into, there is also a \textit{wait} action where an
 agent does not move. Agents are allowed to move at the same time and are
 allowed to move to a position if the currently occupying agent also moves in
 the current time step. The naive approach to this problem takes the Cartesian
-product of all $k$ state spaces and applies a search algorithm like A* to that.
+product of all $k$ state spaces and searches the new combined state space with 
+an algorithm like A*.
 This results in a branching factor of $(b+1)^k$, the branching factor grows
 exponentially in the number of agents and the problem quickly becomes
 intractable even with efficient search algorithms like A* \cite{sharon2013}.
@@ -42,10 +43,11 @@ to two different kind of states: in standard states no agent has been assigned
 an action; in intermediate states some of the agents have been assigned an
 action, when all agents are assigned an action it results in a new standard
 state. Because intermediate states are considered individually the algorithm is
-less likely to expand standard states that are sub-optimal and thus fewer
-states are generated. The result of this is that the branching factor becomes
-$(b+1)$, but that the depth of the solution in the search tree grows with a
-linear factor $k$. OD is a complete and optimal algorithm, meaning that it will
+less likely to expand those intermediate states that are sub-optimal and thus 
+fewer states are generated. The result of this is that the branching factor 
+becomes $(b+1)$, but that the depth of the solution in the search tree grows 
+with a linear factor $k$. This makes finding a solution with an algorithm like 
+A* more tractable. OD is a complete and optimal algorithm, meaning that it will
 always find a solution if one exists, and it will find the best solution.
 
 On its own OD is not always very efficient, so an additional algorithm called
@@ -80,7 +82,8 @@ generally use the same approach; they start with constructing optimal plans for
 each agent independently of each other. Next they impose a hierarchy on the
 agents, usually this is done by assigning them unique priorities. Finally the
 agents make a new plan but this time they will consider all agents with a
-higher priority as moving obstacles. This leads to a set of conflict free
+higher priority as moving obstacles while ignoring those with a lower priority. 
+This leads to a set of conflict free
 plans. Finding the optimal priority order is a combinatorial problem
 \cite{bennewitz2002}. A common algorithm of assigning priorities first
 retrieves a dependence hierarchy from the first step, then priorities can be
@@ -90,9 +93,37 @@ schemes may have to be tried. The quality of the final solution depends highly
 on the priority ordering employed, some of the possible priority schemes may
 not even lead to a solution.
 
+Most proposals for decoupled methods don't mention whether a central processor 
+must make the plans for all agents, or whether the agents can do it themselves. 
+Determining the prioritization scheme is often centralized, since a 
+single processor needs to determine all dependencies \cite{bennewitz2002}. One 
+method called Asynchronous Decentralized prioritized Planning \cite{cap2012} 
+exploits the inherent parallelism of a multi-robot team during the planning 
+stages. The method allows 
+agents to make their individual plans, after an agent has found a path it will 
+notify all agents with a lower priority of its (new) path. These lower priority 
+agents will then update their plans if conflicts arise, notifying lower 
+priority agents. These agents will then update their plans etc. The benefit of 
+this method is that agents can make a new plan as soon as any one higher 
+priority agent has send a conflicting plan, there is no need for agents to 
+sequentially create plans. This means that agents can plan simultaneously and 
+that some agents may finish planning before higher priority agents while their 
+paths are still conflict free.
+
+One model of truly decentralised cooperative pathfinding has been proposed by 
+\cite{wei2016}. Agents move towards their destination and only communicate with 
+each other in a two graph node radius. They can give each other commands like 
+move out of the way, follow me, wait etc. Agents are altruistic which means 
+that they are willing to make concessions during conflicts even if that means 
+that they will be at a disadvantage. Agents use various strategies to deal with 
+different conflict situations. This approach works well, it requires slightly 
+less computation time than OD+ID and on average the agents only need two thirds 
+of the number of movement steps to reach their goal positions.
+
 \section{Argumentation}
 Argumentation has long been studied by philosophers, but it has been used in
-the field of Artificial Intelligence as well. In AI it has mainly been used in
+the field of Artificial Intelligence as well. In AI it has mainly been studied 
+in the fields of
 legal argumentation (AI \& Law), defeasible reasoning and multi-agent systems.
 One of the main pillars is non-monotonic logic. A logic is non-monotonic when a
 conclusion that follows based on the premises does not necessarily hold any
@@ -118,11 +149,11 @@ shining on it will also look red.
 Other researchers have formulated additional forms of defeaters, but they can
 be distilled into three main forms \cite{vaneemeren2014}:
 \begin{description}
-	\item[Undermining defeaters] These attack the premises or assumptions of an
+	\item[Undermining defeaters] attack the premises or assumptions of an
 	argument.
-	\item[Undercutting defeaters] They attack the connection between a set of
+	\item[Undercutting defeaters] attack the connection between a set of
 	reasons and the conclusion in an argument.
-	\item[Rebutting defeaters] Raise an argument in favour of an opposite
+	\item[Rebutting defeaters] raise an argument in favour of an opposite
 	conclusion, thereby attacking an argument.
 \end{description}
 
@@ -219,7 +250,39 @@ will then propose common plans of action, when multiple plans have been
 proposed agents can specify which they prefer. At some points an agent can
 recommend a plan after which all agents will vote for that plan. The dialogue
 requires unanimity before the recommended plan is adopted, but it allows for a
-voting mechanism to pick the most preferred plan among many.
+voting mechanism to pick the most preferred plan among many. Variants of this 
+model that require less stages that still achieve the same outcomes 
+\cite{dunin-keplicz2011}.
+
+\section{Coordination}
+Pollock \cite{pollock1995} introduces hierarchical plans. An agent starts out 
+by  making a global plan consisting only of coarse steps. This saves 
+computation time and it defers planning specific actions to a later time when 
+more information about the problem is available. When the agent reaches a step 
+in a plan that is not concrete enough yet it will start constructing a sub-plan 
+for that step, it may also do this when another planning process depends on it. 
+This is done in multiple levels leading to a hierarchical plan, the lowest 
+level consists of basic actions that are inherent in the agent (like lifting an 
+arm). At the same time the agent also keeps track of whether it is still 
+possible to execute the future steps in the plan. The agent will have to adapt 
+its plans once it notices that the remainder of the plan is not executable any 
+more for any reason. This allows an agent to adapt to a changing environment 
+and changing desires. Although this design focusses on planning actions for a 
+single agent it can easily be extended to planning for groups of agents.
+
+Coordination in a multi-agent system can be done through partial global 
+planning \cite[p. 202--204]{woodridge2009}. The goal is to let agents cooperate 
+without any 
+one of them formulating a global plan, instead agents will coordinate with 
+other agents only when they need to. This leads to the construction of many 
+local plans, which can be communicated to other agents as well. This means that 
+eventually there will be a global plan that covers all agents, but the agents 
+themselves will only know a part of the global plan. This approach is similar 
+to that of decoupled cooperative pathfinding because they use a similar 
+planning structure. Partial global planning starts out with letting each agent 
+make their individual goals, next agents communicate information on where plans 
+interact, finally they will alter their plans such that their actions are 
+better coordinated and there are no negative influences.
 
 \bibliographystyle{plain}
 \bibliography{biblio}

@@ -9,6 +9,7 @@ import timeit
 from simulation import util, visualisation
 from sortedcontainers import SortedListWithKey
 from rra_star import RRAstar
+from id import TimeExceeded
 
 class Agent:
     def __init__(self, world, start, goal):
@@ -23,10 +24,10 @@ class Agent:
         self._actual_prio = set()
         self.old_conflicts = set()
 
-    def plan(self):
+    def plan(self, start_time=None, max_time=None):
         self.path = self._astar()
 
-    def _astar(self):
+    def _astar(self, start_time=None, max_time=None):
         self._actual_prio = set(self.stable_prio + self.priorities)
         closed_set = set()
         open_set = []
@@ -35,6 +36,9 @@ class Agent:
         heapq.heappush(open_set, (0, 0, self.start))
 
         while open_set:
+            time = timeit.default_timer()
+            if start_time != None and (time - start_time) > max_time:
+                raise TimeExceeded()
             _, time_step, cur = heapq.heappop(open_set)
             if cur == self.goal:
                 return self._reverse_path((time_step, cur), came_from)
@@ -103,7 +107,7 @@ class Conflict:
     def __hash__(self):
         return hash((self.position, self.time, tuple(self.agents)))
 
-    def resolve(self):
+    def resolve(self, start_time=None, max_time=5):
         # If this is not the first conflict for an agent then don't bother
         for agent in self.agents:
             if agent.conflicts[0] != self:
@@ -120,6 +124,9 @@ class Conflict:
         best_makespan = 9999
         best_length = 9999
         for ordering in orderings:
+            time = timeit.default_timer()
+            if start_time != None and (time - start_time) > max_time:
+                raise TimeExceeded()
             # Skip ordering if it occurred before
             if ordering == out:
                 continue
@@ -136,7 +143,7 @@ class Conflict:
         print('best', best_ordering)
         for agent in range(len(best_ordering)):
             best_ordering[agent].stable_prio += best_ordering[:agent]
-            best_ordering[agent].plan()
+            best_ordering[agent].plan(start_time=start_time, max_time=max_time)
         self.solution = best_ordering
 
 
@@ -149,7 +156,7 @@ def main(num_agents):
     if '--simple' in sys.argv or '-s' in sys.argv:
         paths = simple_poc(agents)
     else:
-        paths = poc(agents)
+        paths = poc(agents, start_time=start_time, max_time=5)
     end_time = timeit.default_timer()
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 
@@ -157,7 +164,7 @@ def main(num_agents):
     vis = visualisation.Visualisation(world, num_agents, scale=20)
     vis.draw_paths('poc.mkv', paths)
 
-def poc(agents):
+def poc(agents, start_time=None, max_time=5):
     paths = []
     for agent in agents:
         agent.plan()
@@ -167,6 +174,9 @@ def poc(agents):
     conflicts = util.paths_conflict(paths)
     vis = visualisation.Visualisation(agents[0].world, len(agents), scale=20)
     while conflicts:
+        time = timeit.default_timer()
+        if start_time != None and (time - start_time) > max_time:
+            raise TimeExceeded()
         print('Exporting conflicts')
         im = vis.draw_paths_with_conflicts(paths, conflicts)
         im.save(f'conflict_{count:05}.png')
@@ -195,7 +205,7 @@ def poc(agents):
                         agent1.stable_prio.remove(agent2)
                     except ValueError:
                         pass # Ignore if agent is not in the list
-            conflict.resolve()
+            conflict.resolve(start_time=start_time, max_time=max_time)
             for agent in conflict.agents:
                 agent.conflicts.remove(conflict)
                 agent.old_conflicts.add(conflict)

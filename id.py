@@ -11,6 +11,9 @@ from simulation import util, visualisation
 
 NoPathsFoundException = util.NoPathsFoundException
 
+class TimeExceeded(Exception):
+    pass
+
 class Group:
     def __init__(self, starts, goals, w):
         self.starts = starts
@@ -39,13 +42,14 @@ def main(agents):
     print('starts:', starts)
     print('goals: ', goals)
 
-    paths = odid2(agents, world, starts, goals)
+    paths = odid2(agents, world, starts, goals, max_time=5)
 
     print('Writing visualisations')
     vis = visualisation.Visualisation(world, agents, scale=20)
     frames = vis.draw_paths('odid.mkv', paths)
 
-def group_od(w, group, conflicting_paths=None, max_length=None):
+def group_od(w, group, conflicting_paths=None, max_length=None,
+             start_time=None, max_time=5):
     start_state = tuple(od.State(s) for s in group.starts)
     count = 0
     closed_set = set()
@@ -59,6 +63,10 @@ def group_od(w, group, conflicting_paths=None, max_length=None):
     pred_cost = od.heur_dist(group.heur, group.goals, group.starts)
 
     while open_set:
+        # Stop searching if it took too long
+        time = timeit.default_timer()
+        if start_time != None and (time - start_time) > max_time:
+            raise TimeExceeded()
         f, _, agent, time_step, current = heapq.heappop(open_set)
         if max_length and time_step > max_length:
             continue
@@ -184,7 +192,7 @@ def path_conflicts(path1, path2):
             return True
     return False
 
-def odid2(agents, w, starts, goals):
+def odid2(agents, w, starts, goals, max_time=5):
     conflicted = []
     old_conflicts = []
     groups = list(Group([starts[i]], [goals[i]], w) for i in range(agents))
@@ -196,6 +204,9 @@ def odid2(agents, w, starts, goals):
 
     conflicted = groups_conflict(groups)
     while conflicted:
+        time = timeit.default_timer()
+        if start_time != None and (time - start_time) > max_time:
+            raise TimeExceeded()
         #print('conflicted groups:', conflicted)
         group1, group2 = random.choice(conflicted)
         print('Found conflict between', group1, 'and', group2)
@@ -214,7 +225,8 @@ def odid2(agents, w, starts, goals):
             old_paths = groups[group1].paths
             try:
                 groups[group1].paths = group_od(w, groups[group1],
-                    groups[group2].paths, max_length=max_length)
+                    groups[group2].paths, max_length=max_length,
+                    start_time=start_time, max_time=max_time)
             except NoPathsFoundException:
                 pass
             # See if this solved the problem
@@ -223,7 +235,8 @@ def odid2(agents, w, starts, goals):
                 groups[group1].paths = old_paths
                 try:
                     groups[group2].paths = group_od(w, groups[group2],
-                        groups[group1].paths, max_length=max_length)
+                        groups[group1].paths, max_length=max_length,
+                        start_time=start_time, max_time=max_time)
                 except NoPathsFoundException:
                     pass
             # Swap groups back
@@ -240,7 +253,8 @@ def odid2(agents, w, starts, goals):
             del groups[group2]
             print('After merge:', tuple(groups[i].size
                 for i in range(len(groups))))
-            groups[group1].paths = group_od(w, groups[group1])
+            groups[group1].paths = group_od(w, groups[group1],
+                start_time=start_time)
             # Remove stored conflict
             old_conflicts = [c for c in old_conflicts if c != (group1, group2)]
         conflicted = groups_conflict(groups)

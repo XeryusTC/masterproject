@@ -25,9 +25,9 @@ class Agent:
         self.old_conflicts = set()
 
     def plan(self, start_time=None, max_time=None):
-        self.path = self._astar()
+        self.path = self._astar(start_time, max_time)
 
-    def _astar(self, start_time=None, max_time=None):
+    def _astar(self, start_time, max_time):
         self._actual_prio = set(self.stable_prio + self.priorities)
         closed_set = set()
         open_set = []
@@ -44,7 +44,8 @@ class Agent:
                 return self._reverse_path((time_step, cur), came_from)
 
             closed_set.add(cur)
-            for successor in self._successors(cur, time_step):
+            for successor in self._successors(cur, time_step, start_time,
+                    max_time):
                 # Skip successor in closed list
                 if successor in closed_set and successor != cur:
                     continue
@@ -60,11 +61,14 @@ class Agent:
                     (score + self.h.dist(successor), time_step + 1, successor))
         raise util.NoPathsFoundException()
 
-    def _successors(self, pos, time):
+    def _successors(self, pos, time, start_time=None, max_time=None):
         successors = [pos] + self.world.neighbours(pos)
         filtered = []
         for successor in successors:
             for other_agent in self._actual_prio:
+                cur_time = timeit.default_timer()
+                if start_time != None and (cur_time - start_time) > max_time:
+                    raise TimeExceeded()
                 path = other_agent.path
                 if len(path[time:]) >= 2:
                     paths = [path[time:time + 2], (pos, successor)]
@@ -107,7 +111,7 @@ class Conflict:
     def __hash__(self):
         return hash((self.position, self.time, tuple(self.agents)))
 
-    def resolve(self, start_time=None, max_time=5):
+    def resolve(self, start_time=None, max_time=1):
         # If this is not the first conflict for an agent then don't bother
         for agent in self.agents:
             if agent.conflicts[0] != self:
@@ -133,7 +137,8 @@ class Conflict:
             # Replan for agents according to this permutation
             for agent_idx in range(len(ordering)):
                 ordering[agent_idx].priorities = list(ordering[:agent_idx])
-                ordering[agent_idx].plan()
+                ordering[agent_idx].plan(start_time=start_time,
+                    max_time=max_time)
             # Find the makespan of the new solution
             length = sum(len(agent.path) for agent in self.agents)
             if length < best_length:
@@ -164,10 +169,10 @@ def main(num_agents):
     vis = visualisation.Visualisation(world, num_agents, scale=20)
     vis.draw_paths('poc.mkv', paths)
 
-def poc(agents, start_time=None, max_time=5):
+def poc(agents, start_time=None, max_time=1):
     paths = []
     for agent in agents:
-        agent.plan()
+        agent.plan(start_time=start_time, max_time=max_time)
         paths.append(agent.path)
 
     count = 0

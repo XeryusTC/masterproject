@@ -43,3 +43,18 @@ It may be beneficial to remove agents from each other's priority list before
 trying to resolve a conflict. Investigation with statistical analysis may be
 necessary to see if this is true. It seems that the PoC algorithm can find a
 solution more often when agents are removed from the priority list.
+
+2017-04-18
+==========
+Next time: write literature stuff. Pollock, argumentation and cooperative
+pathfinding. Tool: table with parameters from literature what covers what.
+
+2017-05-07
+==========
+Send an overview of literature read to Bart.
+
+2017-05-15
+==========
+Write a script to benchmark OD+ID so that graphs of running times can be
+created. Edit both methods to accept a maximum run time to keep benchmark time
+low.

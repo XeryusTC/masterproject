@@ -1,0 +1,6 @@
+dat = read.csv('poc_bench.csv', header=T)
+len = length(dat$num)
+od = sort(dat$od)
+poc = sort(dat$poc)
+plot(seq(length(od)), od, type='l', log='y', col='red', xlim=c(0,len), ylim=c(1e-3,3), xlab='Instance', ylab='Time (s)')
+lines(seq(length(poc)), poc, col='blue')

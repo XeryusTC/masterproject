@@ -10,6 +10,7 @@
 *.toc
 *.bbl
 *.blg
+*.out
 
 # Include literature
 !literature/*.pdf

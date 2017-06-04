@@ -1,0 +1,83 @@
+\documentclass[a4paper]{article}
+
+\title{Method}
+\author{Xeryus Stokkel}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{General}
+The proposed method works similar to decoupled algorithms. The first step is to 
+plan individual optimal paths for all agents without them taking each other 
+into account. The next step is to determine where these optimal paths have 
+conflicting moves that would lead to a collision. The time and location of each 
+collision is marked as a conflict. When this is completed the algorithm moves 
+on to the conflict resolution stage which consists of two steps. First the 
+algorithm finds all conflicts for which the involved agents have no conflicts 
+which occur at an earlier time. The second step is to find a solution to all 
+these conflicts. This two step process is repeated until all conflicts have 
+been solved. The list of conflicts is updated before each repetition because 
+resolving one conflict may have the side-effect of solving or causing further 
+conflicts with other agents.
+
+\section{Proof of Concept}
+The Proof of Concept method solves conflicts by going through all possible 
+permutations of orderings and calculating the new path lengths. The permutation 
+with the lowest total path length is used as the solution for the conflict. 
+Conflicts often only involve two agents, so there are only two possible 
+ordering permutations. It may be the case that a conflict can not be solved 
+when a particular ordering is chosen for a previous conflict. In this case the 
+method cannot go back and change a previous ordering to make it possible to 
+resolve the current conflict. The method will thus not be able to find a 
+solution to the particular cooperative pathfinding problem.
+
+\section{Base version}
+A smarter approach to resolving conflicts will require fewer resources to 
+compute solutions. In order to achieve this the agents are more involved in 
+determining the priority scheme. Agents enter a dialogue in which they get to 
+propose a (partial) priority 
+ordering to resolve a conflict. The other agents involved in the conflict will 
+analyse the effects of each proposal. Agents then vote on their preferred 
+solution, if the result of the vote is a solution to the conflict then it is 
+considered resolved and no more action need to be undertaken for this conflict. 
+If the vote was on a partial ordering and agents in the conflict still have 
+incompatible paths planned then there is  new round of proposing orderings, all 
+of which must take the previously accepted partial priority scheme into 
+account. This process continues until all agents involved in the conflict do 
+not have conflicts with each other any more.
+
+When no solution can be found to a conflict then agents can reopen the 
+deliberation process of a previously resolved conflict. The old solution to the 
+reopened conflict dialogue can not be proposed again. Agents should also take 
+into account which agent reopened the dialogue during the voting process. To 
+ensure that the new deliberation process does not take too much time all agents 
+should remember old paths that they found so that they do not have to 
+recalculate them when considering different (partial) priority orderings.
+
+\section{Window version}
+Greater efficiency can be achieved by windowing the conflict resolution. 
+Instead of calculating entire paths and resolving all conflicts over their 
+entire length, the conflict resolution can be limited to a maximum distance 
+from the agent's position. Conflicts that are further away are deemed to be 
+outside of the window and no solution for them is discussed until the agent has 
+moved closer. This way only a partial solution to the cooperative pathfinding 
+problem is found and executed, but this happens repeatedly until the entire 
+problem is solved. The window is shifted when the agent is part-way through the 
+route, this means that any conflicts that are now in the window will have to be 
+resolved. Note that the pathfinding algorithm is not stopped at the border of 
+the window, from this point on the agents simply do not discuss the conflicts 
+and they are free to ignore them. This is done so that agents will always move 
+in the correct direction.
+
+Using a window to limit the number of conflicts that need to be resolved has 
+the effect of spreading out the calculation. Only a small amount of computation 
+needs to be done up front while the remainder is deferred until later. The 
+result of this is that the computation is spread over the time it would take to 
+execute a solution.
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}

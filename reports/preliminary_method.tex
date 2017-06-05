@@ -1,5 +1,17 @@
 \documentclass[a4paper]{article}
 
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage[hidelinks]{hyperref}
+\usepackage[all]{hypcap}
+
+% The graphics live in a sub directory
+\graphicspath{{images/}}
+
+\DeclareMathOperator\pos{pos}
+
 \title{Method}
 \author{Xeryus Stokkel}
 \date{}
@@ -8,75 +20,147 @@
 
 \maketitle
 
-
 \section{Problem formulation}
-A shared space is divided into discrete cells such that it forms a regular eight-connected grid. On this graph there is a set of $k$ agents, each agent occupies a single cell of this grid and it has a unique destination. The agents are allowed to move to the eight neighbouring grid cells or \emph{wait} in their current position. A set of paths is required such that each agent can move from its starting position to its destination without colliding with obstacles or the other agents. Movements on the grid are of unit length and take one unit of time to execute, so at each discrete moment in time each agent occupies a grid cell. A collision occurs when agents try to occupy the same space at the same time, their paths are said to be in conflict. A conflict occurs when agents try to occupy the same cell, they swap position, or they move along crossing diagonals. It is possible for an agent $a_i$ to move to the space currently occupied by agent $a_j$ given that $a_j$ moves to a different cell at the same time.
+%The shared space is as shown in \autoref{fig:world}. The world is a regular
+%eight-connected grid, some of the cells in the grid are obstacles. In this
+%world there is a set of $k$ agents, each with their own starting and
+%destination positions. A cooperative pathfinding problem is a tuple $W =
+%\langle V, E, A_s, A_g \rangle$ where $V$ is the set of non-obstacle grid
+%cells. $E$ is the set of edges connecting the cells in $V$, in this case the
+%edges are of unit length and it takes a single time unit to traverse them.
+%$A_s$ are the initial locations of the agents and $A_g$ are the destinations
+%of
+%the agents. The goal is to find a series of moves for each agent such that no
+%conflicts occur between the paths of the agents. Agents can wait in their
+%current cell in addition to moving to one of the eight neighbours.
+
+A shared space is divided into discrete cells such that it forms a regular
+grid. Some of these cells can be occupied by an obstacle while the other cells
+are open. A set of $k$ agents are located on the open cells of this grid, each
+one of them occupies a single cell and no agents share the same cell. Each
+agent has a unique destination. Each time step an agent can move to one of the
+eight neighbouring cells or \emph{wait} in its current location. An example
+initial configuration is shown in \autoref{fig:world}. The goal is to find a
+series of moves, one such series for each agent, such that the agents reach
+their destination without colliding with other agents or running into the
+static obstacles.
+
+The paths of two agents are in conflict when at any time step the agents occupy
+the same cell, when agents move along the same edge, or when agents move along
+crossing edges. Obstacle cells can be considered as stationary agents. Agents
+are allowed to move along a diagonal even when the two cells on the opposing
+diagonal are blocked, i.e. agent 5 in \autoref{fig:world} can move to its
+destination in a single time step. An agent $a_i$ can move a cell occupied by
+agent $a_j$ given that $a_j$ will move to a different cell at the same time.
+Agents 1--4 in \autoref{fig:world} can move their respective destinations
+by ``rotating'' clockwise. They can do this in a single time step without
+requiring any additional empty cells. Agents 7 and 8 cannot move to their
+destinations in a single time step because that would mean that they move along
+crossing edges at the same time. They can also not swap places because then
+they would be travelling along the same edge.
+
+%The grid can
+%be generalised to a graph $G = (V, E)$ where the set of vertices $V$
+%represents
+%the non-obstacle cells and $E$ are the edges connecting the cells. There is a
+%set of $k$ agents, each agent occupies a single vertex in the graph and it is
+%not possible for two agents to occupy the same vertex at the same time.
+%
+%A shared space is divided into discrete cells such that it forms a regular
+%eight-connected grid. On this graph there is a set of $k$ agents, each agent
+%occupies a single cell of this grid and it has a unique destination. The
+%agents
+%are allowed to move to the eight neighbouring grid cells or \emph{wait} in
+%their current position. A set of paths is required such that each agent can
+%move from its starting position to its destination without colliding with
+%obstacles or the other agents. Movements on the grid are of unit length and
+%take one unit of time to execute, so at each discrete moment in time each
+%agent
+%occupies a grid cell. A collision occurs when agents try to occupy the same
+%space at the same time, their paths are said to be in conflict. A conflict
+%occurs when agents try to occupy the same cell, they swap position, or they
+%move along crossing diagonals. It is possible for an agent $a_i$ to move to
+%the
+%space currently occupied by agent $a_j$ given that $a_j$ moves to a different
+%cell at the same time. This makes it possible for agents $a_1, a_2, a_3, a_4$
+%in \autoref{fig:world} to reach their destinations in a single time step by
+%``rotating'' clockwise.
+
+\begin{figure}[h]
+	\centering
+	\def\svgscale{.7}
+	\input{images/world.pdf_tex}
+	\caption{A small space shared by some agents. Obstacles are black, agents
+	are circles inscribed with the agent's number ($a_i$), the destination for
+	agent $a_i$ is given by $g_i$.}
+	\label{fig:world}
+\end{figure}
 
 \section{Methodology}
-The proposed method works similar to decoupled algorithms. The first step is to 
-plan individual optimal paths for all agents without them taking each other 
-into account. The next step is to determine where these optimal paths have 
-conflicting moves that would lead to a collision. The time and location of each 
-collision is marked as a conflict. When this is completed the algorithm moves 
-on to the conflict resolution stage which consists of two steps. First the 
-algorithm finds all conflicts for which the involved agents have no conflicts 
-which occur at an earlier time. The second step is to find a solution to all 
-these conflicts. This two step process is repeated until all conflicts have 
+The proposed method works similar to decoupled algorithms. The first step is to
+plan individual optimal paths for all agents without them taking each other
+into account. The next step is to determine where these optimal paths have
+conflicting moves that would lead to a collision. The time and location of each
+collision is marked as a conflict. When this is completed the algorithm moves
+on to the conflict resolution stage which consists of two steps. First the
+algorithm finds all conflicts for which the involved agents have no conflicts
+which occur at an earlier time. The second step is to find a solution to all
+these conflicts. This two step process is repeated until all conflicts have
 been solved. Resolving one conflict may have the side-effect of causing or solving conflicts with other agents, so the list of conflicts will have to be updated on each iteration.
 
 \subsection{Proof of Concept}
-The Proof of Concept method solves conflicts by going through all possible 
-permutations of partial orderings and calculating the new path lengths. The permutation 
-with the lowest total path length is used as the solution for the conflict. 
-Conflicts often only involve two agents, so there are only two possible 
-ordering permutations. It may be the case that a conflict can not be solved 
-when a particular ordering is chosen for a previous conflict. In this case the 
-method cannot go back and change a previous ordering to make it possible to 
-resolve the current conflict. The method will thus not be able to find a 
+The Proof of Concept method solves conflicts by going through all possible
+permutations of partial orderings and calculating the new path lengths. The permutation
+with the lowest total path length is used as the solution for the conflict.
+Conflicts often only involve two agents, so there are only two possible
+ordering permutations. It may be the case that a conflict can not be solved
+when a particular ordering is chosen for a previous conflict. In this case the
+method cannot go back and change a previous ordering to make it possible to
+resolve the current conflict. The method will thus not be able to find a
 solution to the particular cooperative pathfinding problem.
 
 \subsection{Base version}
-A smarter approach to resolving conflicts will require fewer resources to 
-compute solutions. In order to achieve this the agents are more involved in 
-determining the priority scheme. Agents enter a dialogue in which they get to 
-propose a (partial) priority 
-ordering to resolve a conflict. The other agents involved in the conflict will 
-analyse the effects of each proposal. Agents then vote on their preferred 
-solution, if the result of the vote is a solution to the conflict then it is 
-considered resolved and no more action need to be undertaken for this conflict. 
-If the vote was on a partial ordering and agents in the conflict still have 
-incompatible paths planned then there is  new round of proposing orderings, all 
-of which must take the previously accepted partial priority scheme into 
-account. This process continues until all agents involved in the conflict do 
+A smarter approach to resolving conflicts will require fewer resources to
+compute solutions. In order to achieve this the agents are more involved in
+determining the priority scheme. Agents enter a dialogue in which they get to
+propose a (partial) priority
+ordering to resolve a conflict. The other agents involved in the conflict will
+analyse the effects of each proposal. Agents then vote on their preferred
+solution, if the result of the vote is a solution to the conflict then it is
+considered resolved and no more action need to be undertaken for this conflict.
+If the vote was on a partial ordering and agents in the conflict still have
+incompatible paths planned then there is  new round of proposing orderings, all
+of which must take the previously accepted partial priority scheme into
+account. This process continues until all agents involved in the conflict do
 not have conflicts with each other any more.
 
-When no solution can be found to a conflict then agents can reopen the 
-deliberation process of a previously resolved conflict. The old solution to the 
-reopened conflict dialogue can not be proposed again. Agents should also take 
-into account which agent reopened the dialogue during the voting process. To 
-ensure that the new deliberation process does not take too much time all agents 
-should remember old paths that they found so that they do not have to 
+When no solution can be found to a conflict then agents can reopen the
+deliberation process of a previously resolved conflict. The old solution to the
+reopened conflict dialogue can not be proposed again. Agents should also take
+into account which agent reopened the dialogue during the voting process. To
+ensure that the new deliberation process does not take too much time all agents
+should remember old paths that they found so that they do not have to
 recalculate them when considering different (partial) priority orderings.
 
 \subsection{Window version}
-Greater efficiency can be achieved by windowing the conflict resolution. 
-Instead of calculating entire paths and resolving all conflicts over their 
-entire length, the conflict resolution can be limited to a maximum distance 
-from the agent's position. Conflicts that are further away are deemed to be 
-outside of the window and no solution for them is discussed until the agent has 
-moved closer. This way only a partial solution to the cooperative pathfinding 
-problem is found and executed, but this happens repeatedly until the entire 
-problem is solved. The window is shifted when the agent is part-way through the 
-route, this means that any conflicts that are now in the window will have to be 
-resolved. Note that the pathfinding algorithm is not stopped at the border of 
-the window, from this point on the agents simply do not discuss the conflicts 
-and they are free to ignore them. This is done so that agents will always move 
+Greater efficiency can be achieved by windowing the conflict resolution.
+Instead of calculating entire paths and resolving all conflicts over their
+entire length, the conflict resolution can be limited to a maximum distance
+from the agent's position. Conflicts that are further away are deemed to be
+outside of the window and no solution for them is discussed until the agent has
+moved closer. This way only a partial solution to the cooperative pathfinding
+problem is found and executed, but this happens repeatedly until the entire
+problem is solved. The window is shifted when the agent is part-way through the
+route, this means that any conflicts that are now in the window will have to be
+resolved. Note that the pathfinding algorithm is not stopped at the border of
+the window, from this point on the agents simply do not discuss the conflicts
+and they are free to ignore them. This is done so that agents will always move
 in the correct direction.
 
-Using a window to limit the number of conflicts that need to be resolved has 
-the effect of spreading out the calculation. Only a small amount of computation 
-needs to be done up front while the remainder is deferred until later. The 
-result of this is that the computation is spread over the time it would take to 
+Using a window to limit the number of conflicts that need to be resolved has
+the effect of spreading out the calculation. Only a small amount of computation
+needs to be done up front while the remainder is deferred until later. The
+result of this is that the computation is spread over the time it would take to
 execute a solution. Computational effort is also decreased by virtue of the paths being shorter. Because agents will have moved before the next set of conflicts will be solved they have moved closer to their goal. This means that the depth of the search is not as large and less computation is required to find conflict free paths for the new window.
 
 \bibliographystyle{plain}

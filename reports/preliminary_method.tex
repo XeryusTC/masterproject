@@ -8,7 +8,11 @@
 
 \maketitle
 
-\section{General}
+
+\section{Problem formulation}
+A shared space is divided into discrete cells such that it forms a regular eight-connected grid. On this graph there is a set of $k$ agents, each agent occupies a single cell of this grid and it has a unique destination. The agents are allowed to move to the eight neighbouring grid cells or \emph{wait} in their current position. A set of paths is required such that each agent can move from its starting position to its destination without colliding with obstacles or the other agents. Movements on the grid are of unit length and take one unit of time to execute, so at each discrete moment in time each agent occupies a grid cell. A collision occurs when agents try to occupy the same space at the same time, their paths are said to be in conflict. A conflict occurs when agents try to occupy the same cell, they swap position, or they move along crossing diagonals. It is possible for an agent $a_i$ to move to the space currently occupied by agent $a_j$ given that $a_j$ moves to a different cell at the same time.
+
+\section{Methodology}
 The proposed method works similar to decoupled algorithms. The first step is to 
 plan individual optimal paths for all agents without them taking each other 
 into account. The next step is to determine where these optimal paths have 
@@ -18,13 +22,11 @@ on to the conflict resolution stage which consists of two steps. First the
 algorithm finds all conflicts for which the involved agents have no conflicts 
 which occur at an earlier time. The second step is to find a solution to all 
 these conflicts. This two step process is repeated until all conflicts have 
-been solved. The list of conflicts is updated before each repetition because 
-resolving one conflict may have the side-effect of solving or causing further 
-conflicts with other agents.
+been solved. Resolving one conflict may have the side-effect of causing or solving conflicts with other agents, so the list of conflicts will have to be updated on each iteration.
 
-\section{Proof of Concept}
+\subsection{Proof of Concept}
 The Proof of Concept method solves conflicts by going through all possible 
-permutations of orderings and calculating the new path lengths. The permutation 
+permutations of partial orderings and calculating the new path lengths. The permutation 
 with the lowest total path length is used as the solution for the conflict. 
 Conflicts often only involve two agents, so there are only two possible 
 ordering permutations. It may be the case that a conflict can not be solved 
@@ -33,7 +35,7 @@ method cannot go back and change a previous ordering to make it possible to
 resolve the current conflict. The method will thus not be able to find a 
 solution to the particular cooperative pathfinding problem.
 
-\section{Base version}
+\subsection{Base version}
 A smarter approach to resolving conflicts will require fewer resources to 
 compute solutions. In order to achieve this the agents are more involved in 
 determining the priority scheme. Agents enter a dialogue in which they get to 
@@ -56,7 +58,7 @@ ensure that the new deliberation process does not take too much time all agents
 should remember old paths that they found so that they do not have to 
 recalculate them when considering different (partial) priority orderings.
 
-\section{Window version}
+\subsection{Window version}
 Greater efficiency can be achieved by windowing the conflict resolution. 
 Instead of calculating entire paths and resolving all conflicts over their 
 entire length, the conflict resolution can be limited to a maximum distance 
@@ -75,7 +77,7 @@ Using a window to limit the number of conflicts that need to be resolved has
 the effect of spreading out the calculation. Only a small amount of computation 
 needs to be done up front while the remainder is deferred until later. The 
 result of this is that the computation is spread over the time it would take to 
-execute a solution.
+execute a solution. Computational effort is also decreased by virtue of the paths being shorter. Because agents will have moved before the next set of conflicts will be solved they have moved closer to their goal. This means that the depth of the search is not as large and less computation is required to find conflict free paths for the new window.
 
 \bibliographystyle{plain}
 \bibliography{biblio}

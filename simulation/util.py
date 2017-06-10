@@ -23,27 +23,8 @@ def paths_conflict(paths):
             min_length = min(len(paths[i]), len(paths[j]))
             max_length = max(len(paths[i]), len(paths[j]))
             for time in range(min_length - 1):
-                ox0 = paths[i][time][0]
-                oy0 = paths[i][time][1]
-                ox1 = paths[j][time][0]
-                oy1 = paths[j][time][1]
-                nx0 = paths[i][time+1][0]
-                ny0 = paths[i][time+1][1]
-                nx1 = paths[j][time+1][0]
-                ny1 = paths[j][time+1][1]
-                # Check if the agents are near each other
-                if abs(ox0 - ox1) > 2 or abs(oy0 - oy1) > 2:
-                    continue
-                # Same position
-                if nx0 == nx1 and ny0 == ny1:
-                    conflicts.append({'path1': i, 'path2': j, 'time': time})
-                # Swapping position
-                elif ox0 == nx1 and oy0 == ny1 and ox1 == nx0 and oy1 == ny0:
-                    conflicts.append({'path1': i, 'path2': j, 'time': time})
-                # Crossing edge
-                elif ox0 == ox1 and nx0 == nx1 and ny0 == oy1 and oy0 == ny1:
-                    conflicts.append({'path1': i, 'path2': j, 'time': time})
-                elif oy0 == oy1 and ny0 == ny1 and nx0 == ox1 and ox0 == nx1:
+                if moves_conflict(paths[i][time:time+2],
+                                  paths[j][time:time+2]):
                     conflicts.append({'path1': i, 'path2': j, 'time': time})
             # Check if one agent goes through the endpoint of the other
             if min_length != max_length:
@@ -58,3 +39,30 @@ def paths_conflict(paths):
                         conflicts.append({'path1': i, 'path2': j,
                             'time': time})
     return conflicts
+
+def moves_conflict(move1, move2):
+    """Returns True if moves conflict, False otherwise"""
+    ox0 = move1[0][0]
+    oy0 = move1[0][1]
+    ox1 = move2[0][0]
+    oy1 = move2[0][1]
+    nx0 = move1[1][0]
+    ny0 = move1[1][1]
+    nx1 = move2[1][0]
+    ny1 = move2[1][1]
+
+    # If agents are not near each other they can not conflict
+    if abs(ox0 - ox1) > 2 or abs(oy0 - oy1) > 2:
+        return False
+    # Same position
+    if nx0 == nx1 and ny0 == ny1:
+        return True
+    # Swapping position
+    elif ox0 == nx1 and oy0 == ny1 and ox1 == nx0 and oy1 == ny0:
+        return True
+    # Crossing edge
+    elif ox0 == ox1 and nx0 == nx1 and ny0 == oy1 and oy0 == ny1:
+        return True
+    elif oy0 == oy1 and ny0 == ny1 and nx0 == ox1 and ox0 == nx1:
+        return True
+    return False

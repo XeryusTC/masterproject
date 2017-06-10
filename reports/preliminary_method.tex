@@ -37,11 +37,11 @@
 A shared space is divided into discrete cells such that it forms a regular
 grid. Some of these cells can be occupied by an obstacle while the other cells
 are open. A set of $k$ agents are located on the open cells of this grid, each
-one of them occupies a single cell and no agents share the same cell. Each
+one of them occupies a single cell and no two agents share the same cell. Each
 agent has a unique destination. Each time step an agent can move to one of the
 eight neighbouring cells or \emph{wait} in its current location. An example
 initial configuration is shown in \autoref{fig:world}. The goal is to find a
-series of moves, one such series for each agent, such that the agents reach
+series of moves, or paths, one for each agent, such that the agents reach
 their destination without colliding with other agents or running into the
 static obstacles.
 

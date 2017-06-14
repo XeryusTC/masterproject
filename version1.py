@@ -24,19 +24,38 @@ class Agent:
         self.path = []
         self.conflicts = SortedListWithKey(key=lambda c: c.time)
         self.resolved_conflicts = []
+        self.current_conflict = None
         self.higher_prio = []
 
     def plan(self, start_time, max_time):
+        print(f'Planning for agent {self}')
+        self.old_path = self.path
+        self.construct_higher_prio()
         self.path = self._astar(start_time, max_time)
 
     def construct_higher_prio(self):
         prio = set()
-        for conflict in self.conflicts:
-            prio.update(conflict.agents[:conflict.agents.index(self)])
-        print(f'Agent {self} prio: {prio}')
+        # Construct priorities from the conflict solutions
+        for conflict in self.resolved_conflicts:
+            idx = conflict.solution.index(self)
+            prio.update(conflict.solution[:idx])
+            print(f'  Agent {self} prio: {prio}, {idx}')
+        # Update with the current proposed solution
+        if self.current_conflict != None:
+            idx = self.current_conflict.proposal.index(self)
+            prio.update(self.current_conflict.proposal[:idx])
+        print(f'  Agent {self} final prio: {prio}')
         self.higher_prio = prio
 
     def propose(self, conflict):
+        # If there are only two agents, propose to go first
+        if len(conflict.agents) == 2:
+            if conflict.agents[0] == self:
+                print(f'{self} proposing to go first')
+                return conflict.agents
+            else:
+                print(f'{self} proposing to go first, with reversal')
+                return reversed(conflict.agents)
         # Return a set order at first
         # TODO: actually propose something good
         return conflict.agents
@@ -44,13 +63,15 @@ class Agent:
     def resolved_conflict(self, conflict):
         self.resolved_conflicts.append(conflict)
 
+    def evaluate(self):
+        return random.choice((-1, 0, 1))
+
     def _astar(self, start_time, max_time):
         closed_set = set()
         open_set = []
         came_from = {}
         g = {self.start: 0}
         heapq.heappush(open_set, (0, 0, self.start))
-        self.construct_higher_prio()
 
         while open_set:
             time = timeit.default_timer()
@@ -123,9 +144,10 @@ class Conflict:
         return f'<{self.time:2d} {self.position} {self.agents}>'
 
     def __eq__(self, other):
-        return (self.position == other.position
-            and self.time == other.time
-            and self.agents == other.agents)
+        return (isinstance(other, Conflict)
+                and self.position == other.position
+                and self.time == other.time
+                and self.agents == other.agents)
 
     def __hash__(self):
         return hash((self.position, self.time, tuple(self.agents)))
@@ -141,21 +163,35 @@ class Conflict:
         for agent in self.agents:
             if agent.conflicts[0] != self:
                 return
+            agent.current_conflict = self
+
+        print(f'Resolving conflict {self}')
 
         # Let the agents propose priorities
-        proposals = (agent.propose(self) for agent in self.agents)
-        proposals = tuple(proposals)[:1] # TODO: remove temporary thing
+        proposals = tuple(tuple(agent.propose(self)) for agent in self.agents)
 
         # Enter voting if there are multiple proposals
+        votes = {}
         if len(proposals) > 1:
-            pass
+            for proposal in proposals:
+                self.proposal = proposal
+                votes[proposal] = 0
+                for agent in proposal:
+                    agent.plan(start_time, max_time)
+                    votes[proposal] += agent.evaluate()
+            # Pick the proposal with the highest sum of votes
+            pprint(votes)
+            self.solution = max(votes, key=votes.get)
         else:
             self.solution = proposals[0]
 
+        self.proposal = None
+        print('SOLUTION', self.solution)
         # Tell the agents that we are done
-        for agent in self.agents:
-            agent.plan(start_time, max_time)
+        for agent in self.solution:
+            agent.current_conflict = None
             agent.resolved_conflict(self)
+            agent.plan(start_time, max_time)
 
 
 def version1(agents, start_time, max_time, visualize=False):
@@ -182,6 +218,7 @@ def version1(agents, start_time, max_time, visualize=False):
         print(f'Conflicts found: {len(conflicts)}')
         pprint(conflicts)
         conflict_objs = convert_conflicts(agents, conflicts)
+        pprint(conflict_objs)
 
         # Get the agents to resove the conflicts
         for agent in agents:
@@ -196,6 +233,7 @@ def version1(agents, start_time, max_time, visualize=False):
         conflicts = util.paths_conflict(paths)
         if count > 5:
             break
+        print() # Just a new line to break up iterations
 
     return paths
 

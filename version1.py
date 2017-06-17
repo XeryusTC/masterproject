@@ -14,7 +14,13 @@ from id import TimeExceeded
 from poc import find_conflicts
 
 TimePlace = namedtuple('TimePlace', ['time', 'place'])
-Weights = namedtuple('Weights', ['path_len', 'conflict_count'])
+Weights = namedtuple('Weights', ['path_len',
+                                 'conflict_count',
+                                ])
+
+class ConflictNotSolved(Exception):
+    pass
+
 
 class Agent:
     def __init__(self, world, start, goal, weights=Weights(1, 3)):
@@ -65,6 +71,10 @@ class Agent:
         self.resolved_conflicts.append(conflict)
 
     def evaluate(self, conflicts):
+        # Current conflict solved
+        if self.current_conflict in conflicts.values():
+            print('Conflict not solved')
+            raise ConflictNotSolved()
         score = 0
         # Change in path length
         score += (len(self.old_path) - len(self.path)) * self.weights.path_len
@@ -189,13 +199,20 @@ class Conflict:
                 print('Evaluation proposal', proposal)
                 self.proposal = proposal
                 votes[proposal] = 0
+                # Plan new paths
                 for agent in proposal:
                     agent.plan(start_time, max_time)
-                    # Get updated list of conflicts to evaluate
-                    paths = tuple(a.path for a in agents)
-                    conflicts = util.paths_conflict(paths)
-                    conflicts = convert_conflicts(agents, conflicts)
-                    votes[proposal] += agent.evaluate(conflicts)
+                # Evaluate new paths
+                try:
+                    for agent in proposal:
+                        paths = tuple(a.path for a in agents)
+                        conflicts = util.paths_conflict(paths)
+                        conflicts = convert_conflicts(agents, conflicts)
+                        votes[proposal] += agent.evaluate(conflicts)
+                except ConflictNotSolved:
+                    votes[proposal] = -float('inf')
+                    continue
+
             # Pick the proposal with the highest sum of votes
             pprint(votes)
             self.solution = max(votes, key=votes.get)

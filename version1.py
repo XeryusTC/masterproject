@@ -14,9 +14,10 @@ from id import TimeExceeded
 from poc import find_conflicts
 
 TimePlace = namedtuple('TimePlace', ['time', 'place'])
+Weights = namedtuple('Weights', ['path_len', 'conflict_count'])
 
 class Agent:
-    def __init__(self, world, start, goal):
+    def __init__(self, world, start, goal, weights=Weights(1, 3)):
         self.world = world
         self.start = start
         self.goal = goal
@@ -26,6 +27,7 @@ class Agent:
         self.resolved_conflicts = []
         self.current_conflict = None
         self.higher_prio = []
+        self.weights = weights
 
     def plan(self, start_time, max_time):
         print(f'Planning for agent {self}')
@@ -39,7 +41,6 @@ class Agent:
         for conflict in self.resolved_conflicts:
             idx = conflict.solution.index(self)
             prio.update(conflict.solution[:idx])
-            print(f'  Agent {self} prio: {prio}, {idx}')
         # Update with the current proposed solution
         if self.current_conflict != None:
             idx = self.current_conflict.proposal.index(self)
@@ -63,8 +64,18 @@ class Agent:
     def resolved_conflict(self, conflict):
         self.resolved_conflicts.append(conflict)
 
-    def evaluate(self):
-        return random.choice((-1, 0, 1))
+    def evaluate(self, conflicts):
+        score = 0
+        # Change in path length
+        score += (len(self.old_path) - len(self.path)) * self.weights.path_len
+        # Change in conflicts
+        filtered = list(filter(lambda c: self in c.agents, conflicts.values()))
+        print(f'{self} {len(self.conflicts)} {len(filtered)}')
+        score += (len(self.conflicts) - len(filtered)) * \
+                 self.weights.conflict_count
+
+        print(f'Agent score {self}: {score}')
+        return score
 
     def _astar(self, start_time, max_time):
         closed_set = set()
@@ -155,10 +166,11 @@ class Conflict:
     def add_agent(self, agent):
         if agent not in self.agents:
             self.agents.append(agent)
-            # Register self with agent
-            agent.conflicts.add(self)
 
-    def resolve(self, start_time, max_time):
+    def resolve(self, agents, start_time, max_time):
+        # Don't try to solve a conflict after having already done so
+        if self.solution:
+            return
         # If this is not the first conflict for an agent then don't bother
         for agent in self.agents:
             if agent.conflicts[0] != self:
@@ -174,11 +186,16 @@ class Conflict:
         votes = {}
         if len(proposals) > 1:
             for proposal in proposals:
+                print('Evaluation proposal', proposal)
                 self.proposal = proposal
                 votes[proposal] = 0
                 for agent in proposal:
                     agent.plan(start_time, max_time)
-                    votes[proposal] += agent.evaluate()
+                    # Get updated list of conflicts to evaluate
+                    paths = tuple(a.path for a in agents)
+                    conflicts = util.paths_conflict(paths)
+                    conflicts = convert_conflicts(agents, conflicts)
+                    votes[proposal] += agent.evaluate(conflicts)
             # Pick the proposal with the highest sum of votes
             pprint(votes)
             self.solution = max(votes, key=votes.get)
@@ -219,6 +236,12 @@ def version1(agents, start_time, max_time, visualize=False):
         pprint(conflicts)
         conflict_objs = convert_conflicts(agents, conflicts)
         pprint(conflict_objs)
+        # Add conflicts to agents
+        for agent in agents:
+            agent.conflicts.clear()
+        for conflict in conflict_objs.values():
+            for agent in conflict.agents:
+                agent.conflicts.add(conflict)
 
         # Get the agents to resove the conflicts
         for agent in agents:
@@ -226,15 +249,21 @@ def version1(agents, start_time, max_time, visualize=False):
                 conflict = agent.conflicts[0]
             except IndexError:
                 continue  # Agent has no conflicts
-            conflict.resolve(start_time, max_time)
+            conflict.resolve(agents, start_time, max_time)
 
         # Update the list of conflicts
         paths = [agent.path for agent in agents]
         conflicts = util.paths_conflict(paths)
-        if count > 5:
+        if count > 3:
+            print('Quiting early')
             break
         print() # Just a new line to break up iterations
 
+    # Final visualisation
+    if visualize:
+        print('Exporting final conflicts')
+        im = vis.draw_paths_with_conflicts(paths, conflicts)
+        im.save(f'conflict_{count:05}.png')
     return paths
 
 def convert_conflicts(agents, conflicts):

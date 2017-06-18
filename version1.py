@@ -23,36 +23,50 @@ class ConflictNotSolved(Exception):
 
 
 class Agent:
-    def __init__(self, world, start, goal, weights=Weights(1, 3)):
+    def __init__(self, world, start, goal,
+                 weights=Weights(1, 3), caching=True):
         self.world = world
         self.start = start
         self.goal = goal
         self.h = RRAstar(world, start, goal)
         self.path = []
-        self.conflicts = SortedListWithKey(key=lambda c: c.time)
+        self.path_cache = {}
+        self.conflicts = SortedListWithKey(key=lambda conflict: conflict.time)
         self.resolved_conflicts = []
         self.current_conflict = None
-        self.higher_prio = []
+        self.higher_prio = frozenset()
         self.weights = weights
+        self.caching = caching
 
     def plan(self, start_time, max_time):
         print(f'Planning for agent {self}')
         self.old_path = self.path
         self.construct_higher_prio()
+        # Check if there is a path in the cache for this prio set up
+        if self.caching and self.higher_prio in self.path_cache:
+            # Check if the cached path conflicts with those of higher prio
+            paths = [agent.path for agent in self.higher_prio]
+            conflicts = util.paths_conflict(paths)
+            if not conflicts:
+                print('Using cached path')
+                self.path = self.path_cache[self.higher_prio]
+                return
         self.path = self._astar(start_time, max_time)
+        # Update the cache
+        self.path_cache[self.higher_prio] = self.path
 
     def construct_higher_prio(self):
-        prio = set()
+        prio = []
         # Construct priorities from the conflict solutions
         for conflict in self.resolved_conflicts:
             idx = conflict.solution.index(self)
-            prio.update(conflict.solution[:idx])
+            prio.extend(conflict.solution[:idx])
         # Update with the current proposed solution
         if self.current_conflict != None:
             idx = self.current_conflict.proposal.index(self)
-            prio.update(self.current_conflict.proposal[:idx])
-        print(f'  Agent {self} final prio: {prio}')
-        self.higher_prio = prio
+            prio.extend(self.current_conflict.proposal[:idx])
+        self.higher_prio = frozenset(prio)
+        print(f'  Agent {self} final prio: {self.higher_prio}')
 
     def propose(self, conflict):
         # If there are only two agents, propose to go first
@@ -271,9 +285,6 @@ def version1(agents, start_time, max_time, visualize=False):
         # Update the list of conflicts
         paths = [agent.path for agent in agents]
         conflicts = util.paths_conflict(paths)
-        if count > 3:
-            print('Quiting early')
-            break
         print() # Just a new line to break up iterations
 
     # Final visualisation

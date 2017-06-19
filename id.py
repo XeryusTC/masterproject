@@ -42,7 +42,9 @@ def main(agents):
     print('starts:', starts)
     print('goals: ', goals)
 
-    paths = odid2(agents, world, starts, goals, max_time=5)
+    start_time = timeit.default_timer()
+    paths = odid2(agents, world, starts, goals, start_time=start_time,
+                  max_time=5)
 
     print('Writing visualisations')
     vis = visualisation.Visualisation(world, agents, scale=20)
@@ -192,15 +194,15 @@ def path_conflicts(path1, path2):
             return True
     return False
 
-def odid2(agents, w, starts, goals, max_time=5):
+def odid2(agents, w, starts, goals, start_time=None, max_time=5):
     conflicted = []
     old_conflicts = []
     groups = list(Group([starts[i]], [goals[i]], w) for i in range(agents))
 
-    start_time = timeit.default_timer()
     # Initial planning
     for group in groups:
-        group.paths = group_od(w, group)
+        group.paths = group_od(w, group, start_time=start_time,
+                               max_time=max_time)
 
     conflicted = groups_conflict(groups)
     while conflicted:
@@ -254,7 +256,7 @@ def odid2(agents, w, starts, goals, max_time=5):
             print('After merge:', tuple(groups[i].size
                 for i in range(len(groups))))
             groups[group1].paths = group_od(w, groups[group1],
-                start_time=start_time)
+                start_time=start_time, max_time=max_time)
             # Remove stored conflict
             old_conflicts = [c for c in old_conflicts if c != (group1, group2)]
         conflicted = groups_conflict(groups)

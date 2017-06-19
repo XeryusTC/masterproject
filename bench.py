@@ -31,7 +31,8 @@ def main(runs, max_agents):
         # Run OD+ID
         start_time = timeit.default_timer()
         try:
-            odid.odid2(len(problem[1]), *problem, max_time=MAX_TIME)
+            odid.odid2(len(problem[1]), *problem, start_time=start_time,
+                       max_time=MAX_TIME)
             end_time = timeit.default_timer()
             f.write(f'{end_time-start_time},')
         except odid.TimeExceeded:

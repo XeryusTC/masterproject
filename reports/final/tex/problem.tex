@@ -1,0 +1,36 @@
+\section{Problem formulation}\label{sec:problem}
+A shared space is divided into discrete cells such that it forms a regular
+grid. Some of these cells can be occupied by an obstacle while the other cells
+are open. A set of $k$ agents are located on the open cells of this grid, each
+one of them occupies a single cell and no two agents share the same cell. Each
+agent has a unique destination. Each time step an agent can move to one of the
+eight neighbouring cells or \emph{wait} in its current location. An example
+initial configuration is shown in \autoref{fig:world}. The goal is to find a
+series of moves, or paths, one for each agent, such that the agents reach
+their destination without colliding with other agents or running into the
+static obstacles.
+
+The paths of two agents are in conflict when at any time step the agents occupy
+the same cell, when agents move along the same edge, or when agents move along
+crossing edges. Obstacle cells can be considered as stationary agents. Agents
+are allowed to move along a diagonal even when the two cells on the opposing
+diagonal are blocked, i.e. agent 5 in \autoref{fig:world} can move to its
+destination in a single time step. An agent $a_i$ can move a cell occupied by
+agent $a_j$ given that $a_j$ will move to a different cell at the same time.
+Agents 1--4 in \autoref{fig:world} can move their respective destinations
+by ``rotating'' clockwise. They can do this in a single time step without
+requiring any additional empty cells. Agents 7 and 8 cannot move to their
+destinations in a single time step because that would mean that they move along
+crossing edges at the same time. They can also not swap places because then
+they would be travelling along the same edge.
+
+\begin{figure}[h]
+    \centering
+    \def\svgscale{.7}
+    \input{images/world.pdf_tex}
+    \caption{A small space shared by some agents. Obstacles are black, agents
+        are circles inscribed with the agent's number ($a_i$), the destination 
+        for
+        agent $a_i$ is given by $g_i$.}
+    \label{fig:world}
+\end{figure}

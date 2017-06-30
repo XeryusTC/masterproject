@@ -3,7 +3,7 @@ Path planning for a single agent has long been considered a solved problem.
 When multiple agents have to find their way through a shared space then the
 problem becomes more complicated. Not only do the agents have to find paths
 around obstacles, they also need to ensure that they do not collide with each
-other.It is also possible that congestions or even deadlocks may occur. To
+other. It is also possible that congestions or even deadlocks may occur. To
 avoid this there is a need for coordination between the agents.
 Cooperative pathfinding finds its application in robotics, aviation, road
 traffic management, crowd simulations, and video games \cite{standley2011}.
@@ -70,9 +70,11 @@ need to wait for a central processor to tell agents what to do.
 
 %TODO: describe how to combine these three views
 
-The rest of this thesis is structured as follows. Previous work in cooperative
-pathfinding, argumentation and partial global planning is discussed in
-\autoref{sec:related}. A new method to find conflict-free paths is proposed in
-\autoref{sec:method}. This method is evaluated and compared to the
-state-of-the-art in \autoref{sec:results}. Final remarks on the proposed method
-and its implications are discussed in \autoref{sec:discussion}.
+The rest of this thesis is structured as follows. First, a formal description
+of the cooperative pathfinding problem is given in \autoref{sec:problem}.
+Previous work in cooperative pathfinding, argumentation and partial global
+planning is discussed in \autoref{sec:related}. A new method to find
+conflict-free paths is proposed in \autoref{sec:method}. This method is
+evaluated and compared to other algorithms in \autoref{sec:results}. Final
+remarks on the proposed method and its implications are discussed in
+\autoref{sec:discussion}.

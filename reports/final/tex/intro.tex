@@ -11,7 +11,8 @@ traffic management, crowd simulations, and video games \cite{standley2011}.
 %TODO: Discuss cooperative pathfinding and abstract solutions.
 The most straightforward approach to the cooperative pathfinding problem is to
 search the Cartesian product of the state spaces of all agents. Unfortunately
-this approach is very inefficient, the time to find a solution is exponential
+this approach is very inefficient \cite{sharon2013}, the time to find a
+solution is exponential
 in the number of agents. Another common approach is to assign all agents a
 priority. Agents then plan in descending order of priority, they consider
 agents with a higher priority to be a moving obstacle and avoid planning
@@ -30,43 +31,50 @@ in a small range. This has the problem that there is no global view of the
 problem, so agents can make decisions early on that will lead to congestions or
 deadlocks later on without any agent noticing.
 
+%TODO: Discuss how partial global planning gives local to global view, and
+%allows for cooperation.
+Partial global planning has been used in distributed sensor networks to
+distribute and coordinate tasks among the nodes that make up the network
+\cite{durfee1991}. The nodes create their individual plans without regard for
+each other. They will then exchange information on their plans and adapt them
+to better coordinate their activities. Nodes can even take over each others
+tasks to spread the computational load. Coordination is not rigid, nodes have
+some freedom in how they execute their plan if circumstances change without
+having to re-coordinate with the other nodes. None of the involved nodes ever
+has a global view, but the end result is a plan that is globally coordinated
+with each node holding a part of the global plan.
+
+This method of constructing a global plan from local views can also be applied
+to cooperative pathfinding. Agents only have to coordinate with those agents
+that they have a conflict with. The freedom in planning allows agents to find
+alternative paths without having to update all other agents that were ever
+coordinated with. This allows for a truly decentralised approach,
+agents only communicate with other agents when they have to, and there is no
+need to wait for a central processor to tell agents what to do.
+
 %TODO: Discuss how argumentation adds reasons for solutions.
 Formal models of argumentation have been used in Artificial Intelligence to
-reason about topics like expert systems, multi-agent systems and law. An
-important concept in argumentation is that of defeasible reasoning: the
+reason about topics like expert systems, multi-agent systems and law
+\cite{vaneemeren2014}.
+An important concept in argumentation is that of defeasible reasoning: the
 conclusion that can be drawn from a set of premises does not need to hold when
 additional premises are added. This is in contrast with classical logic where
 adding additional premises will never invalidate a conclusion. Defeasible
 reasoning allows arguments to be made for or against a conclusion. Arguments
-canal so support or attack each other and thereby strengthening or weakening a
+can also support or attack each other and thereby strengthen or weaken a
 case for a conclusion.
 
 Commonly reasoning in a multi-agent system is modelled as a dialogue game. In
-such a dialogue game the agents represent the players and the game prescribes
-the rules of how the dialogue should occur. There are rules about what
+such a dialogue game the agents represent the players and the game rules
+prescribes how the dialogue should occur \cite{walton1995}. There are rules
+about what
 arguments agents can put forward, when they are allowed to do so, and there can
 even be rules about which agent gets to speak when. Most forms of dialogue
 games also have rules about when the dialogue is finished and which agent(s)
-have won if applicable. These dialogues can be used to give reasons about why
-agents decided to take a certain course of action. They can thus be used to
-remove some of the abstractness of cooperative pathfinding solutions by giving
-reasons why this course of action was arrived at.
-
-%TODO: Discuss how partial global planning gives local to global view, and
-%allows for cooperation.
-In distributed sensor networks tasks can be split among nodes through partial
-global planning. The nodes create their individual plans without regard for
-each other. They will then exchange information on their plans and adapt them
-to better coordinate their activities. Nodes can even take over each others
-tasks to spread the computational load. None of the involved nodes ever has a
-global view, but the end result is a plan that is globally coordinated with
-each node holding a part of the global plan.
-
-This method of constructing a global plan from local views can also be applied
-to partial global planning. Agents only have to coordinate with those agents
-that they have a conflict with. This allows for a truly decentralised approach,
-agents only communicate with other agents when they have to, and there is no
-need to wait for a central processor to tell agents what to do.
+have won if applicable. These dialogues can be used to give reasons about why a
+group of agents decided to take a certain course of action. They can thus be
+used to remove some of the abstractness of cooperative pathfinding solutions by
+giving reasons why this course of action was arrived at.
 
 %TODO: describe how to combine these three views
 

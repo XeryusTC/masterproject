@@ -1,1 +1,64 @@
 \section{Related Work}\label{sec:related}
+
+\subsection{Argumentation}
+\subsubsection{Dialogues}
+Multiple agents can have an argument through a dialogue. Walton and
+Krabbe \cite{walton1995} proposed a typology of main dialogues that humans
+partake in. They distinguish six main types of dialogues, it should be noted
+that the list of dialogue types is not exhaustive. In \emph{information
+    seeking} dialogues some of the participating agents aim to gather
+    information
+from another agent that knows the anser. In \emph{inquiry} dialogues a group of
+agents collectively seeks an answer to a question to which non of the
+participating agents knows the answer on its own. \emph{Deliberation} dialogues
+are about what course of action to take in a given situation. A
+\emph{persuasion} dialogue occurs when an agent tries to convince on or
+multiple other agents of its position. It is successful when the other agent(s)
+adopt its position. Participants of \emph{negotiation} dialogues try to find a
+division of a scarce resource that all agents can be satisfied with. Finally
+\emph{eristic} dialogues are a verbal substitute for fighting. Note that most
+actual dialogues combine these dialogue types.
+
+Dialogues are often analysed in a game-theoretic sense, where the utterances
+that agents can make are analogous to the moves in a game. Which utterances are
+appropriate at each moment is then defined by the rules of the game. Most of
+the research into dialogues follows this approach
+\cite{prakken2006,prakken2009}. Most dialogue systems have a two language
+set-up. The first is the topic language which is about what agents are
+discussing and is typically a formal logic, it defines the context of the
+dialogue. The second language is the communication language which specifies
+which utterances can be made, what effects they have and the rules of outcome.
+This latter language is at the core of dialogue games. Most dialogue systems
+have the following syntax in common \cite{prakken2006,prakken2009,mcburney2009}.
+\begin{description}
+    \item[Commencement rules] Rules that concern when and how a dialogue can
+    start and what its context is.
+    \item[Locution rules] Which utterances are permitted are known as the
+    locution rules. They may also define when an utterance is obligatory.
+    Common locutions include asserting propositions, questioning or contesting
+    assertions and justifying previous assertions after they have been
+    questioned.
+    \item[Commitments] Some locutions incur commitments on an agent which are
+    subsequently put into the agent's commitment store. A dialogue system may
+    limit which utterances an agent can make based on what is in its commitment
+    store.
+    \item[Speaker order] Most dialogue systems specify an order in which agents
+    can speak, this can range from agents alternating turns to each agent being
+    allowed to make an utterance at any time.
+    \item[Outcome rules] These determine what the outcome of the dialogue is.
+    Some systems define an outcome while the dialogue may continue and lead to
+    a different outcome at a later point.
+\end{description}
+
+One model of deliberation dialogues is presented in \cite{mcburney2007}. It
+consists of eight stages, starting with an \textbf{Open} stage and ending with
+a \textbf{Close} stage. The other stages can occur multiple times during a
+dialogue in any valid order. During the dialogue agents will collect the
+preferences, goals and other constraints that need to be considered. Agents
+will then propose common plans of action, when multiple plans have been
+proposed agents can specify which they prefer. At some points an agent can
+recommend a plan after which all agents will vote for that plan. The dialogue
+requires unanimity before the recommended plan is adopted, but it allows for a
+voting mechanism to pick the most preferred plan among many. There are variants
+of this model that require fewer stages while still allowing for the same
+expressiveness \cite{dunin-keplicz2011}.

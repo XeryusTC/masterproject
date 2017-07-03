@@ -1,5 +1,196 @@
 \section{Related Work}\label{sec:related}
 
+\subsection{Cooperative pathfinding}
+%Cooperative pathfinding is the field of study that aims to develop methods of
+%finding conflict free paths for groups of agents. Given a connected grid and a
+%group of $k$ agents with initial positions $s_1, \ldots, s_k$ and goal
+%positions $g_1, \ldots, g_k$, a set of paths is conflict free iff all agents
+%$a$ have a path from $s_a$ to $g_a$ without any two agents ever occupying
+%the same position at the same time, or moving along crossing edges at the same
+%time.
+In the grid world each agent can take one of $b+1$ actions, where $b$ is the
+current number of neighbouring cells, there is also a \textit{wait} action
+where an agent does not move. The naive approach to finding conflict free paths
+takes the Cartesian product of all $k$ state spaces and searches the new
+combined state space with an algorithm like A*, this is also known as the
+Standard Algorithm \cite{standley2010}. This results in a branching factor of
+$(b+1)^k$, the branching factor grows exponentially in the number of agents and
+the problem quickly becomes intractable even with efficient search algorithms
+like A* \cite{sharon2013}.
+
+There are a few common strategies that are used to tackle this problem.
+%There are a few categories that methods tackling this problem fall into.
+Centralised methods use one single processor to calculate the paths for all
+agents. They are often complete, they will find a solution to the problem if it
+exists. This also means that they are slow. An alternative strategy is to
+decouple the agents from each other by letting each
+agent plan its own path and enforcing a hierarchy on the agents so that agents
+with a lower priority need to give way to agents with a higher priority.
+Decoupled methods sacrifice completeness for speed. They often calculate the
+priorities at a central processor, but can exploit the inherent parallelism in
+multi-agent systems to calculate the paths. There are also reactive methods
+that will only solve conflicts when they occur during plan execution.
+\autoref{tbl:planning-overview} shows an overview of several algorithms and
+summarises their properties, each algorithm is discussed in more detail below.
+
+\begin{table}[t]
+    \centering
+    \caption{Comparison of cooperative pathfinding algorithms
+    \cite{silver2005,standley2010,standley2011,sharon2013,wei2016,cap2012}.
+    Communication
+        indicates what limit is imposed on which agents can communicate, `all'
+        means that there is no limit and agents can communicate with all others.
+        Online enumerates whether all movement actions for all agents are
+        determined before execution, some algorithms update the plan during
+        execution.}
+    \label{tbl:planning-overview}
+    \begin{tabular}{l|l|l|l|l|l}
+        \hline
+        Method & Category & Complete & Priority & Communication & Online \\
+        \hline
+        WHCA* & Decoupled & No & Yes\footnotemark[1] & Window & Yes \\
+        OD+ID & Centralised & Yes & No & All & No \\
+        ICTS & Centralised & Yes & No & All & No \\
+        DMRCP & Decentralized & No & No & 2 node radius &
+        Yes \\
+        ADPP & Decoupled & No & Yes & All & No \\
+        %Proposed & Decentralized & No & Partial & All & Before
+    \end{tabular}
+\end{table}
+\footnotetext[1]{Although WHCA* does give agents a priority, the assigned
+    priorities can vary between windows.}
+
+One centralized method called Operator Decomposition (OD) deals with the
+intractability of
+the problem is by considering the possible moves of each agent on their own
+\cite{standley2010,standley2011}. Instead of taking the Cartesian product of
+the agents' state spaces it assigns actions to agents individually. This leads
+to two different kind of states: in standard states no agent has been assigned
+an action; in intermediate states some of the agents have been assigned an
+action, when all agents are assigned an action it results in a new standard
+state. Because intermediate states are considered individually the algorithm is
+less likely to expand those intermediate states that are sub-optimal and thus
+fewer states are generated. The result of this is that the branching factor
+becomes $(b+1)$, but that the depth of the solution in the search tree grows
+with a linear factor $k$. This makes finding a solution with an algorithm like
+A* more tractable. OD is a complete and optimal algorithm, meaning that it will
+always find a solution if one exists, and it will find the best solution.
+
+On its own OD is not always very efficient, so an additional algorithm called
+Independence Detection (ID) was introduced \cite{standley2010}. Before planning
+takes place all agents are placed in their own group. Each group then makes a
+plan, when the paths for two groups conflict then one group is tasked with
+finding a new conflict free path. If this also fails then the groups are merged
+and a new plan is formed for the group using OD. This is repeated until a
+set of conflict free paths for all agents has been found. Several variants on
+ID+OD have been proposed, leading to the Optimal Anytime algorithm
+\cite{standley2011} which will quickly find a solution and can then spend more
+time on improving the solution. Because ID is an extension that can be applied
+to any cooperative pathfinding algorithm OD+ID is still complete. Although
+there is implicit priority in which order the agents are assigned actions, it
+has no influence on the ability to find a solution or the quality of the
+solution. Planning is completed before agents start executing it, and there is
+no need to update the plan during execution.
+
+Another centralized method is called the Increasing Cost Tree Search (ICTS)
+which is a
+two-fold search method \cite{sharon2013}. It consists of a high-level search on
+an Increasing Cost Tree (ICT) which has a root node which contains the optimal
+path costs for each individual agent. Each child node increases the path cost
+for a different agent, so each level in the tree increases the sum of the path
+costs by one. This tree is searched using breadth-first search, each node in
+the tree will be searched using a low-level search. This low level search
+generates all paths for each agents that is equal to the cost in the current
+ICT node, it will then try to find a conflict free combination of these paths.
+If such a set of paths exists then the algorithm is done, otherwise the
+high-level search will continue to the next node in the ICT. Pruning can be
+used to decrease the amount of duplicate nodes in the ICT, but it is possible
+to use ID as well. The ICTS is a complete algorithm like OD+ID, but it is
+faster in situations when the number of agents relative to the number of nodes
+is high. ICTS imposes no priority on the agents at all since it only searches
+for combination of paths that are a valid solution to the problem.
+
+The above algorithms all fall into the centralized category of solutions, these
+can become very slow because of the state-space explosion. Decoupled methods
+reduce the required calculation time by considering each agent separately. They
+generally use the same three step approach;
+\begin{enumerate}
+    \item Find optimal paths for each agent independently of each other.
+    \item Impose a hierarchy on the agents, often this is done by assigning
+    them a unique priority.
+    \item Make new plans for all the agents, this time an agent has to consider
+    all agents with a higher priority as a moving obstacle. Agents with a lower
+    priority can safely be ignored.
+\end{enumerate}
+This often leads to a set of conflict free plans. Finding the optimal priority
+order is a combinatorial problem \cite{bennewitz2002}. A common algorithm of
+assigning priorities first calculates a dependence hierarchy based on the paths
+found in the first step, then priorities can be assigned such that agents have
+a priority that is higher than that of agents that may block them. Circular
+dependencies may mean that multiple priority schemes have to be tried. The
+quality of the final solution depends highly on the priority ordering employed,
+some of the possible priority schemes may not even lead to a solution. This
+means that these kind of algorithms are not complete.
+
+Most proposals for decoupled methods don't mention whether a central processor
+must make the plans for all agents, or whether the agents can do it themselves.
+Determining the prioritization scheme is often centralized, since a
+single processor needs to determine all dependencies \cite{bennewitz2002}. One
+method called Asynchronous Decentralized prioritized Planning \cite{cap2012}
+exploits the inherent parallelism of a multi-robot team during the planning
+stages. The method allows
+agents to make their individual plans, after an agent has found a path it will
+notify all agents with a lower priority of its (new) path. These lower priority
+agents will then update their plans if conflicts arise, notifying lower
+priority agents. These agents will then update their plans etc. The benefit of
+this method is that agents can make a new plan as soon as any one higher
+priority agent has send a conflicting plan, there is no need for agents to
+wait for each other to finish their plans. This means that agents can plan
+simultaneously and that some agents may finish planning before higher priority
+agents if their paths are conflict free.
+
+Windowed Hierarchical Cooperative A* (WHCA*) is a decoupled algorithm that has
+been very successful in the video-game industry \cite{silver2005}. It uses a
+reservation table to denote where agents plan to be and thus prevent other
+agents from entering the same space at the same time. It requires that agents
+have been assigned a priority ordering in which they plan so that they can take
+each other's reservations into account. The amount of computation required
+depends on the quality of the heuristic used during A* planning. Hierarchical
+A* is an abstraction of the search space used to obtain perfect distance
+estimates. The reservation table and time dimension are ignored for this so
+that agents can find the minimum distance to their destination. The search by
+the above algorithm is windowed so that the reservation table is only used in
+the window and the rest of the path is planned in the abstract space,
+effectively ignoring the other agent's actions outside of the window. The
+window is moved at regular intervals and the agent's plan is updated. Because
+of this the agents have no fixed priority, it varies based on the current
+window. Computation is spread out over the time it takes for agents to get to
+their destination, so there is no need to calculate all paths before execution,
+they are instead updated during execution. Another issue that is solved is that
+agents would reach their goal position and stay there, potentially blocking the
+paths of other agents. The window limits the size of the reservation table the
+agents have to take into account, limiting the
+communication between agents to the size of the window.
+
+One model of truly decentralized cooperative pathfinding called DMRCP has been
+proposed by
+\cite{wei2016}. Agents move towards their destination and only communicate with
+each other in a two graph node radius. They can give each other commands like
+move out of the way, follow me, wait etc. Agents are altruistic which means
+that they are willing to make concessions during conflicts even if that means
+that they will be at a disadvantage. Agents use various strategies to deal with
+different conflict situations. Because of the limited communication range and
+the various strategies employed the agents often need to recalculate the
+optimal path to their destination during the execution of their old plan. This
+approach works well, it requires slightly less computation time than OD+ID and
+on average the agents only need two thirds of the number of movement steps to
+reach their goal positions. Although completeness is not discussed, the
+algorithm is based in decoupled methods which are generally not complete.
+Because agents only communicate in a limited range there is no indication
+whether agents will have conflicts at a later point in time. This lack of a
+global overview means that agents must include strategies to resolve deadlocks
+when they occur, there is no way to prevent deadlocks from happening.
+
 \subsection{Argumentation}
 \subsubsection{Dialogues}
 Multiple agents can have an argument through a dialogue. Walton and
@@ -53,7 +244,8 @@ have the following syntax in common \cite{prakken2006,prakken2009,mcburney2009}.
 One model of deliberation dialogues is presented in \cite{mcburney2007}. It
 consists of eight stages, starting with an \textbf{Open} stage and ending with
 a \textbf{Close} stage. The other stages can occur multiple times during a
-dialogue in any valid order. During the dialogue agents will collect the
+dialogue, as long as they occur following the rules of the dialogue game.
+During the dialogue agents will collect the
 preferences, goals and other constraints that need to be considered. Agents
 will then propose common plans of action, when multiple plans have been
 proposed agents can specify which they prefer. At some points an agent can

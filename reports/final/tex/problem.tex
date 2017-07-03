@@ -1,17 +1,25 @@
 \section{Problem formulation}\label{sec:problem}
-A shared space is divided into discrete cells such that it forms a regular
-grid. Some of these cells can be occupied by an obstacle while the other cells
-are open. A set of $k$ agents are located on the open cells of this grid, each
-one of them occupies a single cell and no two agents share the same cell. Each
-agent has a unique destination. Each time step an agent can move to one of the
-eight neighbouring cells or \emph{wait} in its current location. An example
-initial configuration is shown in \autoref{fig:world}. The goal is to find a
-series of moves, or paths, one for each agent, such that the agents reach
-their destination without colliding with other agents or running into the
+A shares space is divided into discrete cells such that it forms an 8-connected
+grid. Some of the cells in this grid are static obstacles while the other cells
+are open. A set of $k$ with respective initial positions $a_1, \ldots, a_k$ and
+goal positions $g_1, \ldots, g_k$ need to find paths such that no two agents
+have a conflict. A path consists of a series of moves, which can either be to
+move to one of the neighbouring cells or \emph{wait} at the current location.
+Each time step an agent can take exactly one of these actions.
+%A shared space is divided into discrete cells such that it forms a regular
+%grid. Some of these cells can be occupied by an obstacle while the other cells
+%are open. A set of $k$ agents are located on the open cells of this grid, each
+%one of them occupies a single cell and no two agents share the same cell. Each
+%agent has a unique destination. Each time step an agent can move to one of the
+%eight neighbouring cells or \emph{wait} in its current location.
+An example initial configuration is shown in \autoref{fig:world}. The goal is
+to find a series of moves, or paths, one for each agent, such that the agents
+reach their destination without colliding with other agents or running into the
 static obstacles.
 
-The paths of two agents are in conflict when at any time step the agents occupy
-the same cell, when agents move along the same edge, or when agents move along
+The paths of two agents are not in conflict iff at no time step the agents
+occupy the same cell, agents move along the same edge (swap positions), or
+agents move along
 crossing edges. Obstacle cells can be considered as stationary agents. Agents
 are allowed to move along a diagonal even when the two cells on the opposing
 diagonal are blocked, i.e. agent 5 in \autoref{fig:world} can move to its
@@ -29,7 +37,7 @@ they would be travelling along the same edge.
     \def\svgscale{.7}
     \input{images/world.pdf_tex}
     \caption{A small space shared by some agents. Obstacles are black, agents
-        are circles inscribed with the agent's number ($a_i$), the destination 
+        are circles inscribed with the agent's number ($a_i$), the destination
         for
         agent $a_i$ is given by $g_i$.}
     \label{fig:world}

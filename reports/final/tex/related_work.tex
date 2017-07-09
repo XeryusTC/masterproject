@@ -185,7 +185,9 @@ optimal path to their destination during the execution of their old plan. This
 approach works well, it requires slightly less computation time than OD+ID and
 on average the agents only need two thirds of the number of movement steps to
 reach their goal positions. Although completeness is not discussed, the
-algorithm is based in decoupled methods which are generally not complete.
+algorithm is based in decoupled methods which are generally not complete. Some
+of the conflict resolving strategies used by the agents are able to solve
+situations in which decoupled methods would not find a solution.
 Because agents only communicate in a limited range there is no indication
 whether agents will have conflicts at a later point in time. This lack of a
 global overview means that agents must include strategies to resolve deadlocks

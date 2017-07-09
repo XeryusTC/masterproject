@@ -119,7 +119,7 @@ class Visualisation():
                             (pos[1] + .1)* self.scale,
                             (pos[0] + .9) * self.scale,
                             (pos[1] + .9) * self.scale),
-                            fill=((weight * num),0,0))
+                            fill=(min(num*64, 255),0,0))
 
         # Draw agents and paths
         for i in range(len(paths)):

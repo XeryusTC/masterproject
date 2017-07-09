@@ -3,6 +3,9 @@
 *.png
 *.mp4
 *.mkv
+results/
+.RData
+.Rhistory
 
 # # LaTeX
 *.aux

@@ -59,27 +59,24 @@ class Agent:
         prio = []
         # Construct priorities from the conflict solutions
         for conflict in self.resolved_conflicts:
-            idx = conflict.solution.index(self)
-            prio.extend(conflict.solution[:idx])
+            for i in range(conflict.solution['level'] + 1):
+                if conflict.solution[i] == self:
+                    continue
+                prio.append(conflict.solution[i])
         # Update with the current proposed solution
         if self.current_conflict != None:
-            idx = self.current_conflict.proposal.index(self)
-            prio.extend(self.current_conflict.proposal[:idx])
+            for i in range(self.current_conflict.proposal['level'] + 1):
+                if self.current_conflict.proposal[i] == self:
+                    continue
+                prio.append(self.current_conflict.proposal[i])
         self.higher_prio = frozenset(prio)
         print(f'  Agent {self} final prio: {self.higher_prio}')
 
     def propose(self, conflict):
-        # If there are only two agents, propose to go first
-        if len(conflict.agents) == 2:
-            if conflict.agents[0] == self:
-                print(f'{self} proposing to go first')
-                return conflict.agents
-            else:
-                print(f'{self} proposing to go first, with reversal')
-                return reversed(conflict.agents)
-        # Return a set order at first
-        # TODO: actually propose something good
-        return conflict.agents
+        # If there are no proposals yet, propose to go first
+        if len(conflict.proposals) == 0:
+            proposal = {'score': None, 'level': 0, 0: self}
+        return proposal
 
     def resolved_conflict(self, conflict):
         self.resolved_conflicts.append(conflict)
@@ -174,6 +171,7 @@ class Conflict:
         self.time = time
         self.agents = list(agents)
         self.solution = None
+        self.proposals = []
 
     def __repr__(self):
         return f'<{self.time:2d} {self.position} {self.agents}>'
@@ -204,39 +202,43 @@ class Conflict:
         print(f'Resolving conflict {self}')
 
         # Let the agents propose priorities
-        proposals = tuple(tuple(agent.propose(self)) for agent in self.agents)
+        proposals = tuple(agent.propose(self) for agent in self.agents)
 
         # Enter voting if there are multiple proposals
-        votes = {}
         if len(proposals) > 1:
             for proposal in proposals:
                 print('Evaluation proposal', proposal)
+                self.proposals.append(proposal)
                 self.proposal = proposal
-                votes[proposal] = 0
+                proposal['score'] = 0
                 # Plan new paths
-                for agent in proposal:
+                for i in range(proposal['level'] + 1):
+                    proposal[0].plan(start_time, max_time)
+                # Replanning for all agents shouldnt be too bad because
+                # of caching
+                for agent in self.agents:
                     agent.plan(start_time, max_time)
                 # Evaluate new paths
                 try:
-                    for agent in proposal:
+                    for agent in self.agents:
                         paths = tuple(a.path for a in agents)
                         conflicts = util.paths_conflict(paths)
                         conflicts = convert_conflicts(agents, conflicts)
-                        votes[proposal] += agent.evaluate(conflicts)
+                        proposal['score'] += agent.evaluate(conflicts)
                 except ConflictNotSolved:
-                    votes[proposal] = -float('inf')
+                    proposal['score'] = -float('inf')
                     continue
 
             # Pick the proposal with the highest sum of votes
-            pprint(votes)
-            self.solution = max(votes, key=votes.get)
+            pprint(self.proposals)
+            self.solution = max(self.proposals, key=lambda p: p['score'])
         else:
             self.solution = proposals[0]
 
         self.proposal = None
         print('SOLUTION', self.solution)
         # Tell the agents that we are done
-        for agent in self.solution:
+        for agent in self.agents:
             agent.current_conflict = None
             agent.resolved_conflict(self)
             agent.plan(start_time, max_time)

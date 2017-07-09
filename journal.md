@@ -58,3 +58,13 @@ Send an overview of literature read to Bart.
 Write a script to benchmark OD+ID so that graphs of running times can be
 created. Edit both methods to accept a maximum run time to keep benchmark time
 low.
+
+2017-07-09
+==========
+Changed how priorities work in version 1. Instead of assigning all agents a
+position in the ordering, only a part of the agents can be assigned a position.
+This means that agents that have not been given a position are automatically
+sharing the last position, so a conflict with multiple agents can have only one
+agent in first place, one in second place, and all others sharing third place.
+Agents who share a position do not have to take each other's positions into
+account.

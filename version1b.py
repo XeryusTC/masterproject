@@ -112,9 +112,11 @@ class Agent:
             }
             for i in range(proposal['level']):
                 new_proposal[i] = proposal[i]
+
             print(f'Complicated proposal {new_proposal}')
+            proposal['children'].append(new_proposal)
             return new_proposal
-        raise Exception('Could not make new proposal')
+        return None
 
     def resolved_conflict(self, conflict):
         self.resolved_conflicts.append(conflict)
@@ -262,10 +264,16 @@ class Conflict:
                 raise TimeExceeded()
 
             partially_solved = False
-            proposals = tuple(agent.propose(self) for agent in self.agents)
+            proposals = tuple(filter(lambda p: p != None,
+                               (agent.propose(self) for agent in self.agents)))
             self.proposals += proposals
 
-            assert len(proposals) > 0
+            # If no proposals have been made then go with the best one so far
+            if len(proposals) == 0:
+                self.solution = max(self.proposals, key=lambda p: p['score'])
+                if self.solution['score'] == -float('inf'):
+                    raise ConflictNotSolved()
+                break
 
             if len(proposals) == 1:
                 self.solution = proposals[0]

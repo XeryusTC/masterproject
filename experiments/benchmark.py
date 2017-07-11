@@ -10,6 +10,7 @@ from simulation import util
 import id as odid
 import poc
 import version1
+import version1b
 
 MAX_TIME = 2
 OBSTACLES = 0.2
@@ -28,11 +29,17 @@ def version1_entry(world, starts, goals, start_time, max_time):
               for i in range(len(starts))]
     return version1.version1(agents, start_time, max_time, False)
 
+def version1b_entry(world, starts, goals, start_time, max_time):
+    agents = [version1b.Agent(world, starts[i], goals[i])
+              for i in range(len(starts))]
+    return version1b.version1(agents, start_time, max_time, False)
+
 Algorithm = namedtuple('Algorithm', ['name', 'entry'])
 ALGORITHMS = [
     Algorithm('OD+ID', odid_entry),
     Algorithm('Naive', poc_entry),
     Algorithm('Base version', version1_entry),
+    Algorithm('Version 1b', version1b_entry),
 ]
 
 def main(runs, max_agents):
@@ -67,6 +74,9 @@ def main(runs, max_agents):
                 result.append('NA')
             except (rra_star.NoValidPathExists, util.NoPathsFoundException):
                 print('No valid path exists')
+                result.append('NA')
+            except version1b.ConflictNotSolved:
+                print('Could not find a solution to a conflict')
                 result.append('NA')
             finally:
                 end_time = timeit.default_timer()

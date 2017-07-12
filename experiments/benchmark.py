@@ -11,6 +11,7 @@ import id as odid
 import poc
 import version1
 import version1b
+import standard_algorithm
 
 MAX_TIME = 2
 OBSTACLES = 0.2
@@ -34,8 +35,13 @@ def version1b_entry(world, starts, goals, start_time, max_time):
               for i in range(len(starts))]
     return version1b.version1(agents, start_time, max_time, False)
 
+def standard_algorithm_entry(world, starts, goals, start_time, max_time):
+    return standard_algorithm.standard_algorithm(len(starts), world, starts,
+                                                 goals, start_time, max_time)
+
 Algorithm = namedtuple('Algorithm', ['name', 'entry'])
 ALGORITHMS = [
+    Algorithm('Standard algorithm', standard_algorithm_entry),
     Algorithm('OD+ID', odid_entry),
     Algorithm('Naive', poc_entry),
     Algorithm('Base version', version1_entry),

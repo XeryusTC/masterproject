@@ -140,12 +140,12 @@ class Agent:
         partially_solved = False
         if len(self.current_conflict.agents) > 2:
             for timeplace, conflict in conflicts.items():
-                if self in conflict.agents:
-                    for agent in self.current_conflict.agents:
-                        if agent != self and agent in conflict.agents:
-                            print('  Conflict only partially solved!')
-                            partially_solved = True
-                            score -= self.weights.partial_solved
+                intersection = [agent for agent in conflict.agents
+                                      if agent in self.current_conflict.agents]
+                if len(intersection) >= 2 and self in intersection:
+                    print('  Conflict only partially solved!')
+                    partially_solved = True
+                    score -= self.weights.partial_solved
 
         print(f'Agent score {self}: {score}')
         if partially_solved:
@@ -263,7 +263,7 @@ class Conflict:
             if start_time != None and (time - start_time) > max_time:
                 raise TimeExceeded()
 
-            partially_solved = False
+            partially_solved = True
             proposals = tuple(filter(lambda p: p != None,
                                (agent.propose(self) for agent in self.agents)))
             self.proposals += proposals
@@ -303,7 +303,8 @@ class Conflict:
                     continue
                 except ConflictPartiallySolved as e:
                     proposal['score'] += e.args[0]
-                    partially_solved = True
+                else:
+                    partially_solved = False
                 print(f"Proposal score {proposal['score']}")
 
             # Pick the proposal with the highest sum of votes

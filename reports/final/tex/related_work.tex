@@ -21,8 +21,8 @@ like A* \cite{sharon2013}.
 There are a few common strategies that are used to tackle this problem.
 %There are a few categories that methods tackling this problem fall into.
 Centralised methods use one single processor to calculate the paths for all
-agents. They are often complete, they will find a solution to the problem if it
-exists. This also means that they are slow. An alternative strategy is to
+agents. They are often complete, they will find a solution to the problem if
+one exists. This also means that they are slow. An alternative strategy is to
 decouple the agents from each other by letting each
 agent plan its own path and enforcing a hierarchy on the agents so that agents
 with a lower priority need to give way to agents with a higher priority.
@@ -107,8 +107,14 @@ high-level search will continue to the next node in the ICT. Pruning can be
 used to decrease the amount of duplicate nodes in the ICT, but it is possible
 to use ID as well. The ICTS is a complete algorithm like OD+ID, but it is
 faster in situations when the number of agents relative to the number of nodes
-is high. ICTS imposes no priority on the agents at all since it only searches
-for combination of paths that are a valid solution to the problem.
+is high.
+
+%The algorithms described above are both centralized approaches to cooperative
+%pathfinding. They have a couple of characteristics in common, the most notable
+%being completeness. Given enough time the algorithms will always find a
+%solution if one exists, the solution that is found is often also the best
+%solution, so the algorithms are also optimal. Centralized methods take the
+%state spaces of all agents into account simultaneously to
 
 The above algorithms all fall into the centralized category of solutions, these
 can become very slow because of the state-space explosion. Decoupled methods
@@ -194,6 +200,81 @@ global overview means that agents must include strategies to resolve deadlocks
 when they occur, there is no way to prevent deadlocks from happening.
 
 \subsection{Argumentation}
+Argumentation has long been studied by philosophers, but it has been used in
+the field of Artificial Intelligence as well. In AI it has mainly been studied
+in the fields of legal argumentation (AI \& Law), defeasible reasoning and
+multi-agent systems. One of the main pillars is non-monotonic logic. A logic is
+non-monotonic when a conclusion that follows based on the premises does not
+necessarily hold any more when additional premises are added
+\cite{vaneemeren2014}. A classic example of this is that birds can fly, so when
+you see a bird you assume that it can fly. However, when you're told that the
+bird is a penguin and that penguins can't fly then you will no longer conclude
+that the bird can fly. A argument is defeasible when it can be defeated by
+other arguments, in the previous example the fact that the bird that you see
+can fly is defeasible.
+
+Pollock distinguishes two different types of defeating arguments
+\cite{pollock1995}. \emph{Rebutting defeaters} attack an argument directly and
+give a reason for an opposite argument. \emph{Undercutting defeaters} do not
+attack an argument directly, instead they attack the relation between an
+argument and its support. The standard example given by Pollock is about an
+object that looks red: "The ball looks red to John" is a support for John to
+believe that the ball is red, but there may be a red light shining on the ball.
+This is a undercutting defeater because it does not attack the conclusion
+directly, instead it attacks the relation between the observation and the
+conclusion that the ball is red, after all, a white object with a red light
+shining on it will also look red.
+
+Other researchers have formulated additional forms of defeaters, but they can
+be distilled into three main forms \cite{vaneemeren2014}:
+\begin{description}
+	\item[Undermining defeaters] attack the premises or assumptions of an
+	argument.
+	\item[Undercutting defeaters] attack the connection between a set of
+	reasons and the conclusion in an argument.
+	\item[Rebutting defeaters] raise an argument in favour of an opposite
+	conclusion, thereby attacking an argument.
+\end{description}
+
+A model of argumentation that adds mathematical structure to arguments has been
+proposed in a highly influential paper by Dung \cite{dung1995}.
+%A formal model of argumentation that introduces a structure to ease the
+%computation of validity in arguments has been proposed in a highly influential
+%paper by Dung \cite{dung1995}.
+This work focused mainly on the argument attacks as a formal relation, giving
+the model the name of abstract argumentation. The main concept is the
+\emph{argumentation framework}, a directed graph in which the nodes form
+arguments and the edges between them represent one argument attacking another.
+An important concept that Dung introduced was that of admissibility of sets of
+arguments. A set of arguments is admissible when it is conflict free and
+acceptable. A set being conflict free means that no argument in the set attacks
+another argument in the set. Acceptability means that when an argument is
+attacked by another argument outside of the set, then the set attacks that
+argument. In other words the admissible set defends itself from attacking
+arguments. On top of this Dung formulated other semantics. The preferred
+extension is the set theoretically maximal admissible set, that is, it is the
+largest possible admissible set such that adding one argument from the
+argumentation framework would make it not admissible. There is also the stable
+extension, this is an admissible set that attacks all arguments that are not in
+the set.
+
+One important notion of an argumentation framework is that of the grounded
+extension. This extension is simple to compute by labelling the arguments in
+the argumentation framework as `justified' or `defeated':
+\begin{enumerate}
+	\item All unlabelled arguments $\alpha$ in the framework can be labelled as
+	`justified' if all arguments that attack $\alpha$ are labelled as
+	`defeated'. Note that when $\alpha$ is not attacked that it can then also
+	be labelled as `justified'.
+	\item All unlabelled arguments $\alpha$ in the framework that are attacked
+	by an argument that has been labelled `justified' is labelled as `defeated'.
+	\item Steps 1 and 2 are repeated until all arguments have been labelled.
+\end{enumerate}
+A finite argumentation framework is labelled in a finite amount of steps. All
+arguments that have been labelled as `justified' are included in the grounded
+extension. All arguments that have been labelled `defeated' are not included in
+the grounded extension.
+
 \subsubsection{Dialogues}
 Multiple agents can have an argument through a dialogue. Walton and
 Krabbe \cite{walton1995} proposed a typology of main dialogues that humans
@@ -247,12 +328,16 @@ One model of deliberation dialogues is presented in \cite{mcburney2007}. It
 consists of eight stages, starting with an \textbf{Open} stage and ending with
 a \textbf{Close} stage. The other stages can occur multiple times during a
 dialogue, as long as they occur following the rules of the dialogue game.
-During the dialogue agents will collect the
-preferences, goals and other constraints that need to be considered. Agents
-will then propose common plans of action, when multiple plans have been
-proposed agents can specify which they prefer. At some points an agent can
-recommend a plan after which all agents will vote for that plan. The dialogue
-requires unanimity before the recommended plan is adopted, but it allows for a
-voting mechanism to pick the most preferred plan among many. There are variants
-of this model that require fewer stages while still allowing for the same
-expressiveness \cite{dunin-keplicz2011}.
+During the dialogue agents will collect the preferences, goals and other
+constraints that need to be considered. Agents will then propose common plans
+of action, when multiple plans have been proposed agents can specify which they
+prefer. At some points an agent can recommend a plan after which all agents
+will vote for that plan. The dialogue requires unanimity before the recommended
+plan is adopted, but it allows for a voting mechanism to pick the most
+preferred plan among many. By gathering the requirements of all agents during
+the dialogue their local views combine into a single global view that can be
+used to create a plan. There are variants of this model that require fewer
+stages while still allowing for the same expressiveness
+\cite{dunin-keplicz2011}.
+
+\subsection{Partial global planning}

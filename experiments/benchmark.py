@@ -41,7 +41,6 @@ def standard_algorithm_entry(world, starts, goals, start_time, max_time):
 
 Algorithm = namedtuple('Algorithm', ['name', 'entry'])
 ALGORITHMS = [
-    Algorithm('Standard algorithm', standard_algorithm_entry),
     Algorithm('OD+ID', odid_entry),
     Algorithm('Naive', poc_entry),
     Algorithm('Base version', version1_entry),

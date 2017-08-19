@@ -1,13 +1,15 @@
 \section{Related Work}\label{sec:related}
+Computational argumentation has been used to construct a plan for an agent,
+this field of argumentation is known as \emph{practical reasoning}. It has
+also been used to make plans in a multi-agent system, allowing those agents to
+coordinate. A successful resolution to the cooperative pathfinding problem also
+requires that agents are able to coordinate. Argumentation has not yet been
+used to find solutions for cooperative pathfinding, but research in
+argumentation has been generic enough that it can be applied to a specific
+field as cooperative pathfinding. Relevant work in cooperative pathfinding,
+argumentation and coordination is discussed in this section.
 
 \subsection{Cooperative pathfinding}
-%Cooperative pathfinding is the field of study that aims to develop methods of
-%finding conflict free paths for groups of agents. Given a connected grid and a
-%group of $k$ agents with initial positions $s_1, \ldots, s_k$ and goal
-%positions $g_1, \ldots, g_k$, a set of paths is conflict free iff all agents
-%$a$ have a path from $s_a$ to $g_a$ without any two agents ever occupying
-%the same position at the same time, or moving along crossing edges at the same
-%time.
 In the grid world each agent can take one of $b+1$ actions, where $b$ is the
 current number of neighbouring cells, there is also a \textit{wait} action
 where an agent does not move. The naive approach to finding conflict free paths
@@ -31,30 +33,35 @@ processor, but can exploit the inherent parallelism in multi-agent systems to
 calculate the paths. There are also decentralized reactive methods that will
 only solve conflicts when they occur during plan execution.
 \autoref{tbl:planning-overview} shows an overview of several algorithms and
-summarises their properties, each algorithm is discussed in more detail below.
+summarises these properties, each algorithm is discussed in more detail below.
+Some other aspects of the algorithms are also discussed, among these is the
+communication range which may limit which agents are allowed to coordinate with
+each other. Some of the algorithms create a plan before executing it, while
+other algorithms interleave planning and execution. The latter category of
+algorithms allow agents to move even though there is not a full solution net,
+they are known as online algorithms.
 
-\begin{table}[t]
+\begin{table}[b]
     \centering
-    \caption{Comparison of cooperative pathfinding algorithms
-    \cite{silver2005,standley2010,standley2011,sharon2013,wei2016,cap2012}.
-    Communication
-        indicates what limit is imposed on which agents can communicate, `all'
-        means that there is no limit and agents can communicate with all others.
-        Online enumerates whether all movement actions for all agents are
-        determined before execution, some algorithms update the plan during
-        execution.}
+    \caption{Comparison of several cooperative pathfinding algorithms.
+    Communication indicates what limit is imposed on which agents can
+    communicate, `all' means that there is no limit and agents can communicate
+    with all others. Online enumerates whether all movement actions for all
+    agents are determined before execution, some algorithms update the plan
+    during execution.}
     \label{tbl:planning-overview}
     \begin{tabular}{l|l|l|l|l|l}
         \hline
-        Method & Category & Complete & Priority & Communication & Online \\
+        Method & Category & Complete & Priority & Comm. & Online \\
         \hline
-        WHCA* & Decoupled & No & Yes\footnotemark[1] & Window & Yes \\
-        OD+ID & Centralised & Yes & No & All & No \\
-        ICTS & Centralised & Yes & No & All & No \\
-        DMRCP & Decentralised & No & No & 2 node radius &
-        Yes \\
-        ADPP & Decoupled & No & Yes & All & No \\
-        ORCA & Decentralised & No & No & None & Yes \\
+        OD+ID \cite{standley2010,standley2011} & Centralized & Yes & No & All &
+        No \\
+        ICTS \cite{sharon2013} & Centralized & Yes & No & All & No \\
+        ADPP \cite{cap2012} & Decoupled & No & Yes & All & No \\
+        WHCA* \cite{silver2005} & Decoupled & No & Yes\footnotemark[1] & Window
+        & Yes \\
+		DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
+        ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
         %Proposed & Decentralized & No & Partial & All & Before
     \end{tabular}
 \end{table}
@@ -79,7 +86,8 @@ always find a solution if one exists, and it will find the best solution.
 
 On its own OD is not always very efficient, so an additional algorithm called
 Independence Detection (ID) was introduced \cite{standley2010}. Before planning
-takes place all agents are placed in their own group. Each group then makes a
+$k$ groups are created, one for each agent, each agent is then placed in its
+respective group. Each group then makes a
 plan, when the paths for two groups conflict then one group is tasked with
 finding a new conflict free path. If this also fails then the groups are merged
 and a new plan is formed for the group using OD. This is repeated until a
@@ -163,26 +171,37 @@ agents from entering the same space at the same time. It requires that agents
 have been assigned a priority ordering in which they plan so that they can take
 each other's reservations into account. The amount of computation required
 depends on the quality of the heuristic used during A* planning. Hierarchical
-A* is an abstraction of the search space used to obtain perfect distance
-estimates. The reservation table and time dimension are ignored for this so
-that agents can find the minimum distance to their destination. The search by
+Cooperative A* (HCA*) uses an abstraction of the search space to obtain perfect
+distance estimates. The reservation table and time dimension are ignored for
+this abstract space so that the heuristic distance is the same as an agent's
+optimal path. Agents still use the reservation table to find the conflict free
+paths.
+The search by
 the above algorithm is windowed so that the reservation table is only used in
-the window and the rest of the path is planned in the abstract space,
+the window and the rest of the path is planned using the same abstract space as
+HCA*,
 effectively ignoring the other agent's actions outside of the window. The
 window is moved at regular intervals and the agent's plan is updated. Because
 of this the agents have no fixed priority, it varies based on the current
 window. Computation is spread out over the time it takes for agents to get to
 their destination, so there is no need to calculate all paths before execution,
 they are instead updated during execution. Another issue that is solved is that
-agents would reach their goal position and stay there, potentially blocking the
-paths of other agents. The window limits the size of the reservation table the
-agents have to take into account, limiting the
-communication between agents to the size of the window.
+agents would reach their goal position, stay there and stop cooperating. This
+can potentially block the paths of other agents.
+
+The window of WHCA* limits the size of the reservation table the agents have to
+take into account, limiting the communication range between agents to the size
+of the window. This is in contrast to the other algorithms described above,
+they all have an unlimited communication range. This means that those
+algorithms allow (and often require) all agents to communicate with each other
+to find a solution to the problem. Centralised algorithms use a single
+processor to find the solution, this means that all agents indirectly
+communicate with each other through the central processor.
 
 One model of truly decentralized cooperative pathfinding called DMRCP has been
-proposed by
-\cite{wei2016}. Agents move towards their destination and only communicate with
-each other in a two graph node radius. They can give each other commands like
+proposed by \cite{wei2016}. Agents move towards their destination and only
+communicate with other agents that are at most two graph nodes away. They can
+give each other commands like
 move out of the way, follow me, wait etc. Agents are altruistic which means
 that they are willing to make concessions during conflicts even if that means
 that they will be at a disadvantage. Agents use various strategies to deal with

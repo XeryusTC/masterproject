@@ -1,11 +1,11 @@
 \section{Problem formulation}\label{sec:problem}
-A shares space is divided into discrete cells such that it forms an 8-connected
+A shared space is divided into discrete cells such that it forms an 8-connected
 grid. Some of the cells in this grid are static obstacles while the other cells
-are open. A set of $k$ with respective initial positions $a_1, \ldots, a_k$ and
-goal positions $g_1, \ldots, g_k$ need to find paths such that no two agents
-have a conflict. A path consists of a series of moves, which can either be to
-move to one of the neighbouring cells or \emph{wait} at the current location.
-Each time step an agent can take exactly one of these actions.
+are open. A set of $k$ agents with respective initial positions $a_1, \ldots,
+a_k$ and goal positions $g_1, \ldots, g_k$ need to find paths such that no two
+agents have a conflict. A path consists of a series of moves, which can either
+be to move to one of the neighbouring cells or \emph{wait} at the current
+location. Each time step an agent can take exactly one of these actions.
 %A shared space is divided into discrete cells such that it forms a regular
 %grid. Some of these cells can be occupied by an obstacle while the other cells
 %are open. A set of $k$ agents are located on the open cells of this grid, each
@@ -23,7 +23,7 @@ agents move along
 crossing edges. Obstacle cells can be considered as stationary agents. Agents
 are allowed to move along a diagonal even when the two cells on the opposing
 diagonal are blocked, i.e. agent 5 in \autoref{fig:world} can move to its
-destination in a single time step. An agent $a_i$ can move a cell occupied by
+destination in a single time step. An agent $a_i$ can move to a cell occupied by
 agent $a_j$ given that $a_j$ will move to a different cell at the same time.
 Agents 1--4 in \autoref{fig:world} can move their respective destinations
 by ``rotating'' clockwise. They can do this in a single time step without

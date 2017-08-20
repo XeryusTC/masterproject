@@ -21,7 +21,6 @@ the problem quickly becomes intractable even with efficient search algorithms
 like A* \cite{sharon2013}.
 
 There are a few common strategies that are used to tackle this problem.
-%There are a few categories that methods tackling this problem fall into.
 Centralised methods use one single processor to calculate the paths for all
 agents. They are often complete, they will find a solution to the problem if
 one exists. This also means that they are slow. An alternative strategy is to
@@ -32,6 +31,7 @@ completeness for speed. They often calculate the priorities at a central
 processor, but can exploit the inherent parallelism in multi-agent systems to
 calculate the paths. There are also decentralized reactive methods that will
 only solve conflicts when they occur during plan execution.
+
 \autoref{tbl:planning-overview} shows an overview of several algorithms and
 summarises these properties, each algorithm is discussed in more detail below.
 Some other aspects of the algorithms are also discussed, among these is the
@@ -43,12 +43,7 @@ they are known as online algorithms.
 
 \begin{table}[b]
     \centering
-    \caption{Comparison of several cooperative pathfinding algorithms.
-    Communication indicates what limit is imposed on which agents can
-    communicate, `all' means that there is no limit and agents can communicate
-    with all others. Online enumerates whether all movement actions for all
-    agents are determined before execution, some algorithms update the plan
-    during execution.}
+    \caption{Comparison of several cooperative pathfinding algorithms.}
     \label{tbl:planning-overview}
     \begin{tabular}{l|l|l|l|l|l}
         \hline
@@ -58,20 +53,18 @@ they are known as online algorithms.
         No \\
         ICTS \cite{sharon2013} & Centralized & Yes & No & All & No \\
         ADPP \cite{cap2012} & Decoupled & No & Yes & All & No \\
-        WHCA* \cite{silver2005} & Decoupled & No & Yes\footnotemark[1] & Window
+        WHCA* \cite{silver2005} & Decoupled & No & Yes & Window
         & Yes \\
 		DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
         ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
         %Proposed & Decentralized & No & Partial & All & Before
     \end{tabular}
 \end{table}
-\footnotetext[1]{Although WHCA* does give agents a priority, the assigned
-    priorities can vary between windows.}
 
 One centralized method called Operator Decomposition (OD) deals with the
-intractability of
-the problem is by considering the possible moves of each agent on their own
-\cite{standley2010,standley2011}. Instead of taking the Cartesian product of
+intractability of the problem by considering the possible moves of each agent
+separately \cite{standley2010,standley2011}. Instead of taking the Cartesian
+product of
 the agents' state spaces it assigns actions to agents individually. This leads
 to two different kind of states: in standard states no agent has been assigned
 an action; in intermediate states some of the agents have been assigned an
@@ -125,7 +118,7 @@ is high.
 %solution, so the algorithms are also optimal. Centralized methods take the
 %state spaces of all agents into account simultaneously to
 
-The above algorithms all fall into the centralized category of solutions, these
+The above algorithms both fall into the centralized category of solutions, these
 can become very slow because of the state-space explosion. Decoupled methods
 reduce the required calculation time by considering each agent separately. They
 generally use the same three step approach;

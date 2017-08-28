@@ -232,7 +232,13 @@ algorithm can handle hundreds or even thousands of agents in real-time. ORCA
 also fits quite well with human behaviour and is used in crowd simulations.
 
 \subsection{Argumentation}
-Argumentation has long been studied by philosophers, but it has been used in
+Cooperative pathfinding can be seen as an instance of a resource sharing
+problem. From this perspective a conflict occurs when two agents try to access
+the same resource at the same time. One way of dealing with this resource
+sharing conflict is by constructing an argument with the goal of determining
+which agent gets to access the resource at what time. Argumentation has long
+been studied by philosophers, but in recent decades it has also been
+extensively researched in
 the field of Artificial Intelligence as well. In AI it has mainly been studied
 in the fields of legal argumentation (AI \& Law), defeasible reasoning and
 multi-agent systems. One of the main pillars is non-monotonic logic. A logic is
@@ -371,4 +377,38 @@ used to create a plan. There are variants of this model that require fewer
 stages while still allowing for the same expressiveness
 \cite{dunin-keplicz2011}.
 
-\subsection{Partial global planning}
+\subsection{Coordination}
+Argumentation can be used to allow coordination between agents by letting them
+deliberate in a dialogue. Cooperative pathfinding is a particular instance of a
+coordination problem. Before combining the two we can consider the
+argumentative method of building plans for a single agent that was introduced
+by Pollock \cite{pollock1995}. An agent starts out by  making a global plan
+consisting only of coarse steps. This saves computation time and it defers
+planning specific actions to a later time when more information about the
+problem is available. When the agent reaches a step in a plan that is not
+concrete enough yet it will start constructing a sub-plan for that step, it may
+also do this when another planning process depends on it. This is done in
+multiple levels leading to a hierarchical plan, the lowest level consists of
+basic actions that are inherent in the agent (like lifting an arm). At the same
+time the agent also keeps track of whether it is still possible to execute the
+future steps in the plan. The agent will have to adapt its plans once it
+notices that the remainder of the plan is not executable any more for any
+reason. This allows an agent to adapt to a changing environment and changing
+desires. Although this design focusses on planning actions for a single agent
+it can easily be extended to planning for groups of agents.
+
+Coordination in a multi-agent system can be done through partial global
+planning \cite[pp. 202--204]{woodridge2009}, \cite{durfee1991}. The goal is to
+let agents cooperate without any one of them formulating a global plan, instead
+agents will coordinate with other agents only when they need to. This leads to
+the construction of many small local plans, which can be communicated to other
+agents as well. This means that eventually there will be a global plan that
+covers all agents, but the agents themselves will only know a part of the
+global plan. The global plan is implied by these partial global plans. Key to
+partial global planning is that no agent needs to know the global plan, it only
+needs to know which parts of the plan it is affected by. This approach is
+similar to that of decoupled cooperative pathfinding because they use a similar
+planning structure. Partial global planning starts out with letting each agent
+make their individual goals, next agents communicate information on where plans
+interact, finally they will alter their plans such that their actions are
+better coordinated and there are no negative influences.

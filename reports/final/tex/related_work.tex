@@ -1,18 +1,23 @@
 \section{Related Work}\label{sec:related}
-Computational argumentation has been used to construct a plan for an agent,
-this field of argumentation is known as \emph{practical reasoning}. It has
-also been used to make plans in a multi-agent system, allowing those agents to
-coordinate. A successful resolution to the cooperative pathfinding problem also
-requires that agents are able to coordinate. Argumentation has not yet been
-used to find solutions for cooperative pathfinding, but research in
-argumentation has been generic enough that it can be applied to a specific
-field as cooperative pathfinding. Relevant work in cooperative pathfinding,
-argumentation and coordination is discussed in this section.
+The following sections discuss previous work into cooperative pathfinding,
+argumentation and coordination. The cooperative pathfinding problem requires
+that agents are able to coordinate their movement, several different approaches
+that achieve this will be discussed below. Computational argumentation has been
+used to construct a plan for an agent, this field of argumentation is known as
+\emph{practical reasoning}. It can also be used to make plans in a multi-agent
+system, allowing the agents in such a system to coordinate. Argumentation has
+not yet been used to find solutions for cooperative pathfinding, but research
+in argumentation has been generic enough that it can be applied to a specific
+field such as cooperative pathfinding. Work in coordination is also discussed
+to help bridge the gap between argumentation and cooperative pathfinding.
 
 \subsection{Cooperative pathfinding}
-In the grid world each agent can take one of $b+1$ actions, where $b$ is the
+In the grid world of \autoref{fig:world} each agent can take one of $b+1$
+actions, where $b$ is the
 current number of neighbouring cells, there is also a \textit{wait} action
-where an agent does not move. The naive approach to finding conflict free paths
+where an agent does not move. All cells that are adjecent to the agents current
+cell are considered to be neighbouring, this include cells that can be reached
+by moving diagonally. The naive approach to finding conflict free paths
 takes the Cartesian product of all $k$ state spaces and searches the new
 combined state space with an algorithm like A*, this is also known as the
 Standard Algorithm \cite{standley2010}. This results in a branching factor of

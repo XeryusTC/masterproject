@@ -301,6 +301,12 @@ def window_version(agents, window, start_time, max_time, visualize=False):
             conflicts = [c for c in util.paths_conflict(paths)
                          if c['time'] < window]
 
+        if visualize:
+            print('Exporting after conflict solved conflicts')
+            im = vis.draw_paths_with_conflicts(paths, conflicts)
+            im.save(f'conflict_{count:05}.png')
+            count += 1
+
         # Simulate the next window (advance agents window/2 steps)
         print("Moving agents along their paths")
         paths = []

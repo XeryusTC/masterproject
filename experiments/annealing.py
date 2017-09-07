@@ -36,14 +36,14 @@ def eval_weights(weights, num_problems, max_agents):
             for agent in agents:
                 agent.plan(start_time=start_time, max_time=MAX_TIME)
                 optimal[-1] += len(agent.path)
-        except (odid.TimeExceeded, rra_star.NoValidPathExists):
+        except (odid.TimeExceeded, rra_star.NoValidPathExists, util.NoPathsFoundException):
             actual.append(float('inf'))
             continue
         # Do the actual cooperative planning
         try:
             paths = version1.version1(agents, start_time, MAX_TIME, False)
             actual.append(sum(len(path) for path in paths))
-        except (odid.TimeExceeded, rra_star.NoValidPathExists):
+        except (odid.TimeExceeded, rra_star.NoValidPathExists, util.NoPathsFoundException):
             actual.append(float('inf'))
 
     diff = [res[1] - res[0] for res in zip(optimal, actual)

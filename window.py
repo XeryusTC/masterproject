@@ -314,10 +314,9 @@ def window_version(agents, window, start_time, max_time, visualize=False):
             agent = agents[i]
             try:
                 new_start = agent.path[int(window / 2)]
-                actual_paths[i] += agent.path[:int(window / 2)]
             except IndexError:
                 new_start = agent.path[-1]
-                actual_paths[i] += agent.path[:-1]
+            actual_paths[i] += agent.path[:int(window / 2)]
             agents[i] = Agent(agent.world, new_start, agent.goal, agent.window,
                               agent.weights, agent.caching)
             agents[i].plan(start_time, max_time)

@@ -110,31 +110,43 @@ class Agent:
             time = timeit.default_timer()
             if start_time != None and (time - start_time) > max_time:
                 raise TimeExceeded()
+
             _, time_step, cur = heapq.heappop(open_set)
-            if cur == self.goal:
+            if time_step > self.window:
                 return self._reverse_path((time_step, cur), came_from)
 
             closed_set.add(cur)
             for successor in self._successors(cur, time_step, start_time,
                                               max_time):
                 # Skip successor in closed list
-                if successor in closed_set and successor != cur:
+                if successor in closed_set and successor != cur \
+                        and successor != self.goal:
                     continue
 
-                score = g[cur] + 1
+                if cur == self.goal and successor == self.goal:
+                    score = g[cur]
+                elif time_step == self.window:
+                    score = g[cur] + self.h.dist(successor)
+                else:
+                    score = g[cur] + 1
                 # Ignore a path if it is a longer variant
                 if successor in g and score >= g[successor] \
-                        and successor != cur:
+                        and successor != cur and successor != self.goal:
                     continue
+
                 came_from[time_step + 1, successor] = (time_step, cur)
                 g[successor] = score
-                heapq.heappush(open_set,
-                               (score + self.h.dist(successor), time_step + 1,
-                                successor))
+                if time_step == self.window:
+                    heapq.heappush(open_set, (score, time_step + 1, successor))
+                else:
+                    heapq.heappush(open_set,
+                                   (score + self.h.dist(successor),
+                                    time_step + 1, successor))
+
         raise util.NoPathsFoundException()
 
     def _successors(self, pos, time, start_time, max_time):
-        successors = [pos] + self.world.neighbours(pos)
+        successors = self.world.neighbours(pos) + [pos]
         filtered = []
         for successor in successors:
             for other_agent in self.higher_prio:
@@ -323,9 +335,13 @@ def window_version(agents, window, start_time, max_time, visualize=False):
         paths = [agent.path for agent in agents]
         conflicts = [c for c in util.paths_conflict(paths)
                      if c['time'] < window]
-        pprint(paths)
         simulation_finished = all(agent.start == agent.goal
                                   for agent in agents)
+        # If the simulation is finished we need to add the final positions to
+        # the complete path
+        if simulation_finished:
+            for i in range(len(agents)):
+                actual_paths[i].append(agents[i].path[-1])
         print() # Just a new line to break up iterations
 
     # Final visualisation
@@ -368,6 +384,11 @@ def main(num_agents, window):
     print('Making visualisation')
     vis = visualisation.Visualisation(world, num_agents, scale=20)
     vis.draw_paths('window_version.mkv', paths)
+
+    return
+    # Print if agents ended up in their original goal
+    for i in range(num_agents):
+        print(f'{i:2}: ({starts[i][0]:2}, {starts[i][1]:2})   ({goals[i][0]:2}, {goals[i][1]:2})   {paths[i][-1]} {goals[i] == paths[i][-1]}')
 
 if __name__ == '__main__':
     try:

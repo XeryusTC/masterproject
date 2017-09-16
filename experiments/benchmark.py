@@ -70,24 +70,29 @@ def main(runs, max_agents):
     line = []
     f = open(f'results/benchmark-{datetime.now()}.csv', 'w')
     writer = csv.writer(f)
-    result = ['instance', 'optimal length']
+    result = ['instance', 'num agents', 'optimal length', 'optimal makespan']
     for algorithm in ALGORITHMS:
-        result += [algorithm.name, f'{algorithm.name}_length']
+        result += [algorithm.name, f'{algorithm.name}_length',
+                   f'{algorithm.name}_makespan']
     writer.writerow(result)
 
     global_start_time = timeit.default_timer()
     for problem in problems:
-        print('Determining optimal lengths')
+        print(f"Problem has {len(problem[1])} agents")
         optimal_length = 0
+        optimal_makespan = 0
         try:
             for i in range(len(problem[1])):
                 dist = rra_star.RRAstar(problem[0], problem[1][i],
                                         problem[2][i])
                 optimal_length += dist.dist(problem[1][i])
+                if dist.dist(problem[1][i]) > optimal_makespan:
+                    optimal_makespan = dist.dist(problem[1][i])
         except rra_star.NoValidPathExists:
             optimal_length = 'NA'
+            makespan = 'NA'
 
-        result = [instance, optimal_length]
+        result = [instance, len(problem[1]), optimal_length, optimal_makespan]
         for algorithm in ALGORITHMS:
             start_time = timeit.default_timer()
             try:
@@ -95,17 +100,18 @@ def main(runs, max_agents):
                                         start_time=start_time,
                                         max_time=MAX_TIME, **algorithm.kwargs)
                 length = sum(len(p) for p in paths)
+                makespan = max(len(p) for p in paths)
                 end_time = timeit.default_timer()
-                result += [end_time - start_time, length]
+                result += [end_time - start_time, length, makespan]
             except odid.TimeExceeded:
                 print('Time exceeded')
-                result += ['NA', 'NA']
+                result += ['NA', 'NA', 'NA']
             except (rra_star.NoValidPathExists, util.NoPathsFoundException):
                 print('No valid path exists')
-                result += ['NA', 'NA']
+                result += ['NA', 'NA', 'NA']
             except version1b.ConflictNotSolved:
                 print('Could not find a solution to a conflict')
-                result += ['NA', 'NA']
+                result += ['NA', 'NA', 'NA']
             finally:
                 end_time = timeit.default_timer()
                 print(algorithm.name, 'time:',

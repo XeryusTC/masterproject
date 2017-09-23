@@ -77,6 +77,15 @@ used to remove some of the abstractness of cooperative pathfinding solutions by
 giving reasons why this course of action was arrived at.
 
 %TODO: describe how to combine these three views
+Dialogues can be used in cooperative pathfinding by applying techniques from
+partial global planning. When agents have a conflict then they need to
+coordinate, they can do so by starting a dialogue. In this dialogue they can
+offer different hypotheses to solve the conflict. The hypotheses offered will
+be discussed in the dialogue and the best one (according to various criteria)
+will be picked. All agents involved in the dialogue adapt their plans so that
+they are better coordinated. This means that there are small local changes to
+agent's plans, with the result of a global solution to the cooperative
+pathfinding problem.
 
 The rest of this thesis is structured as follows. First, a formal description
 of the cooperative pathfinding problem is given in \autoref{sec:problem}.

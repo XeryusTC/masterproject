@@ -11,6 +11,26 @@ in argumentation has been generic enough that it can be applied to a specific
 field such as cooperative pathfinding. Work in coordination is also discussed
 to help bridge the gap between argumentation and cooperative pathfinding.
 
+\begin{table}[b]
+    \centering
+    \caption{Comparison of several cooperative pathfinding algorithms.}
+    \label{tbl:planning-overview}
+    \begin{tabular}{l|l|l|l|l|l}
+        \hline
+        Method & Category & Complete & Priority & Comm. & Online \\
+        \hline
+        OD+ID \cite{standley2010,standley2011} & Centralized & Yes & No & All &
+        No \\
+        ICTS \cite{sharon2013} & Centralized & Yes & No & All & No \\
+        ADPP \cite{cap2012} & Decoupled & No & Yes & All & No \\
+        WHCA* \cite{silver2005} & Decoupled & No & Yes & Window
+        & Yes \\
+		DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
+        ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
+        %Proposed & Decentralized & No & Partial & All & Before
+    \end{tabular}
+\end{table}
+
 \subsection{Cooperative pathfinding}
 In the grid world of \autoref{fig:world} each agent can take one of $b+1$
 actions, where $b$ is the
@@ -45,26 +65,6 @@ each other. Some of the algorithms create a plan before executing it, while
 other algorithms interleave planning and execution. The latter category of
 algorithms allow agents to move even though there is not a full solution net,
 they are known as online algorithms.
-
-\begin{table}[b]
-    \centering
-    \caption{Comparison of several cooperative pathfinding algorithms.}
-    \label{tbl:planning-overview}
-    \begin{tabular}{l|l|l|l|l|l}
-        \hline
-        Method & Category & Complete & Priority & Comm. & Online \\
-        \hline
-        OD+ID \cite{standley2010,standley2011} & Centralized & Yes & No & All &
-        No \\
-        ICTS \cite{sharon2013} & Centralized & Yes & No & All & No \\
-        ADPP \cite{cap2012} & Decoupled & No & Yes & All & No \\
-        WHCA* \cite{silver2005} & Decoupled & No & Yes & Window
-        & Yes \\
-		DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
-        ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
-        %Proposed & Decentralized & No & Partial & All & Before
-    \end{tabular}
-\end{table}
 
 One centralized method called Operator Decomposition (OD) deals with the
 intractability of the problem by considering the possible moves of each agent

@@ -61,7 +61,7 @@ def main(runs, max_agents):
     # Generate problems
     problems = []
     while len(problems) < runs:
-        for i in range(2, max_agents):
+        for i in range(2, max_agents + 1):
             problems.append(util.generate_problem(i, 16, 16, OBSTACLES))
             if len(problems) == runs:
                 break

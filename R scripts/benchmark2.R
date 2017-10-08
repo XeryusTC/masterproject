@@ -14,14 +14,17 @@ window2 = sort(dat$Window.2 * 1000)
 window4 = sort(dat$Window.4 * 1000)
 window8 = sort(dat$Window.8 * 1000)
 
-plot(seq(length(od)), od,
+plot(c(), c(),
 	 type='l',
 	 log='y',
 	 col='red',
 	 xlim=c(1,len),
-	 ylim=c(3, 2000),
+	 ylim=c(5, 2000),
 	 xlab='Instance',
-	 ylab='Time (ms)')
+	 ylab='Time (ms)',
+	 frame.plot=F
+)
+lines(seq(length(od)), od, col='red')
 lines(seq(length(naive)), naive, col='blue')
 lines(seq(length(base)),  base,  col='green')
 lines(seq(length(baseb)), baseb, col='grey')

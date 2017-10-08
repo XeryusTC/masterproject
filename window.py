@@ -349,8 +349,11 @@ def window_version(agents, window, start_time, max_time, visualize=False):
     # Remove waiting until the end of the window from the end of the paths
     print('before:', sum(len(p) for p in actual_paths))
     for i in range(len(agents)):
-        while actual_paths[i][-1] == actual_paths[i][-2]:
-            actual_paths[i] = actual_paths[i][:-1]
+        try:
+            while actual_paths[i][-1] == actual_paths[i][-2]:
+                actual_paths[i] = actual_paths[i][:-1]
+        except IndexError:
+            pass
     print('after:', sum(len(p) for p in actual_paths))
 
     # Final visualisation

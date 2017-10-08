@@ -1,2 +1,39 @@
-\section{Experimental results}\label{sec:results}
+\section{Experimental evaluation}\label{sec:results}
 % TODO: investigate run time vs number of conflicts found
+
+The three proposed algorithms are tested and compared against the complete
+algorithm OD+ID.
+
+\subsection{Experimental setup}
+To compare the algorithms they are all given a large set of cooperative
+pathfinding problems that have be to solve. Each problem consists of a $16
+\times 16$ 8-connected grid. Each grid location has a $20\%$ chance of being an
+impassable obstacle. Agents cannot enter these grid locations, but the
+obstacles do not block agents from moving along diagonals as specified in
+\autoref{sec:problem}. Agents are randomly placed in the grid such that no two
+agents have the same starting position, each agent is also given a randomly
+chosen destination location, again these are chosen in such a way that no two
+agents have the same destination. There are $10000$ problems in the set, each
+of which has between 2 and \agentsupb agents in it. The number of agents in the
+problems form a uniform distribution.
+
+% TODO: add reference to performance graph origin
+Each algorithm solves each instance in the set of problems, the time it takes
+to do this is recorded. There is a time limit of 2000 ms to solve a single
+instance. When the run times are sorted in ascending order they can be plotted
+in a \emph{performance graph} as in \autoref{fig:perfgraph}. The $x$-axis shown
+the number of the sorted instance while the $y$-axis shows the time it takes an
+algorithm to solve that instance. Because the instances are sorted it is not
+necessarily the case that the $n$th instance for one algorithm is the same as
+for a different algorithm. The graph gives several pieces of information. The
+first is a comparison of run times for the different algorithms, a lower line
+means that an algorithm was able to solve problem instances quicker. At the
+same time the graph also shows how many instances an algorithm can solve within
+the 2000 ms time limit. Instances that were not solved are not included in the
+graph, so where the graph crosses the top indicates how many of the problems
+were solved by the algorithm.
+
+%The time it takes each algorithm to solve a problem is recorded
+
+%Each algorithm solves every problem in the set of problems, . The time it
+%takes to do this is recorded. When

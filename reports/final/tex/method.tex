@@ -3,7 +3,8 @@ Decoupled algorithms are able to solve cooperative pathfinding problems while
 requiring only minimal resources. Unfortunately they have a single bottleneck,
 the calculation of the priority scheme. In a distributed multi-agent system all
 agents will have to halt calculating a solution while the priority scheme is
-calculated in a centralized fashion. To overcome this the calculation of the
+determined in a centralized fashion. To overcome this bottleneck the
+calculation of the
 priority ordering can also become distributed. The base decoupled method can be
 altered to allow for this, the first step where each agent plans its optimal
 path without regard for the other agents remains the same. Next agents share
@@ -12,22 +13,23 @@ have conflicting moves that would lead to a collision. The agents will then be
 able to solve the conflicts without having to wait for slower agents to
 calculate and communicate their optimal paths. To solve conflicts agents will
 enter a dialogue where possible solutions are proposed, evaluated and adapted.
-Agents will only need to solve their first conflict because solving it may have
-the side-effect of solving later conflicts. The proposals made consist of a
-priority order for the agents involved in the conflict. After a conflict has
-been solved then the agents involved can work on solving the next conflict.
-Below are three different versions of this algorithm.
+The proposals made consist of a priority order for the agents involved in the
+conflict. Agents will only need to solve the first conflict that occurs in
+their path because solving it may have the side-effect of solving later
+conflicts. After a conflict has been successfully solved then the agents
+involved can work on solving the next conflict.
+Below are the details of three different versions of this algorithm.
 
 \subsection{Naive version}
 The simplest approach to resolving the conflicts is by creating all possible
 ordering permutations for the agents involved in the conflict. The permutation
 that has the lowest sum path length is used as the solution for the conflict.
+This simple method of evaluating the various solutions is unlikely to find the
+most appropriate one because it is not able to predict the consequences of
+selecting one solution over the others.
 Most conflicts involve just two agents, so there are only two possible ordering
 permutations which means that the amount of permutations that need to be
-evaluated is low. It may be the case that the existence of a solution for a
-particular conflict is dependent on the solution to a prior conflict. In this
-case the naive method can not change the ordering of the earlier conflict,
-making it impossible to resolve the latter conflict.
+evaluated is low.
 
 \subsection{Base version}
 Going through all possible permutations and evaluating them is not the most
@@ -48,7 +50,8 @@ The third stage is the evaluation stage which is entered when all agents have
 made a proposal or declined to make one. Each of the new proposals will be
 evaluated in turn. During the evaluation of a proposal each agent has to update
 their plan, the restrictions imposed by the ordering of the proposal should be
-respected, as well as the restrictions imposed by solved conflicts. Once an
+respected, as well as the restrictions imposed by previously solved conflicts.
+Once an
 agent is done with updating its plan then it will cast a vote based on how
 suitable the proposal is. All votes are collected and the best proposal is
 used as the solution. It is also possible that an agent was blocked from
@@ -99,34 +102,3 @@ destination do not have to update their plan. When there would be no window all
 agents would have to recalculate and solve all conflicts again, even if they
 would not need to update their plan, leading to a lot of wasted computational
 resources.
-%The algorithm requires agents to resolve all conflicts before executing the
-%plan, requiring that all the work is done up front. It is also possible to
-%limit by only resolving those conflicts that happen within a certain time
-%window. Any conflicts outside of the window are ignored until the agent has
-%moved closer. During most of the execution there is only a partial solution
-%available to the cooperative pathfinding problem, but this partial solution is
-%continuously updated until a full solution is found.
-
-%Greater efficiency can be achieved by windowing the conflict resolution.
-%Instead of calculating entire paths and resolving all conflicts over their
-%entire length, the conflict resolution can be limited to a maximum distance
-%from the agent's position. Conflicts that are further away are deemed to be
-%outside of the window and no solution for them is discussed until the agent has
-%moved closer. This way only a partial solution to the cooperative pathfinding
-%problem is found and executed, but this happens repeatedly until the entire
-%problem is solved. The window is shifted when the agent is part-way through the
-%route, this means that any conflicts that are now in the window will have to be
-%resolved. Note that the pathfinding algorithm is not stopped at the border of
-%the window, from this point on the agents simply do not discuss the conflicts
-%and they are free to ignore them. This is done so that agents will always move
-%in the correct direction.
-%
-%Using a window to limit the number of conflicts that need to be resolved has
-%the effect of spreading out the calculation. Only a small amount of computation
-%needs to be done up front while the remainder is deferred until later. The
-%result of this is that the computation is spread over the time it would take to
-%execute a solution. Computational effort is also decreased by virtue of the
-%paths being shorter. Because agents will have moved before the next set of
-%conflicts will be solved they have moved closer to their goal. This means that
-%the depth of the search is not as large and less computation is required to
-%find conflict free paths for the new window.

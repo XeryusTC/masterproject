@@ -89,7 +89,9 @@ class Agent:
             raise ConflictNotSolved()
         score = 0
         # Change in path length
-        score += (len(self.old_path) - len(self.path)) * self.weights.path_len
+        #score += (len(self.old_path) - len(self.path)) * self.weights.path_len
+        score += (self.h.dist(self.old_path[-1]) - self.h.dist(self.path[-1]))\
+                 * self.weights.path_len
         # Change in conflicts
         filtered = list(filter(lambda c: self in c.agents, conflicts.values()))
         print(f'{self} {len(self.conflicts)} {len(filtered)}')
@@ -112,7 +114,7 @@ class Agent:
                 raise TimeExceeded()
 
             _, time_step, cur = heapq.heappop(open_set)
-            if time_step > self.window:
+            if time_step == self.window:
                 return self._reverse_path((time_step, cur), came_from)
 
             closed_set.add(cur)
@@ -125,7 +127,7 @@ class Agent:
 
                 if cur == self.goal and successor == self.goal:
                     score = g[cur]
-                elif time_step == self.window:
+                elif time_step == (self.window - 1):
                     score = g[cur] + self.h.dist(successor)
                 else:
                     score = g[cur] + 1
@@ -136,7 +138,7 @@ class Agent:
 
                 came_from[time_step + 1, successor] = (time_step, cur)
                 g[successor] = score
-                if time_step == self.window:
+                if time_step == (self.window - 1):
                     heapq.heappush(open_set, (score, time_step + 1, successor))
                 else:
                     heapq.heappush(open_set,
@@ -343,6 +345,13 @@ def window_version(agents, window, start_time, max_time, visualize=False):
             for i in range(len(agents)):
                 actual_paths[i].append(agents[i].path[-1])
         print() # Just a new line to break up iterations
+
+    # Remove waiting until the end of the window from the end of the paths
+    print('before:', sum(len(p) for p in actual_paths))
+    for i in range(len(agents)):
+        while actual_paths[i][-1] == actual_paths[i][-2]:
+            actual_paths[i] = actual_paths[i][:-1]
+    print('after:', sum(len(p) for p in actual_paths))
 
     # Final visualisation
     if visualize:

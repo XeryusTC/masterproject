@@ -26,13 +26,13 @@ def poc_entry(world, starts, goals, start_time, max_time):
               for i in range(len(starts))]
     return poc.poc(agents, start_time, max_time)
 
-def version1_entry(world, starts, goals, start_time, max_time):
-    agents = [version1.Agent(world, starts[i], goals[i])
+def version1_entry(world, starts, goals, start_time, max_time, weights):
+    agents = [version1.Agent(world, starts[i], goals[i], weights=weights)
               for i in range(len(starts))]
     return version1.version1(agents, start_time, max_time, False)
 
-def version1b_entry(world, starts, goals, start_time, max_time):
-    agents = [version1b.Agent(world, starts[i], goals[i])
+def version1b_entry(world, starts, goals, start_time, max_time, weights):
+    agents = [version1b.Agent(world, starts[i], goals[i], weights=weights)
               for i in range(len(starts))]
     return version1b.version1(agents, start_time, max_time, False)
 
@@ -40,21 +40,30 @@ def standard_algorithm_entry(world, starts, goals, start_time, max_time):
     return standard_algorithm.standard_algorithm(len(starts), world, starts,
                                                  goals, start_time, max_time)
 
-def window_entry(world, starts, goals, start_time, max_time, window_size):
-    agents = [window.Agent(world, starts[i], goals[i], window_size)
+def window_entry(world, starts, goals, start_time, max_time, window_size,
+                 weights):
+    agents = [window.Agent(world, starts[i], goals[i], window_size, weights)
               for i in range(len(starts))]
     return window.window_version(agents, window_size, start_time, max_time,
                                  False)
+
+Weights = namedtuple('Weights',
+                     ['path_len', 'conflict_count', 'partial_solved'])
 
 Algorithm = namedtuple('Algorithm', ['name', 'entry', 'kwargs'])
 ALGORITHMS = [
     Algorithm('OD+ID', odid_entry, {}),
     Algorithm('Naive', poc_entry, {}),
-    Algorithm('Base version', version1_entry, {}),
-    Algorithm('Version 1b', version1b_entry, {}),
-    Algorithm('Window 8', window_entry, {'window_size': 8}),
-    Algorithm('Window 4', window_entry, {'window_size': 4}),
-    Algorithm('Window 2', window_entry, {'window_size': 2}),
+    Algorithm('Base version', version1_entry,
+              {'weights': Weights(4.743788, 5.290992, 1)}),
+    Algorithm('Version 1b', version1b_entry,
+              {'weights': Weights(0.3129151, 5.569737, 2.677335)}),
+    Algorithm('Window 8', window_entry,
+              {'window_size': 8, 'weights': Weights(9.352366, 22.87437, 1)}),
+    Algorithm('Window 4', window_entry,
+              {'window_size': 4, 'weights': Weights(8.735623, 7.914287, 1)}),
+    Algorithm('Window 2', window_entry,
+              {'window_size': 2, 'weights': Weights(3.113396, 9.46371, 1)}),
 ]
 
 def main(runs, max_agents):

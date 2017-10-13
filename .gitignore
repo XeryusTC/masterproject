@@ -6,6 +6,7 @@
 results/
 .RData
 .Rhistory
+reports/final/graphs/*.tex
 
 # # LaTeX
 *.aux

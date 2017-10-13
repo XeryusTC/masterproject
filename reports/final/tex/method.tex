@@ -82,10 +82,15 @@ time without requiring the same resources it is also possible to do them at the
 same time. This means that the plan should be executed while it is still being
 constructed. One way of doing this is my applying a window to the planning. A
 window $w$ determines that agents will use the above algorithm to solve all
-conflicts that occur within $w$ timesteps from their current position. Agents
+conflicts that occur within $w$ time steps from their current position. Agents
 will not coordinate past the boundary of the window, solving conflicts that
 happen beyond that border is deferred to a later point in time. Periodically
 the agents will move their window and solve any new conflicts in the window.
+Because agents only coordinate in the window it is not necessary for them to
+plan a path past the window boundary as well. Instead agents can plan a path
+for the next $w$ time steps so they get closer to their goal. To achieve this
+the graph can be changed so that the nodes at the window boundary connect
+directly to the goal node.
 
 Using the window spreads out the computation over the course of execution, but
 it has other benefits as well. In large multi-agent systems the communication

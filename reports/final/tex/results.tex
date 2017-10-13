@@ -2,25 +2,62 @@
 % TODO: investigate run time vs number of conflicts found
 
 The three proposed algorithms are tested and compared against the complete
-algorithm OD+ID.
+algorithm OD+ID. To do this we compare them on a number of problem instances.
+Each instance consists of a $16 \times 16$ 8-connected grid. Each grid cell has
+a $20\%$ chance of containing an impassable obstacle. Agents cannot enter these
+grid locations, but the obstacles do not block agents from moving along
+diagonals as specified in \autoref{sec:problem}. Agents are placed randomly in
+the grid such that no two agents have the same starting position, each agent is
+also given a randomly chosen destination location, again these are picked in
+such a way that no two agents have the same destination. Note that one agents
+starting position might be another agents destination.
+
+\begin{table}[b]
+	\centering
+	\caption{Evaluation weights as determined by simulated annealing. Empty
+	fields mean that the weight is not used by that algorithm.}
+	\label{tbl:annealing}
+	\begin{tabular}{l|r|r|r}
+		Algorithm & \multicolumn{3}{c}{Weights} \\ \cline{2-4}
+		& Path length & Conflicts solved & Partial solution \\ \hline
+		Base     & 4.743788 & 5.290992 &  \\
+		Base+    & 0.312151 & 5.569737 & 2.677335 \\
+		Window 2 & 3.113396 & 9.46371 &  \\
+		Window 4 & 8.735623 & 7.914287 &  \\
+		Window 8 & 9.352366 & 22.87437 &
+	\end{tabular}
+\end{table}
+
+The base and windowed versions of the algorithm both need to evaluate proposals
+made by agents. The proposals are evaluated on several different effects that
+they have on an agent's plan. To be able to evaluate a proposal properly there
+are several weights that need to be set so that each effect is taken into
+account as much as it needs to be. To set the weights simulated annealing
+\cite{kirkpatrick1983} is used with an initial temperature of 100. Each
+iteration consists of 200 problem instances which contain between 2 and 50
+agents, the number of agents forms a uniform distribution. For each drop in
+temperature a new set of 200 problem instances is generated to avoid
+overfitting to a certain set of problems. There is a time limit of 2000ms to
+solve each instance. The results of the simulated
+annealing process are shown in \autoref{tbl:annealing}. The path length weight
+refers to the increase in path length that lower priority agents suffer when
+they have to make a new length. Some proposals have the side effect of creating
+or solving additional conflicts, this is weighted by the conflicts solved
+weight. The partial solved weight is used in cases where multiple agents take
+part in a dialogue and a proposal that only assigns priority to some of the
+agents doesn't solve the conflict for all agents.
 
 \subsection{Experimental setup}
 To compare the algorithms they are all given a large set of cooperative
-pathfinding problems that have be to solve. Each problem consists of a $16
-\times 16$ 8-connected grid. Each grid location has a $20\%$ chance of being an
-impassable obstacle. Agents cannot enter these grid locations, but the
-obstacles do not block agents from moving along diagonals as specified in
-\autoref{sec:problem}. Agents are randomly placed in the grid such that no two
-agents have the same starting position, each agent is also given a randomly
-chosen destination location, again these are chosen in such a way that no two
-agents have the same destination. There are $10000$ problems in the set, each
-of which has between 2 and \agentsupb agents in it. The number of agents in the
-problems form a uniform distribution.
+pathfinding problems that have be to solve. Each instance is constructed
+following the same procedure as used for simulated annealing. Each instance has
+between 2 and \agentsupb, the number of agents still forms a uniform
+distribution. The time it takes to solve each instance in the set of problems
+is recorded. There is a time limit of 2000ms for each instance to calculate a
+solution.
 
 % TODO: add reference to performance graph origin
-Each algorithm solves each instance in the set of problems, the time it takes
-to do this is recorded. There is a time limit of 2000 ms to solve a single
-instance. When the run times are sorted in ascending order they can be plotted
+When the run times are sorted in ascending order they can be plotted
 in a \emph{performance graph} as in \autoref{fig:perfgraph}. The $x$-axis shown
 the number of the sorted instance while the $y$-axis shows the time it takes an
 algorithm to solve that instance. Because the instances are sorted it is not
@@ -33,7 +70,26 @@ the 2000 ms time limit. Instances that were not solved are not included in the
 graph, so where the graph crosses the top indicates how many of the problems
 were solved by the algorithm.
 
-%The time it takes each algorithm to solve a problem is recorded
+\begin{figure}
+	\centering
+	\input{graphs/perfgraph}
+	\caption{Performance graph}
+	\label{fig:perfgraph}
+\end{figure}
 
-%Each algorithm solves every problem in the set of problems, . The time it
-%takes to do this is recorded. When
+The graph in \autoref{fig:perfgraph} shows the performance characteristic for
+the tested algorithms.
+
+\begin{figure}
+	\centering
+	\input{graphs/solved}
+	\caption{Solved}
+	\label{fig:solved}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\input{graphs/lengths}
+	\caption{Lengths}
+	\label{fig:lengths}
+\end{figure}

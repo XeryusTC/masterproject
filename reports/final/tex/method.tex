@@ -20,8 +20,8 @@ conflicts. After a conflict has been successfully solved then the agents
 involved can work on solving the next conflict.
 Below are the details of three different versions of this algorithm.
 
-\subsection{Naive version}
-The simplest approach to resolving the conflicts is by creating all possible
+\subsection{Naive Partial Prioritized Cooperative Pathfinding}
+The most simple approach to resolving the conflicts is by creating all possible
 ordering permutations for the agents involved in the conflict. The permutation
 that has the lowest sum path length is used as the solution for the conflict.
 This simple method of evaluating the various solutions is unlikely to find the
@@ -29,13 +29,16 @@ most appropriate one because it is not able to predict the consequences of
 selecting one solution over the others.
 Most conflicts involve just two agents, so there are only two possible ordering
 permutations which means that the amount of permutations that need to be
-evaluated is low.
+evaluated is low. This version of the algorithm is known as Naive Partial
+Prioritized  Cooperative Pathfinding (NPPCPF).
 
-\subsection{Base version}
+\subsection{Partial Prioritized Cooperative Pathfinding}
 Going through all possible permutations and evaluating them is not the most
 clever method of finding a priority ordering \cite{bennewitz2002}. To reduce
 the amount of computation needed to find a solution some improvements can be
-made. Agents can enter a dialogue of which the goal is to find a solution to
+made. Partial Prioritized Cooperative Pathfinding (PPCPF) is more intelligent
+than naively computing all possible combinations. Agents can enter a
+dialogue of which the goal is to find a solution to
 the conflict that works for all involved agents. This dialogue consists of
 several stages, the first stage is the opening where agents enter the dialogue
 and tell each other whether they have any conflicts that are occurring at an
@@ -75,12 +78,12 @@ they may have. Because their plans may have been hanged the agents need to
 update the other agents of their new plan, they will also have to recalculate
 where and when conflicts in their plans occur.
 
-\subsection{Window version}
+\subsection{Windowed Partial Prioritized Cooperative Pathfinding}
 One of the issues with this algorithm is that all dialogues and computation
 occur before execution of the plan. Because both planning and execution take
 time without requiring the same resources it is also possible to do them at the
 same time. This means that the plan should be executed while it is still being
-constructed. One way of doing this is my applying a window to the planning. A
+constructed. One way of doing this is my applying a window to PPCPF. A
 window $w$ determines that agents will use the above algorithm to solve all
 conflicts that occur within $w$ time steps from their current position. Agents
 will not coordinate past the boundary of the window, solving conflicts that

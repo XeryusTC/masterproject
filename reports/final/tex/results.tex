@@ -12,7 +12,7 @@ also given a randomly chosen destination location, again these are picked in
 such a way that no two agents have the same destination. Note that one agents
 starting position might be another agents destination.
 
-\begin{table}[b]
+\begin{table}[t]
 	\centering
 	\caption{Evaluation weights as determined by simulated annealing. Empty
 	fields mean that the weight is not used by that algorithm.}
@@ -20,11 +20,11 @@ starting position might be another agents destination.
 	\begin{tabular}{l|r|r|r}
 		Algorithm & \multicolumn{3}{c}{Weights} \\ \cline{2-4}
 		& Path length & Conflicts solved & Partial solution \\ \hline
-		Base     & 4.743788 & 5.290992 &  \\
-		Base+    & 0.312151 & 5.569737 & 2.677335 \\
-		Window 2 & 3.113396 & 9.46371 &  \\
-		Window 4 & 8.735623 & 7.914287 &  \\
-		Window 8 & 9.352366 & 22.87437 &
+		PPCPF     & 4.743788 & 5.290992 &  \\
+		PPCPF+    & 0.312151 & 5.569737 & 2.677335 \\
+		WPPCPF-2 & 3.113396 & 9.46371 &  \\
+		WPPCPF-4 & 8.735623 & 7.914287 &  \\
+		WPPCPF-8 & 9.352366 & 22.87437 &
 	\end{tabular}
 \end{table}
 
@@ -56,6 +56,13 @@ distribution. The time it takes to solve each instance in the set of problems
 is recorded. There is a time limit of 2000ms for each instance to calculate a
 solution.
 
+\begin{figure}
+	\centering
+	\input{graphs/perfgraph}
+	\caption{Performance graph}
+	\label{fig:perfgraph}
+\end{figure}
+
 % TODO: add reference to performance graph origin
 When the run times are sorted in ascending order they can be plotted
 in a \emph{performance graph} as in \autoref{fig:perfgraph}. The $x$-axis shown
@@ -70,15 +77,44 @@ the 2000 ms time limit. Instances that were not solved are not included in the
 graph, so where the graph crosses the top indicates how many of the problems
 were solved by the algorithm.
 
-\begin{figure}
-	\centering
-	\input{graphs/perfgraph}
-	\caption{Performance graph}
-	\label{fig:perfgraph}
-\end{figure}
-
 The graph in \autoref{fig:perfgraph} shows the performance characteristic for
-the tested algorithms.
+the tested algorithms. It shows that only the naive approach is generally
+slower than the complete algorithm OD+ID, in $65.25\%$ of the instances that
+both algorithms solved OD+ID was faster. All other methods are faster than
+OD+ID and are able to find a solution to more instances. The base and base+
+versions of the algorithm have an almost equal performance. The base version is
+slightly faster on each individual instance by 3.7 ms as shown by a one-sided
+paired t-test, $t(6097) = -6.05, p=7.87 \cdot 10^{-8}$. They are able to solve
+about the same number of instances, the base version solves $61.64\%$ of
+instances while the base+ version is able to solve $61.23\%$.
+
+The size of the window also has an influence on the performance. From
+\autoref{fig:perfgraph} we can see that any restricted window size means that
+the algorithm is faster and is able to solve more problem instances. We can
+also see that the graphs for different window sizes are similar to each other.
+An analysis of variance test shows that there is a difference in the time to
+reach a solution for different window sizes, $F(1, 23751) = 12.119, p=5\cdot
+10^{-4}$. Individual t-tests show that $w=2$ differs from both $w=4$ and $w=8$,
+$t(16313) = 2.91, p=0.0036$ and $t(15355)=3.72, p=1.97\cdot10^{-4}$
+respectively. There is no difference between $w=4$ and $w=8$, $t(15344)=0.89,
+p=0.37$. The window size has a large effect on the sum of the path lengths of
+the agents as shown in \autoref{tbl:length}.
+
+\begin{table}[t]
+	\centering
+	\caption{Solution length of algorithms}
+	\label{tbl:length}
+	\begin{tabular}{l|r}
+		Algorithm & Mean length \\ \hline
+		OD+ID & 77.39 \\
+		NWPPCPF & 69.11 \\
+		WPPCPF  & 119.93 \\
+		WPPCPF+ & 119.38 \\
+		WPPCPF-2 & 168.94  \\
+		WPPCPF-4 & 162.07  \\
+		WPPCPF-8 & 147.10
+	\end{tabular}
+\end{table}
 
 \begin{figure}
 	\centering
@@ -87,9 +123,9 @@ the tested algorithms.
 	\label{fig:solved}
 \end{figure}
 
-\begin{figure}
-	\centering
-	\input{graphs/lengths}
-	\caption{Lengths}
-	\label{fig:lengths}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\input{graphs/lengths}
+%	\caption{Lengths}
+%	\label{fig:lengths}
+%\end{figure}

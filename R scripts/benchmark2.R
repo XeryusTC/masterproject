@@ -4,7 +4,7 @@ file = rev(list.files('results', 'benchmark*'))[1]
 dat = read.csv(paste('results/', file, sep=""), header=T)
 
 algorithms = c("OD.ID", "Naive", "Base.version", "Version.1b", "Window.2", "Window.4", "Window.8")
-cannonical_names = c("OD+ID", "Naive", "Base", "Base+", "Window 2", "Window 4", "Window 8")
+cannonical_names = c("OD+ID", "NPPCPF", "PPCPF", "PPCPF+", "WPPCPF-2", "WPPCPF-4", "WPPCPF-8")
 color_set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
 
 len = length(dat$instance)
@@ -35,7 +35,7 @@ lines(seq(length(window2)), window2, col='magenta')
 lines(seq(length(window4)), window4, col='cyan')
 lines(seq(length(window8)), window8, col='orange')
 legend("bottomright",
-       legend=c("OD+ID", "Naive", "Base", "Base+", "Window 2", "Window 4", "Window 8"),
+       legend=cannonical_names,
        col=color_set,
        pch=16)
 dev.off()
@@ -64,5 +64,18 @@ bp2 = barplot(lengths,
               ylab='Mean path length')
 dev.off()
 
-#lengths = aggregate(cbind(optimal.length, OD.ID_length, Naive_length, Base.version_length, Version.1b_length, Window.2_length, Window.4_length, Window.8_length) ~ num.agents, data=dat, FUN=mean)
-#makespans = aggregate(cbind(optimal.makespan, OD.ID_makespan, Naive_makespan, Base.version_makespan, Version.1b_makespan, Window.2_makespan, Window.4_makespan, Window.8_makespan) ~ num.agents, data=dat, FUN=mean)
+# percentage that OD+ID is faster than Naive
+mean(od < naive)
+
+# Window statistics
+dat.window = aggregate(cbind(dat$Window.2, dat$Window.4, dat$Window.8) ~ dat$num.agents, FUN=mean)
+windowdat = rbind(cbind(dat$Window.2, 2), cbind(dat$Window.4, 4), cbind(dat$Window.8, 8))
+lengthdat = rbind(cbind(dat$Window.2_length, 2), cbind(dat$Window.4_length, 4), cbind(dat$Window.8_length, 8))
+anova(lm(windowdat[,1] ~ windowdat[,2]))
+t.test(dat$Window.2, dat$Window.4)
+t.test(dat$Window.2, dat$Window.8)
+t.test(dat$Window.4, dat$Window.8)
+anova(lm(lengthdat[,1] ~ lengthdat[,2]))
+t.test(dat$Window.2_length, dat$Window.4_length)
+t.test(dat$Window.2_length, dat$Window.8_length)
+t.test(dat$Window.4_length, dat$Window.8_length)

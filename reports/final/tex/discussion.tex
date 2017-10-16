@@ -1,1 +1,32 @@
 \section{Discussion}\label{sec:discussion}
+% cache
+% PPCPF+ and PPCPF are simular, later is simpler
+With PPCPF agents resolve conflicts in pairs only while PPCPF+ can have larger
+groups of agents resolve a conflict. This only happens when multiple agents try
+to make conflicting moves at the same time. Allowing larger groups in a
+dialogue means that it gets more complex, this is reflected in the fact that
+PPCPF+ is slower overall and on individual problem instances. Larger groups of
+agents solving conflicts is not necessarily faster than pairs of agents solving
+conflicts. Several small pairwise dialogues can be very effective because the
+pair $a_1$ and $a_2$ resolving their conflict means that $a_2$ gets rerouted,
+this means that $a_2$'s conflict with $a_3$ is also resolved. This means that
+$a_1$ and $a_3$ only need to come to a solution. In the case that all three
+agents would find a solution in a single dialogue they will have to evaluate
+multiple proposals. The added complexity of three agents trying to find a
+solution to the conflict does not outweigh the speed of starting several
+dialogues which come to a conclusion quickly.
+
+%window version being better
+WPPCPF is able to solve more problem instances than PPCPF without a window. How
+many more instances can be solved depends on the size of the window. As a
+trade-off the amount of actions required for agents to reach their destination
+increases. This effect get stronger when the window size gets smaller, when
+$w=2$ most of the instances were solved, however the sum of the path lengths
+was also the highest. That the speed of WPPCPF-2 is high is not surprising, it
+reduces the algorithm to be reactive. Agents mainly solve conflicts that will
+happen during the next time step, and some conflicts that happen a time step
+later. Agents will also determine whether they have conflicts after every time
+step. This shows that creating a complete global plan can be sacrificed to
+obtain smaller plans in a shorter time.
+
+% PPCPF parameters discussion

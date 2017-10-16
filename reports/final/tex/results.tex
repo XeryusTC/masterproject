@@ -1,4 +1,4 @@
-\section{Experimental evaluation}\label{sec:results}
+\section{Experimental results}\label{sec:results}
 % TODO: investigate run time vs number of conflicts found
 
 The three proposed algorithms are tested and compared against the complete
@@ -28,7 +28,7 @@ starting position might be another agents destination.
 	\end{tabular}
 \end{table}
 
-The base and windowed versions of the algorithm both need to evaluate proposals
+PPCPF and WPPCPF  both need to evaluate proposals
 made by agents. The proposals are evaluated on several different effects that
 they have on an agent's plan. To be able to evaluate a proposal properly there
 are several weights that need to be set so that each effect is taken into
@@ -47,7 +47,7 @@ weight. The partial solved weight is used in cases where multiple agents take
 part in a dialogue and a proposal that only assigns priority to some of the
 agents doesn't solve the conflict for all agents.
 
-\subsection{Experimental setup}
+\subsection{Experimental evaluation}
 To compare the algorithms they are all given a large set of cooperative
 pathfinding problems that have be to solve. Each instance is constructed
 following the same procedure as used for simulated annealing. Each instance has
@@ -59,7 +59,7 @@ solution.
 \begin{figure}
 	\centering
 	\input{graphs/perfgraph}
-	\caption{Performance graph}
+	\caption{Performance graph. The lines for PPCPF and PPCPF+ overlap.}
 	\label{fig:perfgraph}
 \end{figure}
 
@@ -81,12 +81,12 @@ The graph in \autoref{fig:perfgraph} shows the performance characteristic for
 the tested algorithms. It shows that only the naive approach is generally
 slower than the complete algorithm OD+ID, in $65.25\%$ of the instances that
 both algorithms solved OD+ID was faster. All other methods are faster than
-OD+ID and are able to find a solution to more instances. The base and base+
-versions of the algorithm have an almost equal performance. The base version is
+OD+ID and are able to find a solution to more instances. The PPCPF and PPCPF+
+versions of the algorithm have an almost equal performance. PPCPF is
 slightly faster on each individual instance by 3.7 ms as shown by a one-sided
 paired t-test, $t(6097) = -6.05, p=7.87 \cdot 10^{-8}$. They are able to solve
-about the same number of instances, the base version solves $61.64\%$ of
-instances while the base+ version is able to solve $61.23\%$.
+about the same number of instances, PPCPF solves $61.64\%$ of
+instances while PPCPF+ is able to solve $61.23\%$.
 
 The size of the window also has an influence on the performance. From
 \autoref{fig:perfgraph} we can see that any restricted window size means that
@@ -97,31 +97,40 @@ reach a solution for different window sizes, $F(1, 23751) = 12.119, p=5\cdot
 10^{-4}$. Individual t-tests show that $w=2$ differs from both $w=4$ and $w=8$,
 $t(16313) = 2.91, p=0.0036$ and $t(15355)=3.72, p=1.97\cdot10^{-4}$
 respectively. There is no difference between $w=4$ and $w=8$, $t(15344)=0.89,
-p=0.37$. The window size has a large effect on the sum of the path lengths of
-the agents as shown in \autoref{tbl:length}.
+p=0.37$.
+%The window size has a large effect on the sum of the path lengths of the
+%agents as shown in \autoref{tbl:length}.
 
 \begin{table}[t]
 	\centering
-	\caption{Solution length of algorithms}
+	\caption{Solution quality of algorithms. Length is the sum of the lengths
+	of the paths for a single problem instance.}
 	\label{tbl:length}
-	\begin{tabular}{l|r}
-		Algorithm & Mean length \\ \hline
-		OD+ID & 77.39 \\
-		NWPPCPF & 69.11 \\
-		WPPCPF  & 119.93 \\
-		WPPCPF+ & 119.38 \\
-		WPPCPF-2 & 168.94  \\
-		WPPCPF-4 & 162.07  \\
-		WPPCPF-8 & 147.10
+	\begin{tabular}{l|r|r}
+		Algorithm & Mean length & Percentage solved \\ \hline
+		OD+ID & 77.39 & 32.44 \\
+		NWPPCPF & 69.11 & 30.86 \\
+		WPPCPF  & 119.93 & 61.64 \\
+		WPPCPF+ & 119.38 & 61.23 \\
+		WPPCPF-2 & 168.94 & 82.34 \\
+		WPPCPF-4 & 162.07 & 80.99 \\
+		WPPCPF-8 & 147.10 & 74.20
 	\end{tabular}
 \end{table}
 
-\begin{figure}
-	\centering
-	\input{graphs/solved}
-	\caption{Solved}
-	\label{fig:solved}
-\end{figure}
+As shown by \autoref{tbl:bl:length} NPPCPF is the only version of the algorithm
+that solves fewer instances than OD+ID. All other versions of PPCPF are able to
+solve at least double the amount of instances. A smaller window means that the
+algorithm is able to solve more problem instances. At the same time this also
+comes at a cost, a smaller window size results in longer sum path lengths as
+shown by \autoref{tbl:length}.
+
+%\begin{figure}
+%	\centering
+%	\input{graphs/solved}
+%	\caption{Percentage of problem instances solved}
+%	\label{fig:solved}
+%\end{figure}
 
 %\begin{figure}
 %	\centering

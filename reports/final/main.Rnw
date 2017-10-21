@@ -1,0 +1,50 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage[hidelinks]{hyperref}
+\usepackage[all]{hypcap}
+
+\graphicspath{{images/}}
+
+\DeclareMathOperator\pos{pos}
+
+\newcommand{\agentsupb}{40 }
+
+\author{Xeryus Stokkel}
+\title{Argumentation for Cooperative Pathfinding}
+
+<<preprocess,echo=F>>=
+require(knitr)
+require(tikzDevice)
+
+file = rev(list.files('../../results', 'benchmark*'))[1]
+dat = read.csv(paste('../../results/', file, sep=""), header=T)
+
+algorithms = c("OD.ID", "Naive", "Base.version", "Version.1b", "Window.2",
+"Window.4", "Window.8")
+cannonical.names = c("OD+ID", "Naive", "Base", "Base+", "Window 2", "Window 4",
+"Window 8")
+color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
+@
+
+\begin{document}
+
+\maketitle
+
+\input{tex/abstract}
+\input{tex/intro}
+\input{tex/problem}
+\input{tex/related_work}
+\input{tex/method}
+\input{tex/results}
+\input{tex/discussion}
+
+\bibliographystyle{plain}
+\bibliography{literature}
+
+\end{document}

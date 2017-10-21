@@ -1,0 +1,168 @@
+\section{Experimental results}\label{sec:results}
+% TODO: investigate run time vs number of conflicts found
+
+The three proposed algorithms are tested and compared against the complete
+algorithm OD+ID. To do this we compare them on a number of problem instances.
+Each instance consists of a $16 \times 16$ 8-connected grid. Each grid cell has
+a $20\%$ chance of containing an impassable obstacle. Agents cannot enter these
+grid locations, but the obstacles do not block agents from moving along
+diagonals as specified in \autoref{sec:problem}. Agents are placed randomly in
+the grid such that no two agents have the same starting position, each agent is
+also given a randomly chosen destination location, again these are picked in
+such a way that no two agents have the same destination. Note that one agents
+starting position might be another agents destination.
+
+\begin{table}[t]
+	\centering
+	\caption{Evaluation weights as determined by simulated annealing. Empty
+	fields mean that the weight is not used by that algorithm.}
+	\label{tbl:annealing}
+	\begin{tabular}{l|r|r|r}
+		Algorithm & \multicolumn{3}{c}{Weights} \\ \cline{2-4}
+		& Path length & Conflicts solved & Partial solution \\ \hline
+		PPCPF     & 4.743788 & 5.290992 &  \\
+		PPCPF+    & 0.312151 & 5.569737 & 2.677335 \\
+		WPPCPF-2 & 3.113396 & 9.46371 &  \\
+		WPPCPF-4 & 8.735623 & 7.914287 &  \\
+		WPPCPF-8 & 9.352366 & 22.87437 &
+	\end{tabular}
+\end{table}
+
+PPCPF and WPPCPF  both need to evaluate proposals
+made by agents. The proposals are evaluated on several different effects that
+they have on an agent's plan. To be able to evaluate a proposal properly there
+are several weights that need to be set so that each effect is taken into
+account as much as it needs to be. To set the weights simulated annealing
+\cite{kirkpatrick1983} is used with an initial temperature of 100. Each
+iteration consists of 200 problem instances which contain between 2 and 50
+agents, the number of agents forms a uniform distribution. For each drop in
+temperature a new set of 200 problem instances is generated to avoid
+overfitting to a certain set of problems. There is a time limit of 2000ms to
+solve each instance. The results of the simulated
+annealing process are shown in \autoref{tbl:annealing}. The path length weight
+refers to the increase in path length that lower priority agents suffer when
+they have to make a new length. Some proposals have the side effect of creating
+or solving additional conflicts, this is weighted by the conflicts solved
+weight. The partial solved weight is used in cases where multiple agents take
+part in a dialogue and a proposal that only assigns priority to some of the
+agents doesn't solve the conflict for all agents.
+
+\subsection{Experimental evaluation}
+To compare the algorithms they are all given a large set of cooperative
+pathfinding problems that have be to solve. Each instance is constructed
+following the same procedure as used for simulated annealing. Each instance has
+between 2 and \agentsupb, the number of agents still forms a uniform
+distribution. The time it takes to solve each instance in the set of problems
+is recorded. There is a time limit of 2000ms for each instance to calculate a
+solution.
+
+<<perfgraph>>=
+len = length(dat$instance)
+od = sort(dat$OD.ID * 1000)
+naive = sort(dat$Naive * 1000)
+base = sort(dat$Base.version * 1000)
+baseb = sort(dat$Version.1b * 1000)
+window2 = sort(dat$Window.2 * 1000)
+window4 = sort(dat$Window.4 * 1000)
+window8 = sort(dat$Window.8 * 1000)
+
+plot(c(), c(),
+    type='l',
+    log='y',
+    col='red',
+    xlim=c(1,len),
+    ylim=c(5, 2000),
+    xlab='Instance',
+    ylab='Time (ms)',
+    frame.plot=F
+)
+lines(seq(length(od)), od, col='red')
+lines(seq(length(naive)), naive, col='blue')
+lines(seq(length(base)),  base,  col='green')
+lines(seq(length(baseb)), baseb, col='grey')
+lines(seq(length(window2)), window2, col='magenta')
+lines(seq(length(window4)), window4, col='cyan')
+lines(seq(length(window8)), window8, col='orange')
+legend("bottomright",
+    legend=c("OD+ID", "Naive", "Base", "Base+", "Window 2", "Window 4", "Window 
+    8"),
+    col=color.set,
+    pch=16
+)
+@
+
+% TODO: add reference to performance graph origin
+When the run times are sorted in ascending order they can be plotted
+in a \emph{performance graph} as in \autoref{fig:perfgraph}. The $x$-axis shown
+the number of the sorted instance while the $y$-axis shows the time it takes an
+algorithm to solve that instance. Because the instances are sorted it is not
+necessarily the case that the $n$th instance for one algorithm is the same as
+for a different algorithm. The graph gives several pieces of information. The
+first is a comparison of run times for the different algorithms, a lower line
+means that an algorithm was able to solve problem instances quicker. At the
+same time the graph also shows how many instances an algorithm can solve within
+the 2000 ms time limit. Instances that were not solved are not included in the
+graph, so where the graph crosses the top indicates how many of the problems
+were solved by the algorithm.
+
+The graph in \autoref{fig:perfgraph} shows the performance characteristic for
+the tested algorithms. It shows that only the naive approach is generally
+slower than the complete algorithm OD+ID, in $65.25\%$ of the instances that
+both algorithms solved OD+ID was faster. All other methods are faster than
+OD+ID and are able to find a solution to more instances. The PPCPF and PPCPF+
+versions of the algorithm have an almost equal performance. PPCPF is
+slightly faster on each individual instance by 3.7 ms as shown by a one-sided
+paired t-test, $t(6097) = -6.05, p=7.87 \cdot 10^{-8}$. They are able to solve
+about the same number of instances, PPCPF solves $61.64\%$ of
+instances while PPCPF+ is able to solve $61.23\%$.
+
+The size of the window also has an influence on the performance. From
+\autoref{fig:perfgraph} we can see that any restricted window size means that
+the algorithm is faster and is able to solve more problem instances. We can
+also see that the graphs for different window sizes are similar to each other.
+An analysis of variance test shows that there is a difference in the time to
+reach a solution for different window sizes, $F(1, 23751) = 12.119, p=5\cdot
+10^{-4}$. Individual t-tests show that $w=2$ differs from both $w=4$ and $w=8$,
+$t(16313) = 2.91, p=0.0036$ and $t(15355)=3.72, p=1.97\cdot10^{-4}$
+respectively. There is no difference between $w=4$ and $w=8$, $t(15344)=0.89,
+p=0.37$.
+%The window size has a large effect on the sum of the path lengths of the
+%agents as shown in \autoref{tbl:length}.
+
+\begin{table}[t]
+	\centering
+	\caption{Solution quality of algorithms. Length is the sum of the lengths
+	of the paths for a single problem instance.}
+	\label{tbl:length}
+	\begin{tabular}{l|r|r}
+		Algorithm & Mean length & Instances solved \\ \hline
+		OD+ID & 77.39 & 32.44\% \\
+		NWPPCPF & 69.11 & 30.86\% \\
+		WPPCPF  & 119.93 & 61.64\% \\
+		WPPCPF+ & 119.38 & 61.23\% \\
+		WPPCPF-2 & 168.94 & 82.34\% \\
+		WPPCPF-4 & 162.07 & 80.99\% \\
+		WPPCPF-8 & 147.10 & 74.20\%
+	\end{tabular}
+\end{table}
+
+As shown by \autoref{tbl:bl:length} NPPCPF is the only version of the algorithm
+that solves fewer instances than OD+ID. All other versions of PPCPF are able to
+solve at least double the amount of instances. A smaller window means that the
+algorithm is able to solve more problem instances. At the same time this also
+comes at a cost, a smaller window size results in longer sum path lengths as
+shown by \autoref{tbl:length}.
+
+%\begin{figure}
+%	\centering
+%	\input{graphs/solved}
+%	\caption{Percentage of problem instances solved}
+%	\label{fig:solved}
+%\end{figure}
+
+%\begin{figure}
+%	\centering
+%	\input{graphs/lengths}
+%	\caption{Lengths}
+%	\label{fig:lengths}
+%\end{figure}

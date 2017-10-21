@@ -78,6 +78,12 @@ they may have. Because their plans may have been hanged the agents need to
 update the other agents of their new plan, they will also have to recalculate
 where and when conflicts in their plans occur.
 
+To reduce the amount of computation required agents can store the paths that
+they have calculated. Agents can then consult their path cache when evaluating
+proposals. This allows them to pick a path that has been found earlier and use
+that as a solution. The only restriction is that the cached path does not have
+a conflict with agents of a higher priority.
+
 \subsection{Windowed Partial Prioritized Cooperative Pathfinding}
 One of the issues with this algorithm is that all dialogues and computation
 occur before execution of the plan. Because both planning and execution take

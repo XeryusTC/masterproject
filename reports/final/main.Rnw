@@ -1,3 +1,4 @@
+% !TeX document-id = {81191a9b-cc7a-4dfa-a09e-7e87a51baad2}
 \documentclass[a4paper]{article}
 
 \usepackage[utf8]{inputenc}
@@ -41,8 +42,10 @@ color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
 \input{tex/problem}
 \input{tex/related_work}
 \input{tex/method}
-\input{tex/results}
+<<resuls-file,child='tex/results.Rnw'>>=
+@
 \input{tex/discussion}
+
 
 \bibliographystyle{plain}
 \bibliography{literature}

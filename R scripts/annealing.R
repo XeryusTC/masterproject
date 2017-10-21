@@ -9,7 +9,7 @@ max_temp = max(dat$temp)
 plot(c(), c(),
      type='l',
      xlim=c(1,max_temp),
-     ylim=c(0,5),
+     ylim=c(0,15),
      xlab="Temperature",
      ylab="Score",
      frame.plot=F
@@ -23,7 +23,7 @@ lines(seq(max_temp), dat$Window.8_score, col='orange')
 plot(c(), c(),
      type='l',
      xlim=c(1,max_temp),
-     ylim=c(0,20),
+     ylim=c(0,15),
      xlab="Temperature",
      ylab="Path len",
      frame.plot=F
@@ -37,7 +37,7 @@ lines(seq(max_temp), dat$Window.8_len, col='orange')
 plot(c(), c(),
      type='l',
      xlim=c(1,max_temp),
-     ylim=c(0,20),
+     ylim=c(0,15),
      xlab="Temperature",
      ylab="Conflicts solved",
      frame.plot=F
@@ -51,7 +51,7 @@ lines(seq(max_temp), dat$Window.8_conflicts, col='orange')
 plot(c(), c(),
      type='l',
      xlim=c(1,max_temp),
-     ylim=c(0,5),
+     ylim=c(0,10),
      xlab="Temperature",
      ylab="Partial solved",
      frame.plot=F

@@ -94,8 +94,12 @@ def eval_weights(algorithm, weights, num_problems, max_agents):
     return sum(diff) / len(diff)
 
 def main(max_temp, problems, max_agents):
+    if len(ALGORITHMS) == 1:
+        name = f'results/annealing-{ALGORITHMS[0].name}-{datetime.now()}.csv'
+    else:
+        name = f'results/annealing-{datetime.now()}.csv'
     line = []
-    f = open(f'results/annealing-{datetime.now()}.csv', 'w')
+    f = open(name, 'w')
     writer = csv.writer(f)
     titles = ['temp']
     weights = {}
@@ -116,7 +120,8 @@ def main(max_temp, problems, max_agents):
                              max_agents)
         scores[algorithm.name] = score
         result += [score, weights[algorithm.name].path_len,
-                   weights[algorithm.name].conflict_count]
+                   weights[algorithm.name].conflict_count,
+                   weights[algorithm.name].partial_solved]
     writer.writerow(result)
     f.flush()
 
@@ -156,4 +161,9 @@ if __name__ == '__main__':
         max_agents = int(sys.argv[3])
     except IndexError:
         max_agents = 25
+    try:
+        algorithm = int(sys.argv[4])
+        ALGORITHMS = [ALGORITHMS[algorithm]]
+    except IndexError:
+        pass
     main(max_temp, problems, max_agents)

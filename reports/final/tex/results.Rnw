@@ -20,15 +20,12 @@ starting position might be another agents destination.
 	fields mean that the weight is not used by that algorithm.}
 	\label{tbl:annealing}
 	\begin{tabular}{l|r|r|r}
-        \hline
-		& \multicolumn{3}{c}{Weights} \\ \cline{2-4}
 		& Path length & Conflicts solved & Partial solution \\ \hline
 		\Sexpr{cannonical.names[3]} & 4.743788 & 5.290992 &  \\
 		\Sexpr{cannonical.names[4]} & 0.312151 & 5.569737 & 2.677335 \\
 		\Sexpr{cannonical.names[5]} & 3.113396 & 9.46371 &  \\
 		\Sexpr{cannonical.names[6]} & 8.735623 & 7.914287 &  \\
-		\Sexpr{cannonical.names[7]} & 9.352366 & 22.87437 & \\
-        \hline
+		\Sexpr{cannonical.names[7]} & 9.352366 & 22.87437 &
 	\end{tabular}
 \end{table}
 
@@ -127,13 +124,13 @@ p=0.37$.
 quality.table = t(rbind(paste(solved * 100, "%"), round(lengths, 2)))
 colnames(quality.table) = c('Instances solved', 'Length')
 rownames(quality.table) = cannonical.names
-print(xtable(quality.table,
+xtable(quality.table,
        label='tbl:quality',
        caption='Solution quality of algorithms. Length is the sum of the lengths
        of the paths for a single problem instance',
        align='l|r|r',
        digits=2
-), table.placement="t")
+)
 @
 
 As shown by \autoref{tbl:quality} \Sexpr{cannonical.names[2]} is the only

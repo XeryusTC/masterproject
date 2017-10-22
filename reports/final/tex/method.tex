@@ -81,8 +81,8 @@ To reduce the amount of computation required agents can store the paths that
 they have calculated. Agents can then consult their path cache when evaluating
 proposals. This allows them to pick a path that has been found earlier and use
 that as a solution. The only restriction is that the cached path does not have
-a conflict with agents of a higher priority. Using a cached path may increase 
-the number of conflicts, these will be solved by later dialogues and should not 
+a conflict with agents of a higher priority. Using a cached path may increase
+the number of conflicts, these will be solved by later dialogues and should not
 influence the use of a cached path.
 
 \subsection{Windowed Dialogue-based Partial Cooperative A*}
@@ -117,3 +117,23 @@ destination do not have to update their plan. When there would be no window all
 agents would have to recalculate and solve all conflicts again, even if they
 would not need to update their plan, leading to a lot of wasted computational
 resources.
+
+An overview of all proposed algorithms is given in \autoref{tbl:proposed}, the
+categories shown are similar to those in \autoref{tbl:planning-overview}. All
+methods are decoupled, not complete and do use priorities to ensure that agents
+do not have conflicts. The meaning of communication has slightly changed, it
+now restricts with which agents dialogues can be started.
+
+\begin{table}
+    \centering
+    \caption{Comparison of proposed cooperative pathfinding algorithms. The
+    communication and online columns are similar to that in
+    \autoref{tbl:planning-overview}.}
+    \label{tbl:proposed}
+    \begin{tabular}{l|l|l|l}
+        Algorithm & Na\"ive & Communication & Online \\ \hline
+        PCA*   & Yes & All & No \\
+        DPCA*  & No  & All & No \\
+        WDPCA* & No  & Window & Yes \\
+    \end{tabular}
+\end{table}

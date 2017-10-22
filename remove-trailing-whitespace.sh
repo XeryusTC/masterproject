@@ -6,3 +6,4 @@ sed -i 's/[ \t]*$//' reports/final/tex/discussion.tex
 sed -i 's/[ \t]*$//' reports/final/tex/intro.tex
 sed -i 's/[ \t]*$//' reports/final/tex/problem.tex
 sed -i 's/[ \t]*$//' reports/final/tex/related_work.tex
+sed -i 's/[ \t]*$//' reports/final/tex/method.tex

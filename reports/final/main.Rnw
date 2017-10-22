@@ -19,13 +19,20 @@
 \newcommand{\agentsupb}{40 }
 
 \author{Xeryus Stokkel}
-\title{Argumentation for Cooperative Pathfinding}
+\title{Argumentation Dialogues for Cooperative Pathfinding}
 
 <<preprocess,echo=F,message=F>>=
-perfgraph.title = "Performance graph"
 require(knitr)
 require(xtable)
 require(tikzDevice)
+
+# settings
+options("xtable.caption.placement" = "top")
+options("xtable.table.placement" = "t")
+options("xtable.hline.after" = c(0))
+
+# Figure titles
+perfgraph.title = "Performance graph"
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)

@@ -1,5 +1,3 @@
-require(tikzDevice)
-
 file = rev(list.files('results', 'benchmark*'))[1]
 dat = read.csv(paste('results/', file, sep=""), header=T)
 
@@ -16,7 +14,6 @@ window2 = sort(dat$Window.2 * 1000)
 window4 = sort(dat$Window.4 * 1000)
 window8 = sort(dat$Window.8 * 1000)
 
-tikz('reports/final/graphs/perfgraph.tex', standAlone=F, width=5, height=3)
 plot(c(), c(),
 	 type='l',
 	 log='y',
@@ -38,9 +35,7 @@ legend("bottomright",
        legend=cannonical_names,
        col=color_set,
        pch=16)
-dev.off()
 
-tikz('reports/final/graphs/solved.tex', width=5, height=3)
 solved = apply(dat[algorithms], 2, function(col)1-sum(is.na(col))/length(col))
 bp = barplot(solved * 100,
         names.arg=cannonical_names,
@@ -50,9 +45,7 @@ bp = barplot(solved * 100,
         ylim=c(0,100),
         col=color_set)
 text(x = bp, y=solved * 100, xpd=T, label=solved*100, pos=3, cex=.8)
-dev.off()
 
-tikz('reports/final/graphs/lengths.tex', width=5, height=3)
 lengths = apply(dat[paste(algorithms, "length", sep="_")],
                 2,
                 function(col)mean(col-dat$optimal.length,na.rm=T))
@@ -62,7 +55,6 @@ bp2 = barplot(lengths,
               cex.names = .8,
               xlab='Algorithm',
               ylab='Mean path length')
-dev.off()
 
 # percentage that OD+ID is faster than Naive
 mean(od < naive)

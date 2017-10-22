@@ -1,10 +1,12 @@
 % !TeX document-id = {81191a9b-cc7a-4dfa-a09e-7e87a51baad2}
+% !TeX TXS-program:compile = txs:///knit2pdf
 \documentclass[a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{color}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage{calc}
 \usepackage[hidelinks]{hyperref}
@@ -19,8 +21,10 @@
 \author{Xeryus Stokkel}
 \title{Argumentation for Cooperative Pathfinding}
 
-<<preprocess,echo=F>>=
+<<preprocess,echo=F,message=F>>=
+perfgraph.title = "Performance graph"
 require(knitr)
+require(xtable)
 require(tikzDevice)
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
@@ -28,9 +32,23 @@ dat = read.csv(paste('../../results/', file, sep=""), header=T)
 
 algorithms = c("OD.ID", "Naive", "Base.version", "Version.1b", "Window.2",
 "Window.4", "Window.8")
-cannonical.names = c("OD+ID", "Naive", "Base", "Base+", "Window 2", "Window 4",
-"Window 8")
+cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
+"WDPCA*-4", "WDPCA*-8")
 color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
+
+len = length(dat$instance)
+od = sort(dat$OD.ID * 1000)
+naive = sort(dat$Naive * 1000)
+base = sort(dat$Base.version * 1000)
+baseb = sort(dat$Version.1b * 1000)
+window2 = sort(dat$Window.2 * 1000)
+window4 = sort(dat$Window.4 * 1000)
+window8 = sort(dat$Window.8 * 1000)
+
+solved = apply(dat[algorithms], 2, function(col)1-sum(is.na(col))/length(col))
+lengths = apply(dat[paste(algorithms, "length", sep="_")],
+                2,
+                function(col)mean(col,na.rm=T))
 @
 
 \begin{document}

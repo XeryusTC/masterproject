@@ -20,7 +20,7 @@ conflicts. After a conflict has been successfully solved then the agents
 involved can work on solving the next conflict.
 Below are the details of three different versions of this algorithm.
 
-\subsection{Naive Partial Prioritized Cooperative Pathfinding}
+\subsection{Partial Cooperative A*}
 The most simple approach to resolving the conflicts is by creating all possible
 ordering permutations for the agents involved in the conflict. The permutation
 that has the lowest sum path length is used as the solution for the conflict.
@@ -29,14 +29,13 @@ most appropriate one because it is not able to predict the consequences of
 selecting one solution over the others.
 Most conflicts involve just two agents, so there are only two possible ordering
 permutations which means that the amount of permutations that need to be
-evaluated is low. This version of the algorithm is known as Naive Partial
-Prioritized  Cooperative Pathfinding (NPPCPF).
+evaluated is low.
 
-\subsection{Partial Prioritized Cooperative Pathfinding}
+\subsection{Dialogue-based Partial Cooperative A*}
 Going through all possible permutations and evaluating them is not the most
 clever method of finding a priority ordering \cite{bennewitz2002}. To reduce
 the amount of computation needed to find a solution some improvements can be
-made. Partial Prioritized Cooperative Pathfinding (PPCPF) is more intelligent
+made. Dialogue-based Partial Cooperative A* (DPCA*) is more intelligent
 than naively computing all possible combinations. Agents can enter a
 dialogue of which the goal is to find a solution to
 the conflict that works for all involved agents. This dialogue consists of
@@ -82,14 +81,16 @@ To reduce the amount of computation required agents can store the paths that
 they have calculated. Agents can then consult their path cache when evaluating
 proposals. This allows them to pick a path that has been found earlier and use
 that as a solution. The only restriction is that the cached path does not have
-a conflict with agents of a higher priority.
+a conflict with agents of a higher priority. Using a cached path may increase 
+the number of conflicts, these will be solved by later dialogues and should not 
+influence the use of a cached path.
 
-\subsection{Windowed Partial Prioritized Cooperative Pathfinding}
+\subsection{Windowed Dialogue-based Partial Cooperative A*}
 One of the issues with this algorithm is that all dialogues and computation
 occur before execution of the plan. Because both planning and execution take
 time without requiring the same resources it is also possible to do them at the
 same time. This means that the plan should be executed while it is still being
-constructed. One way of doing this is my applying a window to PPCPF. A
+constructed. One way of doing this is my applying a window to DPCA*. A
 window $w$ determines that agents will use the above algorithm to solve all
 conflicts that occur within $w$ time steps from their current position. Agents
 will not coordinate past the boundary of the window, solving conflicts that

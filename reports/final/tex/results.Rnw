@@ -1,3 +1,5 @@
+%!TeX root = ../main.Rnw
+
 \section{Experimental results}\label{sec:results}
 % TODO: investigate run time vs number of conflicts found
 
@@ -18,17 +20,19 @@ starting position might be another agents destination.
 	fields mean that the weight is not used by that algorithm.}
 	\label{tbl:annealing}
 	\begin{tabular}{l|r|r|r}
-		Algorithm & \multicolumn{3}{c}{Weights} \\ \cline{2-4}
+        \hline
+		& \multicolumn{3}{c}{Weights} \\ \cline{2-4}
 		& Path length & Conflicts solved & Partial solution \\ \hline
-		PPCPF     & 4.743788 & 5.290992 &  \\
-		PPCPF+    & 0.312151 & 5.569737 & 2.677335 \\
-		WPPCPF-2 & 3.113396 & 9.46371 &  \\
-		WPPCPF-4 & 8.735623 & 7.914287 &  \\
-		WPPCPF-8 & 9.352366 & 22.87437 &
+		\Sexpr{cannonical.names[3]} & 4.743788 & 5.290992 &  \\
+		\Sexpr{cannonical.names[4]} & 0.312151 & 5.569737 & 2.677335 \\
+		\Sexpr{cannonical.names[5]} & 3.113396 & 9.46371 &  \\
+		\Sexpr{cannonical.names[6]} & 8.735623 & 7.914287 &  \\
+		\Sexpr{cannonical.names[7]} & 9.352366 & 22.87437 & \\
+        \hline
 	\end{tabular}
 \end{table}
 
-PPCPF and WPPCPF  both need to evaluate proposals
+DPCA* and WDPCA*  both need to evaluate proposals
 made by agents. The proposals are evaluated on several different effects that
 they have on an agent's plan. To be able to evaluate a proposal properly there
 are several weights that need to be set so that each effect is taken into
@@ -56,36 +60,26 @@ distribution. The time it takes to solve each instance in the set of problems
 is recorded. There is a time limit of 2000ms for each instance to calculate a
 solution.
 
-<<perfgraph>>=
-len = length(dat$instance)
-od = sort(dat$OD.ID * 1000)
-naive = sort(dat$Naive * 1000)
-base = sort(dat$Base.version * 1000)
-baseb = sort(dat$Version.1b * 1000)
-window2 = sort(dat$Window.2 * 1000)
-window4 = sort(dat$Window.4 * 1000)
-window8 = sort(dat$Window.8 * 1000)
-
+<<perfgraph,echo=F,warning=F,cache=T,dependson='preprocess',dev='tikz',fig.height=3,fig.width=6,fig.align='center',fig.pos='h',fig.cap=perfgraph.title>>=
 plot(c(), c(),
     type='l',
     log='y',
     col='red',
     xlim=c(1,len),
     ylim=c(5, 2000),
-    xlab='Instance',
+    xlab='Problem instance',
     ylab='Time (ms)',
     frame.plot=F
 )
-lines(seq(length(od)), od, col='red')
-lines(seq(length(naive)), naive, col='blue')
-lines(seq(length(base)),  base,  col='green')
-lines(seq(length(baseb)), baseb, col='grey')
-lines(seq(length(window2)), window2, col='magenta')
-lines(seq(length(window4)), window4, col='cyan')
-lines(seq(length(window8)), window8, col='orange')
+lines(seq(length(od)), od, col=color.set[1])
+lines(seq(length(naive)), naive, col=color.set[2])
+lines(seq(length(base)),  base,  col=color.set[3])
+lines(seq(length(baseb)), baseb, col=color.set[4])
+lines(seq(length(window2)), window2, col=color.set[5])
+lines(seq(length(window4)), window4, col=color.set[6])
+lines(seq(length(window8)), window8, col=color.set[7])
 legend("bottomright",
-    legend=c("OD+ID", "Naive", "Base", "Base+", "Window 2", "Window 4", "Window 
-    8"),
+    legend=cannonical.names,
     col=color.set,
     pch=16
 )
@@ -109,12 +103,12 @@ The graph in \autoref{fig:perfgraph} shows the performance characteristic for
 the tested algorithms. It shows that only the naive approach is generally
 slower than the complete algorithm OD+ID, in $65.25\%$ of the instances that
 both algorithms solved OD+ID was faster. All other methods are faster than
-OD+ID and are able to find a solution to more instances. The PPCPF and PPCPF+
-versions of the algorithm have an almost equal performance. PPCPF is
+OD+ID and are able to find a solution to more instances. The DPCA* and DPCA*+
+versions of the algorithm have an almost equal performance. DPCA* is
 slightly faster on each individual instance by 3.7 ms as shown by a one-sided
 paired t-test, $t(6097) = -6.05, p=7.87 \cdot 10^{-8}$. They are able to solve
 about the same number of instances, PPCPF solves $61.64\%$ of
-instances while PPCPF+ is able to solve $61.23\%$.
+instances while DPCA*+ is able to solve $61.23\%$.
 
 The size of the window also has an influence on the performance. From
 \autoref{fig:perfgraph} we can see that any restricted window size means that
@@ -129,29 +123,26 @@ p=0.37$.
 %The window size has a large effect on the sum of the path lengths of the
 %agents as shown in \autoref{tbl:length}.
 
-\begin{table}[t]
-	\centering
-	\caption{Solution quality of algorithms. Length is the sum of the lengths
-	of the paths for a single problem instance.}
-	\label{tbl:length}
-	\begin{tabular}{l|r|r}
-		Algorithm & Mean length & Instances solved \\ \hline
-		OD+ID & 77.39 & 32.44\% \\
-		NWPPCPF & 69.11 & 30.86\% \\
-		WPPCPF  & 119.93 & 61.64\% \\
-		WPPCPF+ & 119.38 & 61.23\% \\
-		WPPCPF-2 & 168.94 & 82.34\% \\
-		WPPCPF-4 & 162.07 & 80.99\% \\
-		WPPCPF-8 & 147.10 & 74.20\%
-	\end{tabular}
-\end{table}
+<<quality,echo=F,cache=T,dependson='preprocess',results='asis'>>=
+quality.table = t(rbind(paste(solved * 100, "%"), round(lengths, 2)))
+colnames(quality.table) = c('Instances solved', 'Length')
+rownames(quality.table) = cannonical.names
+print(xtable(quality.table,
+       label='tbl:quality',
+       caption='Solution quality of algorithms. Length is the sum of the lengths
+       of the paths for a single problem instance',
+       align='l|r|r',
+       digits=2
+), table.placement="t")
+@
 
-As shown by \autoref{tbl:bl:length} NPPCPF is the only version of the algorithm
-that solves fewer instances than OD+ID. All other versions of PPCPF are able to
-solve at least double the amount of instances. A smaller window means that the
-algorithm is able to solve more problem instances. At the same time this also
-comes at a cost, a smaller window size results in longer sum path lengths as
-shown by \autoref{tbl:length}.
+As shown by \autoref{tbl:quality} \Sexpr{cannonical.names[2]} is the only
+version of the algorithm that solves fewer instances than OD+ID. All versions
+of \Sexpr{cannonical.names[3]} and WDPCA* are able to solve at least double the
+amount of instances. A smaller window means that the algorithm is able to solve
+more problem instances. At the same time this also comes at a cost, a smaller
+window size results in longer sum path lengths as shown by
+\autoref{tbl:quality}.
 
 %\begin{figure}
 %	\centering

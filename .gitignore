@@ -7,6 +7,9 @@ results/
 .RData
 .Rhistory
 reports/final/graphs/*.tex
+reports/final/main.tex
+reports/final/cache/
+reports/final/figure/
 
 # # LaTeX
 *.aux

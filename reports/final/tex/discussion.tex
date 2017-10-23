@@ -1,6 +1,6 @@
 \section{Discussion}\label{sec:discussion}
 % cache
-% PPCPF+ and PPCPF are simular, later is simpler
+% DPCA*+ and PCA are simular, later is simpler
 With DPCA* agents resolve conflicts in pairs only while DPCA*+ can have larger
 groups of agents resolve a conflict. This only happens when multiple agents try
 to make conflicting moves at the same time. Allowing larger groups in a
@@ -29,4 +29,11 @@ later. Agents will also determine whether they have conflicts after every time
 step. This shows that creating a complete global plan can be sacrificed to
 obtain smaller plans in a shorter time.
 
-% PPCPF parameters discussion
+There is an interaction between which algorithm is used and whether previously
+found paths were stored in a cache and reused. From \autoref{fig:cache} it
+becomes clear that a smaller window also means that the effect is smaller. With
+a small window there are fewer conflicts, so agents will not have to
+participate in conflicts very often. This means that they will not consult the
+cache as often and therefore there is less of a speed-boost. On top of that the
+paths are also shorter and easier to calculate, so retrieving a path from the
+cache is not faster than calculating the path outright.

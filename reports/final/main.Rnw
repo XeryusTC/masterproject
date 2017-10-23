@@ -30,19 +30,27 @@ require(tikzDevice)
 options("xtable.caption.placement" = "top")
 options("xtable.table.placement" = "t")
 options("xtable.hline.after" = c(0))
+options("scipen" = 1)
 
 # Figure titles
 perfgraph.title = "Comparison of performance of various algorithms on $10 000$
 problem instances."
+cachegraph.title = "Comparison of performance of various algorithms with and
+without the use of a path cache. Dashed lines indicate that path cache wasn't
+used while dotted lines indicate that it was used."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
+file = rev(list.files('../../results', 'cache*'))[1]
+dat.cache = read.csv(paste('../../results/', file, sep=""), header=T)
 
 algorithms = c("OD.ID", "Naive", "Base.version", "Version.1b", "Window.2",
 "Window.4", "Window.8")
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
 "WDPCA*-4", "WDPCA*-8")
+cannonical.names.cache = cannonical.names[3:7]
 color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
+color.set.cache = color.set[3:7]
 
 len = length(dat$instance)
 od = sort(dat$OD.ID * 1000)
@@ -57,6 +65,41 @@ solved = apply(dat[algorithms], 2, function(col)1-sum(is.na(col))/length(col))
 lengths = apply(dat[paste(algorithms, "length", sep="_")],
                 2,
                 function(col)mean(col,na.rm=T))
+naive.vs.odid = mean(dat$OD.ID < dat$Naive, na.rm=T)
+base.vs.plus = t.test(dat$Base.version, dat$Version.1b, paired=T,
+                      alternative='less')
+windowdat = rbind(cbind(dat$Window.2, 2), cbind(dat$Window.4, 4),
+                  cbind(dat$Window.8, 8))
+# Influence of window on solve time
+w.anova = anova(lm(windowdat[,1] ~ windowdat[,2]))
+t.2vs4 = t.test(dat$Window.2, dat$Window.4)
+t.2vs8 = t.test(dat$Window.2, dat$Window.8)
+t.4vs8 = t.test(dat$Window.4, dat$Window.8)
+
+len.cache = length(unique(dat.cache$instance))
+base.nocache    = sort(dat.cache[dat.cache$algorithm=='Base' &
+                                     dat.cache$cache=='False',]$time * 1000)
+plus.nocache    = sort(dat.cache[dat.cache$algorithm=='Plus' &
+                                     dat.cache$cache=='False',]$time * 1000)
+window2.nocache = sort(dat.cache[dat.cache$algorithm=='Window2' &
+                                     dat.cache$cache=='False',]$time * 1000)
+window4.nocache = sort(dat.cache[dat.cache$algorithm=='Window4' &
+                                     dat.cache$cache=='False',]$time * 1000)
+window8.nocache = sort(dat.cache[dat.cache$algorithm=='Window8' &
+                                     dat.cache$cache=='False',]$time * 1000)
+base.cache      = sort(dat.cache[dat.cache$algorithm=='Base' &
+                                     dat.cache$cache=='True',]$time * 1000)
+plus.cache      = sort(dat.cache[dat.cache$algorithm=='Plus' &
+                                     dat.cache$cache=='True',]$time * 1000)
+window2.cache   = sort(dat.cache[dat.cache$algorithm=='Window2' &
+                                     dat.cache$cache=='True',]$time * 1000)
+window4.cache   = sort(dat.cache[dat.cache$algorithm=='Window4' &
+                                     dat.cache$cache=='True',]$time * 1000)
+window8.cache   = sort(dat.cache[dat.cache$algorithm=='Window8' &
+                                     dat.cache$cache=='True',]$time * 1000)
+cache.model = lm(time ~ num.agents + algorithm * cache, data=dat.cache)
+cache.anova = aov(cache.model)
+cache.sum = summary(cache.anova)[[1]]
 @
 
 \begin{document}

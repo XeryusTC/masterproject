@@ -49,15 +49,15 @@ agents doesn't solve the conflict for all agents.
 \end{table}
 
 \subsection{Experimental evaluation}
-To compare the algorithms they are all given a large set of cooperative
-pathfinding problems that have be to solve. Each instance is constructed
-following the same procedure as used for simulated annealing. Each instance has
-between 2 and \agentsupb, the number of agents still forms a uniform
-distribution. The time it takes to solve each instance in the set of problems
-is recorded. There is a time limit of 2000ms for each instance to calculate a
-solution.
+To compare the algorithms they are all given a large set of
+cooperative pathfinding problems that have be to solve. Each instance
+is constructed following the same procedure as used for simulated annealing.
+Each instance has between 2 and \agentsupb, the number of agents still forms a
+uniform distribution. The time it takes to solve each instance in the set of
+problems is recorded. There is a time limit of 2000ms for each instance to
+calculate a solution.
 
-<<perfgraph,echo=F,warning=F,cache=T,dependson='preprocess',dev='tikz',fig.height=2.5,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
+<<perfgraph,echo=F,warning=F,cache=T,cache.beater=dat,dev='tikz',fig.height=2.5,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(), c(),
     type='l',
@@ -99,30 +99,40 @@ were solved by the algorithm.
 
 The graph in \autoref{fig:perfgraph} shows the performance characteristic for
 the tested algorithms. It shows that only the naive approach is generally
-slower than the complete algorithm OD+ID, in $65.25\%$ of the instances that
+slower than the complete algorithm OD+ID, in $\Sexpr{round(naive.vs.odid * 100,
+1)}\%$ of the instances that
 both algorithms solved OD+ID was faster. All other methods are faster than
 OD+ID and are able to find a solution to more instances. The DPCA* and DPCA*+
 versions of the algorithm have an almost equal performance. DPCA* is
-slightly faster on each individual instance by 3.7 ms as shown by a one-sided
-paired t-test, $t(6097) = -6.05, p=7.87 \cdot 10^{-8}$. They are able to solve
-about the same number of instances, PPCPF solves $61.64\%$ of
-instances while DPCA*+ is able to solve $61.23\%$.
+slightly faster on each individual instance by
+$\Sexpr{signif(abs(base.vs.plus$estimate * 1000), 2)}$ ms as shown by a
+one-sided
+paired t-test $(t(\Sexpr{base.vs.plus$parameter}) =
+\Sexpr{round(base.vs.plus$statistic, 2)},
+p=\Sexpr{signif(base.vs.plus$p.value, 3)})$. They are able to solve about the
+same number of instances, DPCA* solves $\Sexpr{round(solved[3] * 100, 1)}\%$
+of instances while DPCA*+ is able to solve $\Sexpr{round(solved[4] * 100,
+1)}\%$.
 
 The size of the window also has an influence on the performance. From
 \autoref{fig:perfgraph} we can see that any restricted window size means that
 the algorithm is faster and is able to solve more problem instances. We can
 also see that the graphs for different window sizes are similar to each other.
 An analysis of variance test shows that there is a difference in the time to
-reach a solution for different window sizes, $F(1, 23751) = 12.119, p=5\cdot
-10^{-4}$. Individual t-tests show that $w=2$ differs from both $w=4$ and $w=8$,
-$t(16313) = 2.91, p=0.0036$ and $t(15355)=3.72, p=1.97\cdot10^{-4}$
-respectively. There is no difference between $w=4$ and $w=8$, $t(15344)=0.89,
-p=0.37$.
+reach a solution for different window sizes $(F(\Sexpr{w.anova[['Df']][1]},
+\Sexpr{w.anova[['Df']][2]}) = \Sexpr{round(w.anova[['F value']][1], 2)},
+p=\Sexpr{signif(w.anova[['Pr(>F)']][1], 3)})$. Individual t-tests show that
+$w=2$ differs from both $w=4$ and $w=8$ ($t(\Sexpr{floor(t.2vs4$parameter)})
+= \Sexpr{round(t.2vs4$statistic, 2)}, p=\Sexpr{signif(t.2vs4$p.value, 3)}$ and
+$t(\Sexpr{floor(t.2vs8$parameter)}) = \Sexpr{round(t.2vs8$statistic, 2)},
+p=\Sexpr{signif(t.2vs8$p.value, 3)}$ respectively). There is no difference
+between $w=4$ and $w=8$ ($t(\Sexpr{floor(t.4vs8$parameter)}) =
+\Sexpr{round(t.4vs8$statistic, 2)}, p=\Sexpr{signif(t.4vs8$p.value, 3)}$).
 %The window size has a large effect on the sum of the path lengths of the
 %agents as shown in \autoref{tbl:length}.
 
-<<quality,echo=F,cache=T,dependson='preprocess',results='asis'>>=
-quality.table = t(rbind(paste(solved * 100, "%"), round(lengths, 2)))
+<<quality,echo=F,cache=T,cache.beater=dat,results='asis'>>=
+quality.table = t(rbind(paste(round(solved * 100, 1), "%"), round(lengths, 2)))
 colnames(quality.table) = c('Instances solved', 'Length')
 rownames(quality.table) = cannonical.names
 xtable(quality.table,
@@ -155,3 +165,52 @@ window size results in longer sum path lengths as shown by
 %	\caption{Lengths}
 %	\label{fig:lengths}
 %\end{figure}
+
+The influence of caching paths that have been calculated is shown in
+\autoref{fig:cache}. Only the effects on DPCA* and WDPCA* with $w=2$ and $w=8$
+are shown to reduce clutter, the effects on DPCA*+ and WDPCA* with $w=4$ were
+also tested. The dashed lines in the plot represent the
+performance of an algorithm with caching enabled, while the dotted line shows
+the performance with the cache disabled. It shows that using a cache has a
+large effect on DPCA*, but not on WDPCA*-2. An analysis of variance shows that
+caching does have an effect on the time to solve an instance
+$(F(\Sexpr{cache.sum[['Df']][3]},
+\Sexpr{cache.anova$df.residual}) = \Sexpr{round(cache.sum[['F value']][3], 2)},
+p = \Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$ while there
+is also an interaction between the algorithm and whether the cache is enabled
+$(F(\Sexpr{cache.sum[['Df']][4]}, \Sexpr{cache.anova$df.residual}) =
+\Sexpr{round(cache.sum[['F value']][4], 2)},
+p=\Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$. This
+interaction confirms that the effect of the cache does indeed depend on which
+version of DPCA* is used.
+
+<<cache,echo=F,warning=F,cache=F,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=2.5,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
+op <- par(mar = c(3.8, 3.8, 1, 1))
+plot(c(), c(),
+    type='l',
+    log='y',
+    col='red',
+    xlim=c(1,len.cache),
+    ylim=c(5, 2000),
+    xlab='Instance',
+    ylab='Time (ms)',
+    frame.plot=F
+)
+lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3)
+#lines(seq(length(plus.nocache)), plus.nocache, col=color.set.cache[2], lty=3)
+lines(seq(length(window2.nocache)), window2.nocache, col=color.set.cache[3],
+    lty=3)
+#lines(seq(length(window4.nocache)), window4.nocache, col=color.set.cache[4],
+#	lty=3)
+lines(seq(length(window8.nocache)), window8.nocache, col=color.set.cache[5],
+    lty=3)
+lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=2)
+#lines(seq(length(plus.cache)), plus.cache, col=color.set.cache[2], lty=2)
+lines(seq(length(window2.cache)), window2.cache, col=color.set.cache[3], lty=2)
+#lines(seq(length(window4.cache)), window4.cache, col=color.set.cache[4], lty=2)
+lines(seq(length(window8.cache)), window8.cache, col=color.set.cache[5], lty=2)
+legend("bottomright",
+    legend=cannonical.names.cache[c(1,3,5)],
+    col=color.set.cache[c(1,3,5)],
+    pch=16)
+@

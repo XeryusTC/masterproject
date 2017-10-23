@@ -57,16 +57,18 @@ bp2 = barplot(lengths,
               ylab='Mean path length')
 
 # percentage that OD+ID is faster than Naive
-mean(od < naive)
+naive.vs.odid = mean(dat$OD.ID < dat$Naive, na.rm=T)
+
+basevsplus = t.test(dat$Base.version, dat$Version.1b, paired=T, alternative = 'less')
 
 # Window statistics
 dat.window = aggregate(cbind(dat$Window.2, dat$Window.4, dat$Window.8) ~ dat$num.agents, FUN=mean)
 windowdat = rbind(cbind(dat$Window.2, 2), cbind(dat$Window.4, 4), cbind(dat$Window.8, 8))
 lengthdat = rbind(cbind(dat$Window.2_length, 2), cbind(dat$Window.4_length, 4), cbind(dat$Window.8_length, 8))
-anova(lm(windowdat[,1] ~ windowdat[,2]))
-t.test(dat$Window.2, dat$Window.4)
-t.test(dat$Window.2, dat$Window.8)
-t.test(dat$Window.4, dat$Window.8)
+w.anova = anova(lm(windowdat[,1] ~ windowdat[,2]))
+t.2vs4 = t.test(dat$Window.2, dat$Window.4)
+t.2vs8 = t.test(dat$Window.2, dat$Window.8)
+t.4vs8 = t.test(dat$Window.4, dat$Window.8)
 anova(lm(lengthdat[,1] ~ lengthdat[,2]))
 t.test(dat$Window.2_length, dat$Window.4_length)
 t.test(dat$Window.2_length, dat$Window.8_length)

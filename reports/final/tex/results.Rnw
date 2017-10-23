@@ -11,23 +11,8 @@ grid locations, but the obstacles do not block agents from moving along
 diagonals as specified in \autoref{sec:problem}. Agents are placed randomly in
 the grid such that no two agents have the same starting position, each agent is
 also given a randomly chosen destination location, again these are picked in
-such a way that no two agents have the same destination. Note that one agents
-starting position might be another agents destination.
-
-\begin{table}[t]
-	\centering
-	\caption{Evaluation weights as determined by simulated annealing. Empty
-	fields mean that the weight is not used by that algorithm.}
-	\label{tbl:annealing}
-	\begin{tabular}{l|r|r|r}
-		& Path length & Conflicts solved & Partial solution \\ \hline
-		\Sexpr{cannonical.names[3]} & 4.743788 & 5.290992 &  \\
-		\Sexpr{cannonical.names[4]} & 0.312151 & 5.569737 & 2.677335 \\
-		\Sexpr{cannonical.names[5]} & 3.113396 & 9.46371 &  \\
-		\Sexpr{cannonical.names[6]} & 8.735623 & 7.914287 &  \\
-		\Sexpr{cannonical.names[7]} & 9.352366 & 22.87437 &
-	\end{tabular}
-\end{table}
+such a way that no two agents have the same destination. Note that the starting
+position of one agent might be the destination of another.
 
 DPCA* and WDPCA*  both need to evaluate proposals
 made by agents. The proposals are evaluated on several different effects that
@@ -48,6 +33,21 @@ weight. The partial solved weight is used in cases where multiple agents take
 part in a dialogue and a proposal that only assigns priority to some of the
 agents doesn't solve the conflict for all agents.
 
+\begin{table}[t]
+    \centering
+    \caption{Evaluation weights as determined by simulated annealing. Empty
+        fields mean that the weight is not used by that algorithm.}
+    \label{tbl:annealing}
+    \begin{tabular}{l|r|r|r}
+        & Path length & Conflicts solved & Partial solution \\ \hline
+        \Sexpr{cannonical.names[3]} & 4.743788 & 5.290992 &  \\
+        \Sexpr{cannonical.names[4]} & 0.312151 & 5.569737 & 2.677335 \\
+        \Sexpr{cannonical.names[5]} & 3.113396 & 9.46371 &  \\
+        \Sexpr{cannonical.names[6]} & 8.735623 & 7.914287 &  \\
+        \Sexpr{cannonical.names[7]} & 9.352366 & 22.87437 &
+    \end{tabular}
+\end{table}
+
 \subsection{Experimental evaluation}
 To compare the algorithms they are all given a large set of cooperative
 pathfinding problems that have be to solve. Each instance is constructed
@@ -57,7 +57,8 @@ distribution. The time it takes to solve each instance in the set of problems
 is recorded. There is a time limit of 2000ms for each instance to calculate a
 solution.
 
-<<perfgraph,echo=F,warning=F,cache=T,dependson='preprocess',dev='tikz',fig.height=3,fig.width=6,fig.align='center',fig.pos='h',fig.cap=perfgraph.title>>=
+<<perfgraph,echo=F,warning=F,cache=T,dependson='preprocess',dev='tikz',fig.height=2.5,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
+op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(), c(),
     type='l',
     log='y',

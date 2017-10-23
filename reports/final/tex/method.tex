@@ -1,6 +1,6 @@
 \section{Methodology}\label{sec:method}
 Decoupled algorithms are able to solve cooperative pathfinding problems while
-requiring only minimal resources. Unfortunately they have a single bottleneck,
+requiring only minimal resources. Unfortunately they have a single bottleneck:
 the calculation of the priority scheme. In a distributed multi-agent system all
 agents will have to halt calculating a solution while the priority scheme is
 determined in a centralized fashion. To overcome this bottleneck the
@@ -12,43 +12,59 @@ their paths with each other and they will be able to determine where the paths
 have conflicting moves that would lead to a collision. The agents will then be
 able to solve the conflicts without having to wait for slower agents to
 calculate and communicate their optimal paths. To solve conflicts agents will
-enter a dialogue where possible solutions are proposed, evaluated and adapted.
+start a dialogue where possible solutions are proposed, evaluated and adapted.
 The proposals made consist of a priority order for the agents involved in the
 conflict. Agents will only need to solve the first conflict that occurs in
 their path because solving it may have the side-effect of solving later
 conflicts. After a conflict has been successfully solved then the agents
 involved can work on solving the next conflict.
-Below are the details of three different versions of this algorithm.
+Below are the details of three different versions of this algorithm, each
+version of the algorithm has some improvements over the previous version.
 
 \subsection{Partial Cooperative A*}
-The most simple approach to resolving the conflicts is by creating all possible
+The simplest approach to resolving the conflicts is by creating all possible
 ordering permutations for the agents involved in the conflict. The permutation
 that has the lowest sum path length is used as the solution for the conflict.
 This simple method of evaluating the various solutions is unlikely to find the
 most appropriate one because it is not able to predict the consequences of
 selecting one solution over the others.
 Most conflicts involve just two agents, so there are only two possible ordering
-permutations which means that the amount of permutations that need to be
-evaluated is low.
+permutations which means that the amount of priority permutations that need to
+be evaluated is low.
 
 \subsection{Dialogue-based Partial Cooperative A*}
-Going through all possible permutations and evaluating them is not the most
+\begin{table}
+    \centering
+    \caption{Stages in a conflict resolution dialogue.}
+    \label{tbl:stages}
+    \begin{tabular}{l|l|l}
+        Stage & Goal & Next stage \\ \hline
+        Opening & Exchange information & Proposal \\
+        Proposal & Make (incomplete) priority proposals & Evaluation \\
+        Evaluation & Vote on suitability of proposals & Proposal, Closing \\
+        Closing & Permanently adapt best proposal & \\
+    \end{tabular}
+\end{table}
+
+Going through all possible permutations and evaluating them on a single
+criterion is not the most
 clever method of finding a priority ordering \cite{bennewitz2002}. To reduce
 the amount of computation needed to find a solution some improvements can be
-made. Dialogue-based Partial Cooperative A* (DPCA*) is more intelligent
-than naively computing all possible combinations. Agents can enter a
-dialogue of which the goal is to find a solution to
-the conflict that works for all involved agents. This dialogue consists of
-several stages, the first stage is the opening where agents enter the dialogue
-and tell each other whether they have any conflicts that are occurring at an
-earlier time. If this is the case then resolution is postponed until this is
-no longer the case. If all agents involved in the conflict do not have any
-prior conflicts then the dialogue moves to the proposal stage. Each agent
+made. Using a dialogue to solve conflicts is more intelligent than naively
+computing all possible combinations. Agents start a dialogue of which the goal
+is to find a solution to the conflict that works for all involved agents. This
+dialogue consists of several stages which are summarised in
+\autoref{tbl:stages}. The first stage is the opening where agents enter the
+dialogue and tell each other whether they have any conflicts that are occurring
+at an earlier time. If this is the case then resolution is postponed until
+there are  no prior occurring conflicts any more. If all agents involved in the
+conflict do not have any
+earlier conflicts then the dialogue moves to the proposal stage. Each agent
 gets to enter a new proposal for an ordering. This ordering doesn't need to be
 complete, it can assign one agent the highest priority while other agents are
 assigned the same lower priority.
 
-The third stage is the evaluation stage which is entered when all agents have
+The third stage is the evaluation stage which is reached when all agents have
 made a proposal or declined to make one. Each of the new proposals will be
 evaluated in turn. During the evaluation of a proposal each agent has to update
 their plan, the restrictions imposed by the ordering of the proposal should be
@@ -63,9 +79,9 @@ can also notify the other agents of this and the proposal is rejected.
 When multiple agents are involved then it is possible that a proposal can not
 be solved by giving one agent priority over all the others, in this case a more
 complete priority ordering is required. If this happens then the dialogue will
-enter another proposal stage. Agents will now be allowed to expand on earlier
-proposals as well as completely new proposals. Afterwards the dialogue moves to
-the evaluation stage again.
+have another proposal stage. Agents will now be allowed to expand on earlier
+proposals as well as making completely new proposals. Afterwards there is
+another evaluation stage.
 
 After each evaluation stage the agents will tell each other whether they want
 to make additional proposals. If none of the agents does so then the dialogue
@@ -73,23 +89,40 @@ moves to the closing stage. During the closing stage the proposal with the most
 votes is selected as the solution for the conflict. All agents that took part
 in the dialogue permanently adapt the priority ordering. After the dialogue is
 finished the agents will start working on resolving any further conflicts that
-they may have. Because their plans may have been hanged the agents need to
-update the other agents of their new plan, they will also have to recalculate
-where and when conflicts in their plans occur.
+they may have. As a result of resolving conflict agent's plans may have been
+changed, so they will have to communicate their updated plans to the other
+agents, they will also have to recalculate where and when conflicts in their
+plans occur.
+
+There are two approaches to solving conflicts that involve multiple agents. The
+first is to have a single dialogue for all agents, this is referred to as
+Dialogue-based Partial Cooperative A* Plus (DPCA*+). Another approach is to let
+agents solve conflicts in pairs only. If there is a conflict between agents
+$a_1$, $a_2$, $a_3$ at time $t$ then there would be three dialogues: one
+between $a_1$ and $a_2$, one between $a_1$ and $a_3$, and one between $a_2$ and
+$a_3$. Say $a_1$ and $a_2$ are first to hold a dialogue which finishes with the
+priority $a_1 > a_2$, meaning that $a_1$ has priority over $a_2$. $a_2$ is then
+routed away from the conflict location. Next $a_1$ and $a_3$ will have to
+resolve their remaining conflict. When this is also resolved as $a_1 > a_3$
+then the conflict at $t$ is solved. It may be the case that $a_2$ and $a_3$ now
+have a conflict at another position and they will have to solve this as well.
+This algorithm is called Dialogue-based Partial Cooperative A* (DPCA*). This
+approach of having multiple smaller dialogues can be faster than having a
+single large complex dialogue.
 
 To reduce the amount of computation required agents can store the paths that
 they have calculated. Agents can then consult their path cache when evaluating
 proposals. This allows them to pick a path that has been found earlier and use
 that as a solution. The only restriction is that the cached path does not have
 a conflict with agents of a higher priority. Using a cached path may increase
-the number of conflicts, these will be solved by later dialogues and should not
+the number of conflicts, these will be solved by later dialogues and do not
 influence the use of a cached path.
 
 \subsection{Windowed Dialogue-based Partial Cooperative A*}
 One of the issues with this algorithm is that all dialogues and computation
 occur before execution of the plan. Because both planning and execution take
 time without requiring the same resources it is also possible to do them at the
-same time. This means that the plan should be executed while it is still being
+same time. This means that the plan can be executed while it is still being
 constructed. One way of doing this is my applying a window to DPCA*. A
 window $w$ determines that agents will use the above algorithm to solve all
 conflicts that occur within $w$ time steps from their current position. Agents
@@ -100,14 +133,23 @@ Because agents only coordinate in the window it is not necessary for them to
 plan a path past the window boundary as well. Instead agents can plan a path
 for the next $w$ time steps so they get closer to their goal. To achieve this
 the graph can be changed so that the nodes at the window boundary connect
-directly to the goal node.
+directly to the goal node. This can be achieved by changing the cost function
+between adjacent nodes $P$ and $G$ \cite{silver2005}
+\[
+\text{\textsc{cost}(P,Q)} =
+\begin{cases}
+    0 & \text{if } P = Q = G, t < w \\
+    \textsc{HeuristicDistance(P,G)} & \text{if } t = w \\
+    1 & \text{otherwise}
+\end{cases}
+\]
 
 Using the window spreads out the computation over the course of execution, but
 it has other benefits as well. In large multi-agent systems the communication
 between all agents may take a long time, by limiting the search using a window
 there are only a limited number of agents that need to coordinate. This reduces
-the initial planning time, as well for each subsequent window. Agents that are
-never in each other's window will never have to communicate with each other,
+the initial planning time, as well as for each subsequent window. Agents that
+are never in each other's window will never have to communicate with each other,
 saving a lot of unnecessary communication and conflict detection overhead.
 Windowing the search also has benefits in systems where agents can change their
 destination during execution. Instead of recalculating the entire plan when
@@ -115,8 +157,7 @@ this happens, only agents within the window of the agent changing destination
 have to update their plan. Agents that are not affected by the change in
 destination do not have to update their plan. When there would be no window all
 agents would have to recalculate and solve all conflicts again, even if they
-would not need to update their plan, leading to a lot of wasted computational
-resources.
+would not need to update their plan, leading to wasted computational resources.
 
 An overview of all proposed algorithms is given in \autoref{tbl:proposed}, the
 categories shown are similar to those in \autoref{tbl:planning-overview}. All

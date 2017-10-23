@@ -32,7 +32,8 @@ options("xtable.table.placement" = "t")
 options("xtable.hline.after" = c(0))
 
 # Figure titles
-perfgraph.title = "Performance graph"
+perfgraph.title = "Comparison of performance of various algorithms on $10 000$
+problem instances."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)

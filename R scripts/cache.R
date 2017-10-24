@@ -53,5 +53,8 @@ legend("bottomright",
        legend=cannonical.names.cache[c(1,3,5)],
        col=color.set.cache[c(1,3,5)],
        pch=16)
-cache.lm = lm(time ~ num.agents + algorithm * cache, data=dat.cache)
+aggr.cache = aggregate(. ~ num.agents + algorithm + cache, data=dat.cache,
+                       FUN=mean)
+cache.lm = lm(time ~ num.agents + algorithm * cache, data=aggr.cache)
 cache.anova = aov(cache.lm)
+cache.sum = summary(cache.anova)[[1]]

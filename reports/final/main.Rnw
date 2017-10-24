@@ -97,7 +97,9 @@ window4.cache   = sort(dat.cache[dat.cache$algorithm=='Window4' &
                                      dat.cache$cache=='True',]$time * 1000)
 window8.cache   = sort(dat.cache[dat.cache$algorithm=='Window8' &
                                      dat.cache$cache=='True',]$time * 1000)
-cache.model = lm(time ~ num.agents + algorithm * cache, data=dat.cache)
+aggr.cache = aggregate(. ~ num.agents + algorithm + cache, data=dat.cache,
+                       FUN=mean)
+cache.model = lm(time ~ num.agents + algorithm * cache, data=aggr.cache)
 cache.anova = aov(cache.model)
 cache.sum = summary(cache.anova)[[1]]
 @

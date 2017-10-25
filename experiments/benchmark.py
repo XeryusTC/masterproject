@@ -52,17 +52,17 @@ Weights = namedtuple('Weights',
 
 Algorithm = namedtuple('Algorithm', ['name', 'entry', 'kwargs'])
 ALGORITHMS = [
-    Algorithm('OD+ID', odid_entry, {}),
+    Algorithm('ODID', odid_entry, {}),
     Algorithm('Naive', poc_entry, {}),
-    Algorithm('Base version', version1_entry,
+    Algorithm('Base', version1_entry,
               {'weights': Weights(4.743788, 5.290992, 1)}),
-    Algorithm('Version 1b', version1b_entry,
+    Algorithm('Plus', version1b_entry,
               {'weights': Weights(0.3129151, 5.569737, 2.677335)}),
-    Algorithm('Window 8', window_entry,
+    Algorithm('Window8', window_entry,
               {'window_size': 8, 'weights': Weights(9.352366, 22.87437, 1)}),
-    Algorithm('Window 4', window_entry,
+    Algorithm('Window4', window_entry,
               {'window_size': 4, 'weights': Weights(8.735623, 7.914287, 1)}),
-    Algorithm('Window 2', window_entry,
+    Algorithm('Window2', window_entry,
               {'window_size': 2, 'weights': Weights(3.113396, 9.46371, 1)}),
 ]
 
@@ -79,54 +79,51 @@ def main(runs, max_agents):
     line = []
     f = open(f'results/benchmark-{datetime.now()}.csv', 'w')
     writer = csv.writer(f)
-    result = ['instance', 'num agents', 'optimal length', 'optimal makespan']
-    for algorithm in ALGORITHMS:
-        result += [algorithm.name, f'{algorithm.name}_length',
-                   f'{algorithm.name}_makespan']
+    result = ['instance', 'num agents', 'algorithm', 'time', 'length',
+              'initial conflicts', 'solved conflicts']
     writer.writerow(result)
 
     global_start_time = timeit.default_timer()
     for problem in problems:
         print(f"Problem has {len(problem[1])} agents")
         optimal_length = 0
-        optimal_makespan = 0
+        num_agents = len(problem[1])
         try:
             for i in range(len(problem[1])):
                 dist = rra_star.RRAstar(problem[0], problem[1][i],
                                         problem[2][i])
                 optimal_length += dist.dist(problem[1][i])
-                if dist.dist(problem[1][i]) > optimal_makespan:
-                    optimal_makespan = dist.dist(problem[1][i])
         except rra_star.NoValidPathExists:
             optimal_length = 'NA'
-            makespan = 'NA'
+        result = [instance, num_agents, 'optimal', 'NA', optimal_length, 'NA',
+                  'NA']
+        writer.writerow(result)
 
-        result = [instance, len(problem[1]), optimal_length, optimal_makespan]
         for algorithm in ALGORITHMS:
+            result = [instance, num_agents, algorithm.name]
             start_time = timeit.default_timer()
             try:
-                paths = algorithm.entry(*problem,
+                paths, init, final = algorithm.entry(*problem,
                                         start_time=start_time,
                                         max_time=MAX_TIME, **algorithm.kwargs)
                 length = sum(len(p) for p in paths)
-                makespan = max(len(p) for p in paths)
                 end_time = timeit.default_timer()
-                result += [end_time - start_time, length, makespan]
+                result += [end_time - start_time, length, init, final]
             except odid.TimeExceeded:
                 print('Time exceeded')
-                result += ['NA', 'NA', 'NA']
+                result += ['NA', 'NA', 'NA', 'NA']
             except (rra_star.NoValidPathExists, util.NoPathsFoundException):
                 print('No valid path exists')
-                result += ['NA', 'NA', 'NA']
+                result += ['NA', 'NA', 'NA', 'NA']
             except version1b.ConflictNotSolved:
                 print('Could not find a solution to a conflict')
-                result += ['NA', 'NA', 'NA']
+                result += ['NA', 'NA', 'NA', 'NA']
             finally:
                 end_time = timeit.default_timer()
                 print(algorithm.name, 'time:',
                     f'{(end_time - start_time) * 1000:5.3f}ms')
-        writer.writerow(result)
-        f.flush()
+            writer.writerow(result)
+            f.flush()
         instance += 1
     global_end_time = timeit.default_timer()
     print(f'Total time: {(global_end_time - global_start_time) * 1000:5.3f}ms')

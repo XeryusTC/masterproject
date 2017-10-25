@@ -24,6 +24,7 @@
 <<preprocess,echo=F,message=F>>=
 require(knitr)
 require(xtable)
+require(plyr)
 require(tikzDevice)
 
 # settings
@@ -38,43 +39,56 @@ problem instances."
 cachegraph.title = "Comparison of performance of various algorithms with and
 without the use of a path cache. Dashed lines indicate that path cache wasn't
 used while dotted lines indicate that it was used."
+solved.title = "Percentage of instances solved per number agents in the
+instance."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
 file = rev(list.files('../../results', 'cache*'))[1]
 dat.cache = read.csv(paste('../../results/', file, sep=""), header=T)
 
-algorithms = c("OD.ID", "Naive", "Base.version", "Version.1b", "Window.2",
-"Window.4", "Window.8")
+algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4", "Window8")
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
-"WDPCA*-4", "WDPCA*-8")
+                     "WDPCA*-4", "WDPCA*-8")
 cannonical.names.cache = cannonical.names[3:7]
 color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
 color.set.cache = color.set[3:7]
 
-len = length(dat$instance)
-od = sort(dat$OD.ID * 1000)
-naive = sort(dat$Naive * 1000)
-base = sort(dat$Base.version * 1000)
-baseb = sort(dat$Version.1b * 1000)
-window2 = sort(dat$Window.2 * 1000)
-window4 = sort(dat$Window.4 * 1000)
-window8 = sort(dat$Window.8 * 1000)
+len = length(unique(dat$instance))
+od      = sort(dat[dat$algorithm=='ODID',]$time * 1000)
+naive   = sort(dat[dat$algorithm=='Naive',]$time * 1000)
+base    = sort(dat[dat$algorithm=='Base',]$time * 1000)
+plus    = sort(dat[dat$algorithm=='Plus',]$time * 1000)
+window2 = sort(dat[dat$algorithm=='Window2',]$time * 1000)
+window4 = sort(dat[dat$algorithm=='Window4',]$time * 1000)
+window8 = sort(dat[dat$algorithm=='Window8',]$time * 1000)
 
-solved = apply(dat[algorithms], 2, function(col)1-sum(is.na(col))/length(col))
-lengths = apply(dat[paste(algorithms, "length", sep="_")],
-                2,
-                function(col)mean(col,na.rm=T))
-naive.vs.odid = mean(dat$OD.ID < dat$Naive, na.rm=T)
-base.vs.plus = t.test(dat$Base.version, dat$Version.1b, paired=T,
-                      alternative='less')
-windowdat = rbind(cbind(dat$Window.2, 2), cbind(dat$Window.4, 4),
-                  cbind(dat$Window.8, 8))
+dat.sub = subset(dat, !is.na(time))
+solved = count(dat.sub$algorithm)$freq / count(dat[dat$algorithm !=
+                                                   'optimal',]$algorithm)$freq
+solved.aggr = aggregate(time ~ factor(algorithm, levels=algorithms) +
+                               num.agents,
+                        data=dat,
+                        FUN=function(x)1-sum(is.na(x))/length(x),
+                        na.action=na.pass)
+lengths = aggregate(length ~ factor(algorithm, levels=algorithms), data=dat,
+                    FUN=mean)
+naive.vs.odid = mean(subset(dat, algorithm=="ODID")$time < subset(dat,
+                        algorithm=="Naive")$time, na.rm=T)
+base.vs.plus = t.test(dat[dat$algorithm=="Base","time"],
+                      dat[dat$algorithm=="Plus","time"],
+                      paired=T, alternative = "less")
+
 # Influence of window on solve time
-w.anova = anova(lm(windowdat[,1] ~ windowdat[,2]))
-t.2vs4 = t.test(dat$Window.2, dat$Window.4)
-t.2vs8 = t.test(dat$Window.2, dat$Window.8)
-t.4vs8 = t.test(dat$Window.4, dat$Window.8)
+windowdat = subset(dat, algorithm %in% c("Window2", "Window4", "Window8"))
+w.anova = anova(lm(windowdat$time ~ windowdat$algorithm +
+                    windowdat$num.agents))
+t.2vs4 = t.test(dat[dat$algorithm=="Window2","time"],
+                dat[dat$algorithm=="Window4","time"])
+t.2vs8 = t.test(dat[dat$algorithm=="Window2","time"],
+                dat[dat$algorithm=="Window8","time"])
+t.4vs8 = t.test(dat[dat$algorithm=="Window4","time"],
+                dat[dat$algorithm=="Window8","time"])
 
 len.cache = length(unique(dat.cache$instance))
 base.nocache    = sort(dat.cache[dat.cache$algorithm=='Base' &

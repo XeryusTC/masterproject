@@ -96,3 +96,22 @@ t.4vs8 = t.test(log(dat[dat$algorithm=="Window4","time"]),
                 log(dat[dat$algorithm=="Window8","time"]))
 #t.2vs8 = t.test(dat$Window.2, dat$Window.8)
 #t.4vs8 = t.test(dat$Window.4, dat$Window.8)
+
+# conflicts
+conflicts.aggr = aggregate(cbind(initial.conflicts, solved.conflicts) ~ algorithm + num.agents, data=dat, FUN=mean)
+plot(1,
+     type='l',
+     xlim=c(0,40),
+     ylim=c(0,70),
+     xlab='Number of agents',
+     ylab='Conflicts',
+     frame.plot = F
+)
+for(i in 1:length(algorithms))
+{
+    lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts, col=color_set[i])
+}
+legend("topleft",
+       legend=cannonical_names[2:7],
+       col=color_set[2:7],
+       pch=16)

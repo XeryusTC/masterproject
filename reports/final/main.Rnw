@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
+\usepackage{xfrac}
 \usepackage{color}
 \usepackage{float}
 \usepackage{graphicx}
@@ -39,8 +40,8 @@ problem instances."
 cachegraph.title = "Comparison of performance of various algorithms with and
 without the use of a path cache. Dashed lines indicate that path cache wasn't
 used while dotted lines indicate that it was used."
-solved.title = "Percentage of instances solved per number agents in the
-instance."
+solved.title = "Proportion of instances that were solved."
+conflicts.title = "Total number of dialogues completed."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
@@ -89,6 +90,9 @@ t.2vs8 = t.test(dat[dat$algorithm=="Window2","time"],
                 dat[dat$algorithm=="Window8","time"])
 t.4vs8 = t.test(dat[dat$algorithm=="Window4","time"],
                 dat[dat$algorithm=="Window8","time"])
+
+conflicts.aggr = aggregate(cbind(initial.conflicts, solved.conflicts) ~
+                           algorithm + num.agents, data=dat, FUN=mean)
 
 len.cache = length(unique(dat.cache$instance))
 base.nocache    = sort(dat.cache[dat.cache$algorithm=='Base' &

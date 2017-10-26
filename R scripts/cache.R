@@ -37,7 +37,8 @@ plot(c(), c(),
      ylim=c(5, 2000),
      xlab='Instance',
      ylab='Time (ms)',
-     frame.plot=F
+     frame.plot=F,
+     yaxs="i"
 )
 lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3)
 lines(seq(length(plus.nocache)), plus.nocache, col=color.set.cache[2])

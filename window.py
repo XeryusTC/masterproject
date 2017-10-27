@@ -40,7 +40,7 @@ class Agent:
         self.caching = caching
 
     def plan(self, start_time, max_time):
-        print(f'Planning for agent {self}')
+        #print(f'Planning for agent {self}')
         self.old_path = self.path
         self.construct_higher_prio()
         # Check if there is a path in the cache for this prio set up
@@ -49,7 +49,7 @@ class Agent:
             paths = [agent.path for agent in self.higher_prio]
             conflicts = util.paths_conflict(paths)
             if not conflicts:
-                print('Using cached path')
+                #print('Using cached path')
                 self.path = self.path_cache[self.higher_prio]
                 return
         self.path = self._astar(start_time, max_time)
@@ -71,7 +71,7 @@ class Agent:
                     continue
                 prio.append(self.current_conflict.proposal[i])
         self.higher_prio = frozenset(prio)
-        print(f'  Agent {self} final prio: {self.higher_prio}')
+        #print(f'  Agent {self} final prio: {self.higher_prio}')
 
     def propose(self, conflict):
         # If there are no proposals yet, propose to go first
@@ -85,7 +85,7 @@ class Agent:
     def evaluate(self, conflicts):
         # Current conflict solved
         if self.current_conflict in conflicts.values():
-            print('Conflict not solved')
+            #print('Conflict not solved')
             raise ConflictNotSolved()
         score = 0
         # Change in path length
@@ -94,11 +94,11 @@ class Agent:
                  * self.weights.path_len
         # Change in conflicts
         filtered = list(filter(lambda c: self in c.agents, conflicts.values()))
-        print(f'{self} {len(self.conflicts)} {len(filtered)}')
+        #print(f'{self} {len(self.conflicts)} {len(filtered)}')
         score += (len(self.conflicts) - len(filtered)) * \
                  self.weights.conflict_count
 
-        print(f'Agent score {self}: {score}')
+        #print(f'Agent score {self}: {score}')
         return score
 
     def _astar(self, start_time, max_time):
@@ -214,7 +214,7 @@ class Conflict:
                 return
             agent.current_conflict = self
 
-        print(f'Resolving conflict {self}')
+        #print(f'Resolving conflict {self}')
 
         # Let the agents propose priorities
         proposals = tuple(agent.propose(self) for agent in self.agents)
@@ -222,7 +222,7 @@ class Conflict:
         # Enter voting if there are multiple proposals
         if len(proposals) > 1:
             for proposal in proposals:
-                print('Evaluation proposal', proposal)
+                #print('Evaluation proposal', proposal)
                 self.proposals.append(proposal)
                 self.proposal = proposal
                 proposal['score'] = 0
@@ -251,7 +251,7 @@ class Conflict:
             self.solution = proposals[0]
 
         self.proposal = None
-        print('SOLUTION', self.solution)
+        #print('SOLUTION', self.solution)
         # Tell the agents that we are done
         for agent in self.agents:
             agent.current_conflict = None
@@ -280,6 +280,8 @@ def window_version(agents, window, start_time, max_time, visualize=False):
         im.save(f'all_conflicts.png')
 
     conflicts = [c for c in util.paths_conflict(paths) if c['time'] < window]
+    init_conflicts = len(convert_conflicts(agents, conflicts))
+    solved_conflicts = 0
     while not simulation_finished:
         # Resolve conflicts in the window
         while conflicts:
@@ -287,11 +289,11 @@ def window_version(agents, window, start_time, max_time, visualize=False):
             if start_time != None and (time - start_time) > max_time:
                 raise TimeExceeded()
             if visualize:
-                print('Exporting conflicts')
+                #print('Exporting conflicts')
                 im = vis.draw_paths_with_conflicts(paths, conflicts)
                 im.save(f'conflict_{count:05}.png')
                 count += 1
-            print(f'Conflicts found: {len(conflicts)}')
+            #print(f'Conflicts found: {len(conflicts)}')
             #pprint(conflicts)
             conflict_objs = convert_conflicts(agents, conflicts)
             #pprint(conflict_objs)
@@ -321,8 +323,13 @@ def window_version(agents, window, start_time, max_time, visualize=False):
             im.save(f'conflict_{count:05}.png')
             count += 1
 
+        # Add the number of solved conflicts for this window to the total
+        solved = set()
+        for agent in agents:
+            solved.update(agent.resolved_conflicts)
+        solved_conflicts += len(solved)
         # Simulate the next window (advance agents window/2 steps)
-        print("Moving agents along their paths")
+        #print("Moving agents along their paths")
         paths = []
         for i in range(len(agents)):
             agent = agents[i]
@@ -344,17 +351,17 @@ def window_version(agents, window, start_time, max_time, visualize=False):
         if simulation_finished:
             for i in range(len(agents)):
                 actual_paths[i].append(agents[i].path[-1])
-        print() # Just a new line to break up iterations
+        #print() # Just a new line to break up iterations
 
     # Remove waiting until the end of the window from the end of the paths
-    print('before:', sum(len(p) for p in actual_paths))
+    #print('before:', sum(len(p) for p in actual_paths))
     for i in range(len(agents)):
         try:
             while actual_paths[i][-1] == actual_paths[i][-2]:
                 actual_paths[i] = actual_paths[i][:-1]
         except IndexError:
             pass
-    print('after:', sum(len(p) for p in actual_paths))
+    #print('after:', sum(len(p) for p in actual_paths))
 
     # Final visualisation
     if visualize:
@@ -363,7 +370,7 @@ def window_version(agents, window, start_time, max_time, visualize=False):
         im.save(f'conflict_{count:05}.png')
         im = vis.draw_paths_with_conflicts(actual_paths, conflicts)
         im.save(f'final_paths.png')
-    return actual_paths
+    return actual_paths, init_conflicts, solved_conflicts
 
 def convert_conflicts(agents, conflicts):
     conflict_objs = {}
@@ -389,7 +396,7 @@ def main(num_agents, window):
     agents = [Agent(world, starts[i], goals[i], window)
               for i in range(num_agents)]
     start_time = timeit.default_timer()
-    paths = window_version(agents, window, None, None, True)
+    paths, _, _ = window_version(agents, window, None, None, True)
     end_time = timeit.default_timer()
     print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 

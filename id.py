@@ -211,7 +211,7 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
             raise TimeExceeded()
         #print('conflicted groups:', conflicted)
         group1, group2 = random.choice(conflicted)
-        print('Found conflict between', group1, 'and', group2)
+        #print('Found conflict between', group1, 'and', group2)
         if (group1, group2) not in old_conflicts:
             old_conflicts.append((group1, group2))
             # Replan for the smallest group first
@@ -220,7 +220,7 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
                 swapped = True
             else:
                 swapped = False
-            print('Replanning for group', group1)
+            #print('Replanning for group', group1)
             # Get maximum length of groups
             max_length = max(len(path)
                 for path in groups[group1].paths + groups[group2].paths)
@@ -233,7 +233,7 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
                 pass
             # See if this solved the problem
             if groups_conflict([groups[group1], groups[group2]]):
-                print('Replanning for group', group2)
+                #print('Replanning for group', group2)
                 groups[group1].paths = old_paths
                 try:
                     groups[group2].paths = group_od(w, groups[group2],
@@ -249,12 +249,12 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
         # Conflict still not resolved, merge groups
         if (group1, group2) in conflicted:
             end_time = timeit.default_timer()
-            print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
-            print('Merging groups', group1, 'and', group2)
+            #print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+            #print('Merging groups', group1, 'and', group2)
             groups[group1].merge(groups[group2])
             del groups[group2]
-            print('After merge:', tuple(groups[i].size
-                for i in range(len(groups))))
+            #print('After merge:', tuple(groups[i].size
+            #    for i in range(len(groups))))
             groups[group1].paths = group_od(w, groups[group1],
                 start_time=start_time, max_time=max_time)
             # Remove stored conflict
@@ -262,13 +262,13 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
         conflicted = groups_conflict(groups)
 
     end_time = timeit.default_timer()
-    print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
+    #print(f'elapsed time: {(end_time - start_time) * 1000:5.3f}ms')
 
     # Flatten paths
     paths = []
     for group in groups:
         paths += group.paths
-    return paths
+    return paths, 'NA', 'NA'
 
 def groups_conflict(groups):
     num_groups = len(groups)

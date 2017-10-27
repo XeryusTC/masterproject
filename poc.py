@@ -145,7 +145,7 @@ class Conflict:
                 best_length = length
                 best_ordering = ordering
         # Finally, let the agents replan with the added priorities
-        print('best', best_ordering)
+        #print('best', best_ordering)
         for agent in range(len(best_ordering)):
             best_ordering[agent].stable_prio += best_ordering[:agent]
             best_ordering[agent].plan(start_time=start_time, max_time=max_time)
@@ -177,17 +177,18 @@ def poc(agents, start_time=None, max_time=1):
 
     count = 0
     conflicts = util.paths_conflict(paths)
+    init_conflicts = len(find_conflicts(agents, conflicts))
     while conflicts:
         time = timeit.default_timer()
         if start_time != None and (time - start_time) > max_time:
             raise TimeExceeded()
-        print('Exporting conflicts')
+        #print('Exporting conflicts')
         count += 1
-        print(f'Conflicts found: {len(conflicts)}')
-        pprint(conflicts)
+        #print(f'Conflicts found: {len(conflicts)}')
+        #pprint(conflicts)
         # Add the conflicts to the agents
         conflict_sets = find_conflicts(agents, conflicts)
-        pprint(conflict_sets)
+        #pprint(conflict_sets)
         for conflict in conflict_sets:
             c = Conflict(conflict[0], conflict[1], conflict_sets[conflict])
             for agent in c.agents:
@@ -215,9 +216,13 @@ def poc(agents, start_time=None, max_time=1):
         # Calculate the final paths
         paths = [agent.path for agent in agents]
         conflicts = util.paths_conflict(paths)
-    print(f'Final conflicts found: {len(conflicts)}')
+    #print(f'Final conflicts found: {len(conflicts)}')
     # Output final conflict free paths
-    return paths
+    # Find number of conflicts solved
+    conflicts = set()
+    for agent in agents:
+        conflicts.update(agent.old_conflicts)
+    return paths, init_conflicts, len(conflicts)
 
 def find_conflicts(agents, conflicts):
     conflict_sets = {}
@@ -244,8 +249,8 @@ def simple_poc(agents):
 
     conflicts = util.paths_conflict(paths)
     while conflicts:
-        print(f'Conflicts found: {len(conflicts)}')
-        pprint(conflicts)
+        #print(f'Conflicts found: {len(conflicts)}')
+        #pprint(conflicts)
         conflict_sets = find_conflicts(agents, conflicts)
 
         # Randomly get an order for the conflict
@@ -264,7 +269,7 @@ def simple_poc(agents):
     # Get final paths
     paths = list(agent.path for agent in agents)
     conflicts = util.paths_conflict(paths)
-    print(f'Final conflicts found: {len(conflicts)}')
+    #print(f'Final conflicts found: {len(conflicts)}')
     return paths
 
 if __name__ == '__main__':

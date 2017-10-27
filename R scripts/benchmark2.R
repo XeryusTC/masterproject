@@ -39,16 +39,19 @@ legend("bottomright",
        pch=16)
 
 #solved = apply(dat[algorithms], 2, function(col)1-sum(is.na(col))/length(col))
-dat.sub = subset(dat, !is.na(time))
-solved = count(dat.sub$algorithm)$freq / count(dat[dat$algorithm != 'optimal',]$algorithm)$freq
-bp = barplot(solved * 100,
+dat.sub = subset(dat, !is.na(time) & algorithm != 'optimal')
+solved = aggregate(time ~ factor(algorithm, levels=algorithms),
+                   data=dat,
+                   FUN=function(x)1-sum(is.na(x))/length(x),
+                   na.action = na.pass)
+bp = barplot(solved$time * 100,
         names.arg=cannonical_names,
         cex.names = .8,
         xlab='Algorithm',
         ylab='Percentage solved',
         ylim=c(0,100),
         col=color_set)
-text(x = bp, y=solved * 100, xpd=T, label=solved*100, pos=3, cex=.8)
+text(x = bp, y=solved$time * 100, xpd=T, label=solved$time*100, pos=3, cex=.8)
 
 solved.aggr = aggregate(time ~ factor(algorithm, levels=algorithms) + num.agents, data=dat,
                         FUN=function(x)1-sum(is.na(x))/length(x),

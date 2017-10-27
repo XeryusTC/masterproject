@@ -12,7 +12,8 @@ diagonals as specified in \autoref{sec:problem}. Agents are placed randomly in
 the grid such that no two agents have the same starting position, each agent is
 also given a randomly chosen destination location, again these are picked in
 such a way that no two agents have the same destination. Note that the starting
-position of one agent might be the destination of another.
+position of one agent might be the destination of another. All experiments were
+implemented in Python 3.6 and were run on an AMD FX-8120 clocked at 3.1GHz.
 
 DPCA* and WDPCA*  both need to evaluate proposals
 made by agents. The proposals are evaluated on several different effects that
@@ -228,6 +229,45 @@ doesn't follow an exponential trend any more coincides with the point where the
 fraction of instances that an algorithm is able to solve decreases as indicated
 by \autoref{fig:solved}.
 
+The similarities in performance of DPCA* and DPCA*+ can be explained by
+\autoref{fig:conflict-sizes}. It shows what the number of agents in each
+dialogue is depending on the number of agents in the conflict in total. It
+shows that in most dialogues only two agents participate. It is not a given
+that there are larger dialogues in any problem instance, the number of
+dialogues with three or more agents averages to
+$\Sexpr{signif(max(sizes.aggr$X3), 3)}$ at most. For dialogues with four agents
+this is even lower, $\Sexpr{signif(max(sizes.aggr$X4), 4)}$ dialogues per
+instance at most. This means that in most problem instances there will only be
+dialogues in which two agents try to solve a conflict. DPCA*+ often doesn't
+have to solve more complex dialogues, but it uses a more complex strategy to
+reach a successful conclusion for each dialogue and therefore it is slightly
+slower than DPCA*.
+
+<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
+op <- par(mar = c(4, 3.8, 1, 1))
+plot(1,
+    type='n',
+    xlim=c(1,31),
+    ylim=c(0,15),
+    xlab="Number of agents",
+    ylab="Numbor of conflicts",
+    xaxs="i",
+    yaxs="i",
+    frame.plot = F
+)
+points(sizes.aggr$X2[1:31], col='red', pch=8)
+points(sizes.aggr$X3, col='blue', pch=4)
+points(sizes.aggr$X4, col='green', pch=3)
+lines(smooth.spline(sizes.aggr$X2[1:31], spar=0.35), col="red")
+lines(smooth.spline(sizes.aggr$X3[1:31], spar=0.35), col="blue")
+lines(smooth.spline(sizes.aggr$X4, spar=0.35), col="green")
+legend("topleft",
+       legend=c('2 agents', '3 agents', '4 agents'),
+       col=c("red", "blue", "green"),
+       pch=c(8, 4, 3),
+       bty='n')
+@
+
 The effect of caching paths for reuse in dialogues was also measured. To do
 this 1000 problem instances were generated. Each of the (W)DPCA* algorithms
 were presented with each instance while the cache was turned off and turned on.
@@ -246,11 +286,11 @@ p = \Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$ while there
 is also an interaction between the algorithm and whether the cache is enabled
 $(F(\Sexpr{cache.sum[['Df']][4]}, \Sexpr{cache.anova$df.residual}) =
 \Sexpr{round(cache.sum[['F value']][4], 2)},
-p=\Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$. This
-interaction confirms that the effect of the cache does indeed depend on which
-version of DPCA* is used.
+p=\Sexpr{signif(cache.sum[['Pr(>F)']][4], 3)})$. This
+interaction confirms that the effect of the cache does indeed depend on whether
+a window is used and what size it is.
 
-<<cache,echo=F,warning=F,cache=F,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
+<<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(), c(),
     type='l',

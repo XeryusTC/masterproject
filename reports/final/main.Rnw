@@ -42,11 +42,14 @@ without the use of a path cache. Dashed lines indicate that path cache wasn't
 used while dotted lines indicate that it was used."
 solved.title = "Proportion of instances that were solved."
 conflicts.title = "Total number of dialogues completed."
+sizes.title="Comparison of number of agents in DPCA*+ dialogues."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
 file = rev(list.files('../../results', 'cache*'))[1]
 dat.cache = read.csv(paste('../../results/', file, sep=""), header=T)
+file = rev(list.files('../../results', 'conflictsize-*'))[1]
+sizes.dat = read.csv(paste('../../results/', file, sep=""), header=T)
 
 algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4", "Window8")
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
@@ -120,6 +123,9 @@ aggr.cache = aggregate(. ~ num.agents + algorithm + cache, data=dat.cache,
 cache.model = lm(time ~ num.agents + algorithm * cache, data=aggr.cache)
 cache.anova = aov(cache.model)
 cache.sum = summary(cache.anova)[[1]]
+
+sizes.aggr = aggregate(cbind(X2, X3, X4, X5) ~ num.agents,
+                       data=sizes.dat, FUN=mean)
 @
 
 \begin{document}

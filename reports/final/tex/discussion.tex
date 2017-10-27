@@ -1,20 +1,22 @@
 \section{Discussion}\label{sec:discussion}
-% cache
+% TODO: scalability
+% TODO: more compartmentalized than decoupled methods
+
 % DPCA*+ and PCA are simular, later is simpler
-With DPCA* agents resolve conflicts in pairs only while DPCA*+ can have larger
-groups of agents resolve a conflict. This only happens when multiple agents try
-to make conflicting moves at the same time. Allowing larger groups in a
-dialogue means that it gets more complex, this is reflected in the fact that
-PPCPF+ is slower overall and on individual problem instances. Larger groups of
-agents solving conflicts is not necessarily faster than pairs of agents solving
-conflicts. Several small pairwise dialogues can be very effective because the
-pair $a_1$ and $a_2$ resolving their conflict means that $a_2$ gets rerouted,
-this means that $a_2$'s conflict with $a_3$ is also resolved. This means that
-$a_1$ and $a_3$ only need to come to a solution. In the case that all three
-agents would find a solution in a single dialogue they will have to evaluate
-multiple proposals. The added complexity of three agents trying to find a
-solution to the conflict does not outweigh the speed of starting several
-dialogues which come to a conclusion quickly.
+%With DPCA* agents resolve conflicts in pairs only while DPCA*+ can have larger
+%groups of agents resolve a conflict. This only happens when multiple agents try
+%to make conflicting moves at the same time. Allowing larger groups in a
+%dialogue means that it gets more complex, this is reflected in the fact that
+%PPCPF+ is slower overall and on individual problem instances. Larger groups of
+%agents solving conflicts is not necessarily faster than pairs of agents solving
+%conflicts. Several small pairwise dialogues can be very effective because the
+%pair $a_1$ and $a_2$ resolving their conflict means that $a_2$ gets rerouted,
+%this means that $a_2$'s conflict with $a_3$ is also resolved. This means that
+%$a_1$ and $a_3$ only need to come to a solution. In the case that all three
+%agents would find a solution in a single dialogue they will have to evaluate
+%multiple proposals. The added complexity of three agents trying to find a
+%solution to the conflict does not outweigh the speed of starting several
+%dialogues which come to a conclusion quickly.
 
 %window version being better
 WDPCA* is able to solve more problem instances than DPCA* without a window. How
@@ -22,12 +24,12 @@ many more instances can be solved depends on the size of the window. As a
 trade-off the amount of actions required for agents to reach their destination
 increases. This effect get stronger when the window size gets smaller, when
 $w=2$ most of the instances were solved, however the sum of the path lengths
-was also the highest. That the speed of WDPCA-2 is high is not surprising, it
+was also the highest. That the speed of WDPCA*-2 is high is not surprising, it
 reduces the algorithm to be reactive. Agents mainly solve conflicts that will
 happen during the next time step, and some conflicts that happen a time step
 later. Agents will also determine whether they have conflicts after every time
-step. This shows that creating a complete global plan can be sacrificed to
-obtain smaller plans in a shorter time.
+step. This shows that it is a valid strategy to create many small plans with
+low computational effort instead of a complete global plan.
 
 There is an interaction between which algorithm is used and whether previously
 found paths were stored in a cache and reused. From \autoref{fig:cache} it
@@ -37,3 +39,34 @@ participate in conflicts very often. This means that they will not consult the
 cache as often and therefore there is less of a speed-boost. On top of that the
 paths are also shorter and easier to calculate, so retrieving a path from the
 cache is not faster than calculating the path outright.
+
+DPCA* is based on the A* algorithm \cite{hart1968} but this can be changed to
+any pathfinding algorithm. Dialogues result in a priority ordering for agents,
+which in turn determines which agents should be considered moving obstacles by
+other agents. This is independent from which path planning algorithm is used,
+it only puts constraints on where an agent can move to. As long as an algorithm
+is able to handle moving obstacles or can be modified to handle moving
+obstacles then it can be used instead of A* in DPCA*. This means that our
+algorithm can be adapted to work with other discrete space algorithms, or even
+continuous space algorithms like RRT* \cite{lavalle1998,lavalle2001}.
+
+The world defined in \autoref{sec:problem} is an abstracted version of reality
+which only allows for very basic arguments and evaluations to be made during a
+dialogue. A real world situation like rail traffic management is more complex
+and should allow for richer dialogues. In such systems agents should be able to
+make domain specific arguments. For example, in a public transport rail system
+planner agents could make arguments based on how passenger friendly a proposal
+is. A proposal that delays a train from reaching a station in time so that
+passengers can transfer to other stations is less passenger friendly than a
+proposal which doesn't have this effect.
+
+Cooperative pathfinding is a specific instance of a coordination problem. It is
+possible to generalise the findings here to other resource sharing problems.
+Instead of agents making moves in a grid world the agents would claim the use
+of a resource for some amount of time. Two agents have conflicting claims when
+they try to claim the same resource at the same or overlapping times. They can
+resolve this conflict in claims by starting a deliberation dialogue and make
+arguments about why an agent should be allowed to access the resource before
+the other. They could also make proposals about how to resolve the conflict in
+claims and agents should be able to argue for or against its adaptation. A
+voting system similar to the one used by DPCA* could also be used.

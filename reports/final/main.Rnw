@@ -19,7 +19,7 @@
 
 \newcommand{\agentsupb}{40 }
 
-\author{Xeryus Stokkel}
+\author{Xeryus Stokkel \\ Supervisor: prof. dr. Bart Verheij}
 \title{Argumentation Dialogues for Cooperative Pathfinding}
 
 <<preprocess,echo=F,message=F>>=
@@ -68,8 +68,10 @@ window4 = sort(dat[dat$algorithm=='Window4',]$time * 1000)
 window8 = sort(dat[dat$algorithm=='Window8',]$time * 1000)
 
 dat.sub = subset(dat, !is.na(time))
-solved = count(dat.sub$algorithm)$freq / count(dat[dat$algorithm !=
-                                                   'optimal',]$algorithm)$freq
+solved = aggregate(time ~ factor(algorithm, levels=algorithms),
+                   data=dat,
+                   FUN=function(x)1-sum(is.na(x))/length(x),
+                   na.action=na.pass)
 solved.aggr = aggregate(time ~ factor(algorithm, levels=algorithms) +
                                num.agents,
                         data=dat,

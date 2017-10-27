@@ -25,11 +25,14 @@ trade-off the amount of actions required for agents to reach their destination
 increases. This effect get stronger when the window size gets smaller, when
 $w=2$ most of the instances were solved, however the sum of the path lengths
 was also the highest. That the speed of WDPCA*-2 is high is not surprising, it
-reduces the algorithm to be reactive. Agents mainly solve conflicts that will
-happen during the next time step, and some conflicts that happen a time step
-later. Agents will also determine whether they have conflicts after every time
-step. This shows that it is a valid strategy to create many small plans with
-low computational effort instead of a complete global plan.
+reduces the algorithm to be almost reactive. There is barely any global
+planning any more because agents don't look far ahead when trying to find their
+way to the destination. Agents mainly solve conflicts that will
+happen during the next time step, and some conflicts that happen one time step
+later. Agents will also determine whether they have conflicts after action.
+This shows that it is a valid strategy to create many small plans with
+low computational effort instead of a complete global plan, but creating plans
+that are too small has a negative effect on the quality of the solution.
 
 There is an interaction between which algorithm is used and whether previously
 found paths were stored in a cache and reused. From \autoref{fig:cache} it

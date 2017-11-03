@@ -10,6 +10,7 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{calc}
+\usepackage{subcaption}
 \usepackage[hidelinks]{hyperref}
 \usepackage[all]{hypcap}
 

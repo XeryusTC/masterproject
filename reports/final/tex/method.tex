@@ -1,14 +1,22 @@
-\section{Methodology}\label{sec:method}
+\section{Algorithm}\label{sec:method}
 Decoupled algorithms are able to solve cooperative pathfinding problems while
-requiring only minimal resources. Unfortunately they have a single bottleneck:
-the calculation of the priority scheme. In a distributed multi-agent system all
-agents will have to halt calculating a solution while the priority scheme is
-determined in a centralized fashion. To overcome this bottleneck the
-calculation of the
-priority ordering can also become distributed. The base decoupled method can be
+requiring only minimal resources. The agents calculate paths to their
+destination individually so this is inherently distributed. To achieve this
+there has to be determine a  priority order for the agents so that they can
+plan paths that have no conflicts. To do this there is often a central
+processor that knows the paths of all agents. This central processor can then
+find dependencies between agents to determine possible priority orderings that
+can be used to solve the problem \cite{latombe1991,bennewitz2002}. This means
+that decoupled methods are almost fully distributed but they have a single
+centralized bottleneck. All agents will have to halt calculating a solution
+while the priority scheme is determined by the central processor.
+
+To overcome this bottleneck the calculation of the priority ordering can also
+become distributed. The three step base decoupled method can be
 altered to allow for this, the first step where each agent plans its optimal
 path without regard for the other agents remains the same. Next agents share
-their paths with each other and they will be able to determine where the paths
+the paths that they found with each other. Each agent can now determine where
+its path and the paths of other agents
 have conflicting moves that would lead to a collision. The agents will then be
 able to solve the conflicts without having to wait for slower agents to
 calculate and communicate their optimal paths. To solve conflicts agents will
@@ -22,15 +30,71 @@ Below are the details of three different versions of this algorithm, each
 version of the algorithm has some improvements over the previous version.
 
 \subsection{Partial Cooperative A*}
-The simplest approach to resolving the conflicts is by creating all possible
-ordering permutations for the agents involved in the conflict. The permutation
-that has the lowest sum path length is used as the solution for the conflict.
-This simple method of evaluating the various solutions is unlikely to find the
-most appropriate one because it is not able to predict the consequences of
-selecting one solution over the others.
-Most conflicts involve just two agents, so there are only two possible ordering
-permutations which means that the amount of priority permutations that need to
-be evaluated is low.
+The heart of the algorithm is the conflict resolution step. The most
+straightforward approach to solving conflicts is by going through all possible
+agent orderings. An ordering determines which agent has priority over another
+agent, the ordering $a_1 > a_2$ indicates that $a_1$ can plan freely while
+$a_2$ has to consider $a_1$ as a moving obstacle. Usually decoupled methods use
+a permutation of the priority ordering $a_1 > a_2 > \ldots > a_k$ that all
+agents have to adhere to. Partial Cooperative A* (PCA*) uses the method
+described above to allow agents to communicate conflicts with each other. When
+agents detect that they have a conflict they will try to find a priority
+ordering between them that will solve the conflict. Agents will always try to
+find a solution to the conflict that is closest to their current position
+first. This is because the solution to earlier occurring conflicts may also
+have the effect of solving or creating later conflicts.
+
+To find the most suitable priority ordering scheme all possible orderings
+between the agents that are involved in the conflict are evaluated. So a
+conflict with two agents will result in the ordering $a_1 > a_2$ and $a_2 >
+a_1$. The agents temporarily adapt the first ordering and plan new paths with
+the constraints it introduces, the agents measure the length of the paths that
+they found. Next they will adapt the second ordering and create a new plan
+using its constraints, they also measure the lengths. The priority scheme for
+which the sum of the path lengths is the lowest is permanently adapted by the
+agents. Because the solution with the lowest sum path length is used there is
+no consideration for the effects of the solution of conflicts that occur later.
+
+Only the agents that occur in a priority ordering adapt it. This means that an
+agent $a_3$ does not know about the ordering that agents $a_1$ and $a_2$ have
+settled on, say that they picked $a_2 > a_1$. When $a_3$ and $a_1$ have a
+conflict then this will also find a solution to it. If they settle on a
+solution $a_1 > a_3$ then only $a_1$ knows $a_2 > a_1 > a_3$, the other two
+agents only know the partial priorities. In this case the global priority is
+known by $a_1$, but it will not always be the case that one agent knows the
+full priority ordering. The ordering is implied by the partial orderings that
+the agents do know about, this is similar to how plans are constructed in
+partial global planning.
+% TODO: incremental plans
+
+The orderings that are found do not need to be unambiguous, if $a_1$ and $a_3$
+had used the solution $a_3 > a_1$ then $a_1$ would have orderings $a_2 > a_1$
+and $a_3 > a_1$ but no $a_2 > a_3$ or $a_3 > a_2$. This leaves $a_2$ and $a_3$
+free to use any priority scheme in the event that they also have a conflict in
+their paths. This also allows for circular priority orderings, something which
+conventional decoupled algorithms do not support. This is possible because the
+circular ordering is implicit in all the partial orderings that individual
+agents know about. The implied global priority also doesn't need to be
+complete, not every agent needs to be present in it. This is easiest to see
+when considering only agents $a_1$ and $a_5$ in \autoref{fig:world}, for this
+example the other agents do not exist. There is no need to establish an
+ordering for these two agents since their paths never meet. This has the effect
+of implied Independence Detection \cite{standley2010} because these agents will
+never have to communicate beyond sharing the paths that they have found with
+each other. There is no need for them to coordinate because their plans never
+interact.
+% Simplicity of algorithm b/c not able to predict consequences
+% priorities form PGP
+
+%The simplest approach to resolving the conflicts is by creating all possible
+%ordering permutations for the agents involved in the conflict. The permutation
+%that has the lowest sum path length is used as the solution for the conflict.
+%This simple method of evaluating the various solutions is unlikely to find the
+%most appropriate one because it is not able to predict the consequences of
+%selecting one solution over the others.
+%Most conflicts involve just two agents, so there are only two possible ordering
+%permutations which means that the amount of priority permutations that need to
+%be evaluated is low.
 
 \subsection{Dialogue-based Partial Cooperative A*}
 \begin{table}

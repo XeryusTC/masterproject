@@ -4,7 +4,8 @@ requiring only minimal resources. The agents calculate paths to their
 destination individually so this is inherently distributed. To achieve this
 there has to be determine a  priority order for the agents so that they can
 plan paths that have no conflicts. To do this there is often a central
-processor that knows the paths of all agents. This central processor can then
+processor that knows the optimal paths of all agents. This central processor
+can then
 find dependencies between agents to determine possible priority orderings that
 can be used to solve the problem \cite{latombe1991,bennewitz2002}. This means
 that decoupled methods are almost fully distributed but they have a single
@@ -28,6 +29,14 @@ conflicts. After a conflict has been successfully solved then the agents
 involved can work on solving the next conflict.
 Below are the details of three different versions of this algorithm, each
 version of the algorithm has some improvements over the previous version.
+
+%Each of the three algorithms builds upon a more general search algorithm
+%Cooperative A* (CA*). This algorithm is a variation on A* \cite{hart1968} that
+%allows teams of agents to cooperate. Each agent searches for a path
+%individually, but they can take each other's actions into account. Both space
+%and time are searched so that the movements of other agents can be considered.
+%Agents send their paths to the other agents once they're found. During the
+%neighbouring node expansion stage of A*
 
 \subsection{Partial Cooperative A*}
 The heart of the algorithm is the conflict resolution step. The most
@@ -111,52 +120,91 @@ interact.
 \end{table}
 
 Going through all possible permutations and evaluating them on a single
-criterion is not the most
-clever method of finding a priority ordering \cite{bennewitz2002}. To reduce
-the amount of computation needed to find a solution some improvements can be
-made. Using a dialogue to solve conflicts is more intelligent than naively
-computing all possible combinations. Agents start a dialogue of which the goal
-is to find a solution to the conflict that works for all involved agents. This
-dialogue consists of several stages which are summarised in
-\autoref{tbl:stages}. The first stage is the opening where agents enter the
-dialogue and tell each other whether they have any conflicts that are occurring
-at an earlier time. If this is the case then resolution is postponed until
-there are  no prior occurring conflicts any more. If all agents involved in the
-conflict do not have any
-earlier conflicts then the dialogue moves to the proposal stage. Each agent
-gets to enter a new proposal for an ordering. This ordering doesn't need to be
-complete, it can assign one agent the highest priority while other agents are
-assigned the same lower priority.
+criterion is not the most clever method of finding a priority ordering
+\cite{bennewitz2002}. This would mean that the entire search space is
+exhaustively examined until a working solution is found. To avoid evaluating
+all possible permutations and thereby reducing the time required to find a
+solution some improvements can be made. Utilising a dialogue to solve conflicts
+can reduce the number of priority combinations that need to be evaluated.
+Agents take part in a dialogue of which the goal is to find a solution to the
+conflict that works for all agents involved in the conflict. This dialogue
+consists of several stages which are summarised in \autoref{tbl:stages}. For
+each conflict the agents start a new dialogue. The agents work through the
+conflicts in chronological order, they solve conflicts that occur early before
+solving conflicts that occur later. The opening stage is where each dialogue
+starts, during this stage the agents notify each other if they are taking part
+in any dialogues for conflicts that occur earlier than the current conflict
+being discussed. If there is such a prior dialogue then the current dialogue
+will be put on hold all earlier dialogues are completed. If the conflict that
+the dialogue is on is the earliest conflict for all involved agents then the
+dialogue moves on to the proposal stage.
+
+During the proposal stage each agent can enter a new ordering proposal that is
+to be evaluated. Agents can make only one single proposal during each proposal
+stage. There can be multiple of these stages during a dialogue so it is
+possible for agents to make multiple proposals before the dialogue has
+concluded. The proposed priority can be
+partial, if there are three or more agents taking part of the dialogue then
+$a_1 > a_2 > a_3$ is a valid proposal but $a_1 > a_2, a_3$ is as well. In the
+latter case $a_1$ has priority over both $a_2$ and $a_3$, but there is no
+established priority ordering between $a_2$ and $a_3$ yet and this may be
+decided upon later during the dialogue, or during a future dialogue. Agents
+will always propose that they get a higher priority over the other agents that
+are part of the conflict. So in a dialogue that involves two agents $a_4$ and
+$a_5$ each agent gets to make a proposal, $a_4$ will propose $a_4 > a_5$ while
+$a_5$ will propose $a_5 > a_4$.
 
 The third stage is the evaluation stage which is reached when all agents have
 made a proposal or declined to make one. Each of the new proposals will be
-evaluated in turn. During the evaluation of a proposal each agent has to update
-their plan, the restrictions imposed by the ordering of the proposal should be
-respected, as well as the restrictions imposed by previously solved conflicts.
-Once an
-agent is done with updating its plan then it will cast a vote based on how
-suitable the proposal is. All votes are collected and the best proposal is
-used as the solution. It is also possible that an agent was blocked from
-reaching its destination with the proposed priorities, in this case an agent
-can also notify the other agents of this and the proposal is rejected.
+evaluated in turn. To evaluate a proposed priority ordering the agents adapt it
+and update their plans. During this replanning agents have to take into account
+the constraints imposed by both the ordering in the proposal, and the ordering
+imposed by previously solved conflicts. Once an agent has updated its plan then
+it will cast a vote based on how suitable the proposal is. When an agent finds
+that it is unable to plan a path to its destination under a certain proposal
+then it will notify the other agents of this. In this case the proposal is
+rejected by all agents and not voted on, it can also not be expanded on during
+an extra proposal stage. If it is not the case that an agent is blocked from
+reaching its destination then all agents will vote on their preference for a
+proposal. Each vote consists of a single real number that represents how
+suitable the proposal is. This number is based on the increase of the length of
+the path, and whether the new plan solves or causes more conflicts at later
+time steps. Both of these factors are weighted to result in the final vote. All
+agents cast a vote on each acceptable proposal. The proposal with the highest
+sum of the votes is accepted as the solution to the conflict. The votes of each
+agents are weighted equally, so there is no agent which has a stronger vote.
 
-When multiple agents are involved then it is possible that a proposal can not
-be solved by giving one agent priority over all the others, in this case a more
-complete priority ordering is required. If this happens then the dialogue will
-have another proposal stage. Agents will now be allowed to expand on earlier
-proposals as well as making completely new proposals. Afterwards there is
-another evaluation stage.
+% additional proposal stages
+% multiple agents
+% Closing stage
 
-After each evaluation stage the agents will tell each other whether they want
-to make additional proposals. If none of the agents does so then the dialogue
-moves to the closing stage. During the closing stage the proposal with the most
-votes is selected as the solution for the conflict. All agents that took part
-in the dialogue permanently adapt the priority ordering. After the dialogue is
-finished the agents will start working on resolving any further conflicts that
-they may have. As a result of resolving conflict agent's plans may have been
-changed, so they will have to communicate their updated plans to the other
-agents, they will also have to recalculate where and when conflicts in their
-plans occur.
+%During the evaluation of a proposal each agent has to update
+%their plan, the restrictions imposed by the ordering of the proposal should be
+%respected, as well as the restrictions imposed by previously solved conflicts.
+%Once an
+%agent is done with updating its plan then it will cast a vote based on how
+%suitable the proposal is. All votes are collected and the best proposal is
+%used as the solution. It is also possible that an agent was blocked from
+%reaching its destination with the proposed priorities, in this case an agent
+%can also notify the other agents of this and the proposal is rejected.
+%
+%When multiple agents are involved then it is possible that a proposal can not
+%be solved by giving one agent priority over all the others, in this case a more
+%complete priority ordering is required. If this happens then the dialogue will
+%have another proposal stage. Agents will now be allowed to expand on earlier
+%proposals as well as making completely new proposals. Afterwards there is
+%another evaluation stage.
+%
+%After each evaluation stage the agents will tell each other whether they want
+%to make additional proposals. If none of the agents does so then the dialogue
+%moves to the closing stage. During the closing stage the proposal with the most
+%votes is selected as the solution for the conflict. All agents that took part
+%in the dialogue permanently adapt the priority ordering. After the dialogue is
+%finished the agents will start working on resolving any further conflicts that
+%they may have. As a result of resolving conflict agent's plans may have been
+%changed, so they will have to communicate their updated plans to the other
+%agents, they will also have to recalculate where and when conflicts in their
+%plans occur.
 
 There are two approaches to solving conflicts that involve multiple agents. The
 first is to have a single dialogue for all agents, this is referred to as

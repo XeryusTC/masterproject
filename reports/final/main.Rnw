@@ -16,7 +16,8 @@
 
 \graphicspath{{images/}}
 
-\DeclareMathOperator\pos{pos}
+\DeclareMathOperator{\pos}{pos}
+\DeclareMathOperator{\eval}{eval}
 
 \newcommand{\agentsupb}{40 }
 

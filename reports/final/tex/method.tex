@@ -201,57 +201,32 @@ proposal or declined to make one the dialogue moves to the evaluation stage
 again. This time only the new proposals are evaluated.
 % should not accept expanded proposals
 
-%After each evaluation stage the agents will tell each other whether they want
-%to make additional proposals. If none of the agents does so then the dialogue
-%moves to the closing stage.
+Conflicts that involve more than two agents can be solved in two different
+ways. The first is to let agents solve the conflict in pairs, this approach is
+known as Dialogue-based Partial Cooperative A* (DPCA*). In a conflict between
+the agents $a_1$, $a_2$ and $a_3$ at time $t$ then there would be three
+dialogues: one between $a_1$ and $a_2$, one between $a_1$ and $a_3$, and one
+between $a_2$ and$a_3$. Say that $a_1$ and $a_2$ are the first to hold a
+dialogue which finishes with the priority $a_1 > a_2$, meaning that $a_1$ has
+priority over $a_2$. Agent $a_2$ will have found a path that does not go
+through the location of the conflict at $t$. This has the effect of also
+solving the conflict between $a_2$ and $a_3$. Now only $a_1$ and $a_3$ still
+have a conflict at $t$ and they will have to hold a dialogue about which agent
+gets priority over the other. When this dialogue would end with the priority
+scheme $a_1 > a_3$ then the multi-agent conflict at $t$ is solved. It may be
+the case that $a_2$ and $a_3$ now have another conflict at a different position
+and/or time that they will have to resolve. For this conflict there will be at
+least two dialogues that need to lead to a conclusion, and at most three
+conflicts if $a_2$ and $a_3$ do have a conflict at a different location.
 
-% additional proposal stages
-% multiple agents
-% Closing stage
-
-%During the evaluation of a proposal each agent has to update
-%their plan, the restrictions imposed by the ordering of the proposal should be
-%respected, as well as the restrictions imposed by previously solved conflicts.
-%Once an
-%agent is done with updating its plan then it will cast a vote based on how
-%suitable the proposal is. All votes are collected and the best proposal is
-%used as the solution. It is also possible that an agent was blocked from
-%reaching its destination with the proposed priorities, in this case an agent
-%can also notify the other agents of this and the proposal is rejected.
-%
-%When multiple agents are involved then it is possible that a proposal can not
-%be solved by giving one agent priority over all the others, in this case a more
-%complete priority ordering is required. If this happens then the dialogue will
-%have another proposal stage. Agents will now be allowed to expand on earlier
-%proposals as well as making completely new proposals. Afterwards there is
-%another evaluation stage.
-%
-%After each evaluation stage the agents will tell each other whether they want
-%to make additional proposals. If none of the agents does so then the dialogue
-%moves to the closing stage. During the closing stage the proposal with the most
-%votes is selected as the solution for the conflict. All agents that took part
-%in the dialogue permanently adapt the priority ordering. After the dialogue is
-%finished the agents will start working on resolving any further conflicts that
-%they may have. As a result of resolving conflict agent's plans may have been
-%changed, so they will have to communicate their updated plans to the other
-%agents, they will also have to recalculate where and when conflicts in their
-%plans occur.
-
-There are two approaches to solving conflicts that involve multiple agents. The
-first is to have a single dialogue for all agents, this is referred to as
-Dialogue-based Partial Cooperative A* Plus (DPCA*+). Another approach is to let
-agents solve conflicts in pairs only. If there is a conflict between agents
-$a_1$, $a_2$, $a_3$ at time $t$ then there would be three dialogues: one
-between $a_1$ and $a_2$, one between $a_1$ and $a_3$, and one between $a_2$ and
-$a_3$. Say $a_1$ and $a_2$ are first to hold a dialogue which finishes with the
-priority $a_1 > a_2$, meaning that $a_1$ has priority over $a_2$. $a_2$ is then
-routed away from the conflict location. Next $a_1$ and $a_3$ will have to
-resolve their remaining conflict. When this is also resolved as $a_1 > a_3$
-then the conflict at $t$ is solved. It may be the case that $a_2$ and $a_3$ now
-have a conflict at another position and they will have to solve this as well.
-This algorithm is called Dialogue-based Partial Cooperative A* (DPCA*). This
-approach of having multiple smaller dialogues can be faster than having a
-single large complex dialogue.
+The other approach is to have a single dialogue in which all agents
+participate, this is known as Dialogue-based Partial Cooperative A* Plus
+(DPCA*+). Having multiple agents in a dialogue will require that the dialogue
+supports partial priority orderings and that it allows for multiple rounds of
+making proposals and evaluating them. DPCA* does not need to have this
+complexity in dialogues. DPCA*+ may be more complex than DPCA*, but it also
+requires fewer dialogues to find a set of conflict free paths and therefore it
+may be faster than DPCA*.
 
 Each time that agents evaluate a proposal they have to compute paths that
 satisfy the constraints imposed by the priority orderings. This often means
@@ -399,14 +374,15 @@ store that $a_1$ has a higher priority than it. All conflicts in
 paths.
 
 \subsection{Windowed Dialogue-based Partial Cooperative A*}
-One of the issues with this algorithm is that all dialogues and computation
-occur before execution of the plan. Because both planning and execution take
-time without requiring the same resources it is also possible to do them at the
+One of the issues with DPCA* and DPCA*+ is that all dialogues and computation
+occur before execution of the plan. Both planning and execution take time
+without requiring the same resources so it is also possible to do them at the
 same time. This means that the plan can be executed while it is still being
-constructed. One way of doing this is my applying a window to DPCA*. A
+constructed. One way of doing this is by applying a window to restrict how far
+away from an agent's location DPCA* will be used to solve conflicts. A
 window $w$ determines that agents will use the above algorithm to solve all
 conflicts that occur within $w$ time steps from their current position. Agents
-will not coordinate past the boundary of the window, solving conflicts that
+will not cooperate past the boundary of the window, solving conflicts that
 happen beyond that border is deferred to a later point in time. Periodically
 the agents will move their window and solve any new conflicts in the window.
 Because agents only coordinate in the window it is not necessary for them to
@@ -414,7 +390,8 @@ plan a path past the window boundary as well. Instead agents can plan a path
 for the next $w$ time steps so they get closer to their goal. To achieve this
 the graph can be changed so that the nodes at the window boundary connect
 directly to the goal node. This can be achieved by changing the cost function
-between adjacent nodes $P$ and $Q$ \cite{silver2005}
+defined in \autoref{sec:problem} between adjacent nodes $P$ and $Q$
+\cite{silver2005}
 \[
 \text{\textsc{cost}(P,Q)} =
 \begin{cases}
@@ -423,11 +400,14 @@ between adjacent nodes $P$ and $Q$ \cite{silver2005}
     1 & \text{otherwise}
 \end{cases}
 \]
+where \textsc{HeuristicDistance} is a function that returns the cost of the
+shortest path between $P$ and $G$ if there are no other agents on the graph.
 
 Using the window spreads out the computation over the course of execution, but
-it has other benefits as well. In large multi-agent systems the communication
-between all agents may take a long time, by limiting the search using a window
-there are only a limited number of agents that need to coordinate. This reduces
+it has other benefits as well. Exchanging optimal paths between agents after
+the first step may take a long time in large multi-agent systems.
+By limiting the search using a window agents only need to coordinate with a
+limited number of other agents. This reduces
 the initial planning time, as well as for each subsequent window. Agents that
 are never in each other's window will never have to communicate with each other,
 saving a lot of unnecessary communication and conflict detection overhead.
@@ -440,10 +420,23 @@ agents would have to recalculate and solve all conflicts again, even if they
 would not need to update their plan, leading to wasted computational resources.
 
 An overview of all proposed algorithms is given in \autoref{tbl:proposed}, the
-categories shown are similar to those in \autoref{tbl:planning-overview}. All
-methods are decoupled, not complete and do use priorities to ensure that agents
-do not have conflicts. The meaning of communication has slightly changed, it
-now restricts with which agents dialogues can be started.
+categories shown are similar to those in \autoref{tbl:planning-overview}. Some
+of the columns from \autoref{tbl:planning-overview} are missing in
+\autoref{tbl:proposed} because these have the same values for all proposed
+algorithms. Each algorithm is decentralized because they do not rely on a
+central processor at any time. The algorithms are heavily influenced by the
+three step decoupled approach where agents first calculate optimal routes, then
+find a priority ordering and finally plan a route to their destination that
+adhere to the constraints that are imposed by the priority ordering. None of
+the methods is complete because they belong to categories that generally do not
+include complete algorithms. The meaning of the communication column in
+\autoref{tbl:proposed} is more specific of that in
+\autoref{tbl:planning-overview}; here it means in which range agents can start
+dialogues with each other. The meaning of the online column remains the same,
+an offline algorithm completes planning before execution while an online
+algorithm interleaves making and executing plans. There ``valuations'' column
+is new, it indicates whether agents are allowed to evaluate proposals and share
+the evaluations with each other.
 
 \begin{table}
     \centering
@@ -452,9 +445,9 @@ now restricts with which agents dialogues can be started.
     \autoref{tbl:planning-overview}.}
     \label{tbl:proposed}
     \begin{tabular}{l|l|l|l}
-        Algorithm & Na\"ive & Communication & Online \\ \hline
-        PCA*   & Yes & All & No \\
-        DPCA*  & No  & All & No \\
-        WDPCA* & No  & Window & Yes \\
+        Algorithm & Communication & Online & Valuations \\ \hline
+        PCA*   & All & No & No \\
+        DPCA*  & All & No & Yes \\
+        WDPCA* & Window & Yes & Yes \\
     \end{tabular}
 \end{table}

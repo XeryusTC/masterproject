@@ -11,7 +11,7 @@
     \label{fig:world}
 \end{figure}
 
-
+The problem of cooperative pathfinding can be defined as follows.
 A shared space is divided into discrete cells such that it forms an 8-connected
 grid. Some of the cells in this grid are static obstacles while the other cells
 are open. A set of $k$ agents $\{a_1, a_k\}$ occupy cells within the grid, the
@@ -24,7 +24,7 @@ location. Each time step an agent can take exactly one of these actions.
 An example initial configuration is shown in \autoref{fig:world}. The goal is
 to find a series of moves, or paths, one for each agent, such that the agents
 reach their destination without colliding with other agents or running into the
-static obstacles. Each action has unit cost, with the exception of waiting in 
+static obstacles. Each action has unit cost, with the exception of waiting in
 the goal position. The cost function of moving is then
 \[
 \text{\textsc{cost}(P,Q)} =
@@ -33,10 +33,10 @@ the goal position. The cost function of moving is then
     1 & \text{otherwise}
 \end{cases}
 \]
-where $P$ is the node where the agent started, $Q$ is the node where the agent 
-ended up in, and $G$ is the agent's goal node. A single agent's path has a cost 
-that is the sum of the costs of all its actions. The cost of a solution is 
-defined as the sum of the costs of the paths of the agents. The most 
+where $P$ is the node where the agent started, $Q$ is the node where the agent
+ended up in, and $G$ is the agent's goal node. A single agent's path has a cost
+that is the sum of the costs of all its actions. The cost of a solution is
+defined as the sum of the costs of the paths of the agents. The most
 appropriate solution to the problem is the solution with the lowest cost.
 
 The paths of two agents are not in conflict iff at no time step the agents

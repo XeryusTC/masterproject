@@ -11,6 +11,7 @@
     \label{fig:world}
 \end{figure}
 
+
 A shared space is divided into discrete cells such that it forms an 8-connected
 grid. Some of the cells in this grid are static obstacles while the other cells
 are open. A set of $k$ agents $\{a_1, a_k\}$ occupy cells within the grid, the
@@ -23,7 +24,20 @@ location. Each time step an agent can take exactly one of these actions.
 An example initial configuration is shown in \autoref{fig:world}. The goal is
 to find a series of moves, or paths, one for each agent, such that the agents
 reach their destination without colliding with other agents or running into the
-static obstacles.
+static obstacles. Each action has unit cost, with the exception of waiting in 
+the goal position. The cost function of moving is then
+\[
+\text{\textsc{cost}(P,Q)} =
+\begin{cases}
+    0 & \text{if } P = Q = G \\
+    1 & \text{otherwise}
+\end{cases}
+\]
+where $P$ is the node where the agent started, $Q$ is the node where the agent 
+ended up in, and $G$ is the agent's goal node. A single agent's path has a cost 
+that is the sum of the costs of all its actions. The cost of a solution is 
+defined as the sum of the costs of the paths of the agents. The most 
+appropriate solution to the problem is the solution with the lowest cost.
 
 The paths of two agents are not in conflict iff at no time step the agents
 occupy the same cell, agents move along the same edge (swap positions), or
@@ -41,7 +55,7 @@ Agents are allowed to move along a diagonal even when the two cells on the
 opposing diagonal are blocked, i.e. $a_5$ in \autoref{fig:world} can move to its
 destination in a single time step. An agent $a_i$ can move to a cell occupied by
 agent $a_j$ given that $a_j$ will move to a different cell at the same time.
-Agents $a_1, \ldots a_4$ in \autoref{fig:world} can move their respective
+Agents $a_1, \ldots a_4$ in \autoref{fig:world} can reach their respective
 destinations
 by ``rotating'' clockwise. They can do this in a single time step without
 requiring any additional empty cells. $a_7$ and $a_8$ cannot move to their

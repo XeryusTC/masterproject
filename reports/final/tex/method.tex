@@ -373,6 +373,16 @@ store that $a_1$ has a higher priority than it. All conflicts in
 \autoref{fig:example} have now been solved and agents are free to execute their
 paths.
 
+To evaluate a proposal an agent needs to weigh different factors of the
+quality. In this example a weight of 1 for the path length and a weight of 3
+for the number of solved/introduced conflicts was used. These weights are used
+for demonstration only and an implementation should have these weights set
+empirically. The weights can be any real number. When dialogues between groups
+of three or more agents are possible then a third penalty weight can be added.
+This penalty weight is included in the evaluation if there are two or more
+agents that still have a conflict with each other after adapting a priority
+proposal. It is a penalty for when a proposal only partially solves a conflict.
+
 \subsection{Windowed Dialogue-based Partial Cooperative A*}
 One of the issues with DPCA* and DPCA*+ is that all dialogues and computation
 occur before execution of the plan. Both planning and execution take time

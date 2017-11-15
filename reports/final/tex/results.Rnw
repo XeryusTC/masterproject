@@ -327,15 +327,21 @@ legend("bottomright",
     bty="n", cex=.8)
 @
 
-The effect of caching paths for reuse in dialogues was also measured. To do
-this 1000 problem instances were generated. Both DPCA* and WDPCA*
-were presented with each instance while the cache was turned off and turned on.
-Just like earlier experiments algorithms were given 2000ms to solve each
-instance, this results in
-the performance graph of \autoref{fig:cache}.
-Only the effects on DPCA* and WDPCA* with $w=2$ and $w=8$
-are shown to reduce clutter, the effects on DPCA*+ and WDPCA* with $w=4$ were
-also tested. The dashed lines in the plot represent the
+The agents make use of a path cache to reduce the amount of calculation
+required when they resolve conflicts. If the cache is in use then there should
+be a noticeable decrease in the time it takes to solve problems when compared
+to when agents don't cache paths. To measure the effect of caching on solving
+cooperative pathfinding problems a separate experiment was conducted. A new set
+of 1000 problem instances was generated. Each instance had between 2 and 40
+agents in it. Each instance was presented to DPCA* and WDPCA* twice, once with
+the path cache disabled and once with the cache enabled. Similar to other
+experiments the algorithms had to solve each instance within 2000ms.
+
+The performance graph of this experiment is shown in \autoref{fig:cache}. Only
+the effects of the cache on DPCA* and WDPCA* with $w=2$ and $w=8$ are shown to
+reduce visual clutter, the effects on DPCA*+ and WDPCA* with $w=4$ were also
+tested.
+The dashed lines in the plot represent the
 performance of an algorithm with caching enabled, while the dotted line shows
 the performance with the cache disabled. It shows that using a cache has a
 large effect on DPCA*, but not on WDPCA*-2. An analysis of variance shows that

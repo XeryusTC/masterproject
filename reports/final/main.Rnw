@@ -40,10 +40,11 @@ options("scipen" = 1)
 perfgraph.title = "Comparison of performance of various algorithms on $10 000$
 problem instances."
 cachegraph.title = "Comparison of performance of various algorithms with and
-without the use of a path cache. Dashed lines indicate that path cache wasn't
-used while dotted lines indicate that it was used."
-solved.title = "Proportion of instances that were solved."
-conflicts.title = "Total number of dialogues completed."
+without the use of a path cache. Dotted lines indicate that path cache wasn't
+used while solid lines indicate that the cache was used."
+solved.title = "Proportion of instances that were solved by each algorithm."
+conflicts.title = "Mean number of dialogues that needed to be completed to find
+a solution for instances with $n$ agents."
 sizes.title="Comparison of number of agents in DPCA*+ dialogues."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]

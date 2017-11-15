@@ -17,7 +17,19 @@ position of one agent might be the destination of another. All experiments were
 implemented in Python 3.6 and run on a single core of an AMD FX-8120 clocked at
 3.1GHz.
 
-\subsection{Evaluation weights}
+There are several experiments that are done to compare the proposed algorithms
+to the complete method OD+ID. First the weights that influence the evaluation
+of proposals made during dialogues need to be set, this is discussed in
+\autoref{sec:evalweights}. The main hypothesis is that all proposed algorithms
+are able to solve problem instances faster than OD+ID, but none of the
+algorithms matches OD+ID in terms of the quality of the solution. The quality
+of a solution is measured as the sum of the lengths of the paths that agents
+have to take for them to arrive at their destination position. Several
+sub-experiments are also conducted such as the dependence on the number of
+agents in the conflict to be able to find a solution, and the influence of
+caching paths on solution time.
+
+\subsection{Evaluation weights}\label{sec:evalweights}
 
 DPCA* and WDPCA* both need to evaluate proposals made by agents.
 The evaluation of a proposal is based on the effects that they have on an
@@ -172,43 +184,6 @@ legend("bottomleft", legend=cannonical.names, col=color.set, pch=16, bty="n",
        cex=.8)
 @
 
-\autoref{fig:solved} shows how many instances each algorithm can solve within
-the time limit for varying number of agents in an instance. It shows that there
-is indeed a little difference in performance of WDPCA* when the size of the
-window is varied. A smaller window means that instances with more agents are
-more likely to be solved. It also shows that there is a trade-off, a smaller
-window also means that instances with a medium amount of agents can't always be
-solved. The
-graph also shows a similar picture as \autoref{fig:perfgraph} where OD+ID and
-PCA* solved only few instances while DPCA* and its windowed variants are able
-to solve denser problems. It shows that DPCA* and DPCA*+ have the same overall
-performance, they both solve the same fraction of instances for any number of
-agents. This again suggests that the added complexity of DPCA*+ doesn't have a
-benefit when it comes to solving the cooperative pathfinding problem.
-
-<<quality,echo=F,cache=T,cache.beater=solved,results='asis'>>=
-require(xtable)
-quality.table = t(rbind(paste(round(solved$time * 100, 1), "%"),
-round(lengths$length, 2)))
-colnames(quality.table) = c('Instances solved', 'Length')
-rownames(quality.table) = cannonical.names
-xtable(quality.table,
-       label='tbl:quality',
-       caption='Solution quality of algorithms. Length is the sum of the lengths
-       of the paths for a single problem instance',
-       align='l|r|r',
-       digits=2
-)
-@
-
-As shown by \autoref{tbl:quality} \Sexpr{cannonical.names[2]} is the only
-version of the algorithm that solves fewer instances than OD+ID. All versions
-of \Sexpr{cannonical.names[3]} and WDPCA* are able to solve at least double the
-amount of instances. A smaller window means that the algorithm is able to solve
-more problem instances. At the same time this also comes at a cost, a smaller
-window size results in longer sum path lengths as shown by
-\autoref{tbl:quality}.
-
 <<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
@@ -223,11 +198,49 @@ plot(1,
 for(i in 1:length(algorithms))
 {
     lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts,
-        col=color.set[i])
+      col=color.set[i])
 }
 legend("topleft", legend=cannonical.names[2:7], col=color.set[2:7], pch=16,
-       bty="n", cex=.8)
+    bty="n", cex=.8)
 @
+
+\autoref{fig:solved} shows how many instances each algorithm can solve within
+the time limit for varying number of agents in an instance. It shows that there
+is indeed a little difference in performance of WDPCA* when the size of the
+window is varied. A smaller window means that instances with more agents are
+more likely to be solved. It also shows that there is a trade-off, a smaller
+window also means that instances with a medium amount of agents can't always be
+solved. The
+graph also shows a similar picture as \autoref{fig:perfgraph} where OD+ID and
+PCA* solved only few instances while DPCA* and its windowed variants are able
+to solve problems that include more agents. It shows that DPCA* and DPCA*+ have
+the same overall
+performance, they both solve the same fraction of instances for any number of
+agents. This again suggests that the added complexity of DPCA*+ does not mean
+that it is able to solve more instances of the cooperative pathfinding problem.
+
+<<quality,echo=F,cache=T,cache.beater=solved,results='asis'>>=
+require(xtable)
+quality.table = t(rbind(paste(round(solved$time * 100, 1), "%"),
+round(lengths$length, 2)))
+colnames(quality.table) = c('Instances solved', 'Length')
+rownames(quality.table) = cannonical.names
+xtable(quality.table,
+       label='tbl:quality',
+       caption='Solution quality of algorithms. Length is the sum of the lengths
+       of the paths for a single problem instance.',
+       align='l|r|r',
+       digits=2
+)
+@
+
+As shown by \autoref{tbl:quality} \Sexpr{cannonical.names[2]} is the only
+version of the algorithm that solves fewer instances than OD+ID. All versions
+of \Sexpr{cannonical.names[3]} and WDPCA* are able to solve at least double the
+amount of instances. A smaller window means that the algorithm is able to solve
+more problem instances. At the same time this also comes at a cost, a smaller
+window size results in longer sum path lengths as shown by
+\autoref{tbl:quality}.
 
 The number of dialogues that have taken place on average is shown in
 \autoref{fig:dialogues}. It shows that more dialogues are needed when the
@@ -235,24 +248,29 @@ problem instance contains more agents. DPCA* and DPCA*+ are very similar again,
 so there is little difference in this aspect of the algorithms as well.
 \autoref{fig:dialogues} also shows that more dialogues take place when a window
 is applied to conflict resolution, and with a decreasing size in window there
-are more dialogues that take place. This is to be expected since agents do not
-solve have a dialogue for all conflicts at the start. Instead they will solve
-conflicts that occur within $w$ time steps, then they will execute
-$\sfrac{w}{2}$ steps of the plan and start resolving any conflicts that occur
-then. This means that when agents have a conflict that lies between
+are more dialogues that take place. This is to be expected because agents do
+not start a dialogue for every conflict on the most optimal path, but only for
+those conflicts that occur within $w$ time steps. After they solve these
+conflicts they execute
+$\sfrac{w}{2}$ steps of the plan and move the centre of the window to their new
+position. Next they start resolving any conflicts that occur within the updated
+window. This means that when agents have a conflict that lies between
 $\sfrac{w}{2}$ and $w$ time steps then they are likely to have a dialogue about
 it several times. So when $w$ is small there are more dialogues because agents
 need to coordinate more often.
 
 One thing that is noticeable about \autoref{fig:dialogues} is that the number
 of dialogues required rises exponentially when the number of agents increases,
-but towards the end this trend trails off. This is likely to be because the
-algorithms are only able to find a solution to simple problems. More complex
-problems would require more dialogues but these can't be completed within the
-2000ms time limit. We can see that the point where the number of dialogues
-doesn't follow an exponential trend any more coincides with the point where the
-fraction of instances that an algorithm is able to solve decreases as indicated
-by \autoref{fig:solved}.
+but at some point this trend trails off. This point lies between 25 and 30
+agents depending on the algorithm. There is a peak in the number of dialogues
+between 28 and 35 agents. This is likely to be because the algorithms are only
+able to find a solution to problems with few conflicts. More complex problems
+with many agents would require more dialogues but these can't be completed
+within the 2000ms time limit. We can see that the point where the growth in the
+number of  dialogues required to solve an instance starts to increase coincides
+with \autoref{fig:solved}. The start of the steep cliff for each respective
+algorithm in \autoref{fig:solved} is around the same number of agents as where
+the growth in the number of dialogues starts to decrease.
 
 <<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='b',fig.cap=sizes.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
@@ -280,14 +298,17 @@ legend("topleft",
 @
 
 The similarities in performance of DPCA* and DPCA*+ can be explained by
-\autoref{fig:conflict-sizes}. It shows how many dialogues have $n$ agents
-trying to find a solution to a conflict depending on the total number of agents
-in a problem instance. It
-shows that in most dialogues only two agents participate. It is not a given
+\autoref{fig:conflict-sizes}. It shows the number of dialogues that occur
+depending on the number of agents in a conflict. The number of conflicts is
+split by the number of agents that are part of the conflict.
+%It shows how many dialogues have $n$ agents
+%trying to find a solution to a conflict depending on the total number of agents
+%in a problem instance.
+It shows that in most dialogues only two agents participate. It is not a given
 that there are larger dialogues in any problem instance, the number of
 dialogues with three or more agents averages to
 $\Sexpr{signif(max(sizes.aggr$X3), 3)}$ at most. For dialogues with four agents
-this is even lower, $\Sexpr{signif(max(sizes.aggr$X4), 4)}$ dialogues per
+this is even lower, $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ dialogues per
 instance at most. This means that in most problem instances there will only be
 dialogues in which two agents try to solve a conflict, and only rarely
 dialogues with more than two agents. DPCA*+ often doesn't
@@ -315,11 +336,11 @@ lines(seq(length(window2.nocache)), window2.nocache, col=color.set.cache[3],
 #	lty=3)
 lines(seq(length(window8.nocache)), window8.nocache, col=color.set.cache[5],
     lty=3)
-lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=2)
-#lines(seq(length(plus.cache)), plus.cache, col=color.set.cache[2], lty=2)
-lines(seq(length(window2.cache)), window2.cache, col=color.set.cache[3], lty=2)
-#lines(seq(length(window4.cache)), window4.cache, col=color.set.cache[4], lty=2)
-lines(seq(length(window8.cache)), window8.cache, col=color.set.cache[5], lty=2)
+lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=1)
+#lines(seq(length(plus.cache)), plus.cache, col=color.set.cache[2], lty=1)
+lines(seq(length(window2.cache)), window2.cache, col=color.set.cache[3], lty=1)
+#lines(seq(length(window4.cache)), window4.cache, col=color.set.cache[4], lty=1)
+lines(seq(length(window8.cache)), window8.cache, col=color.set.cache[5], lty=1)
 legend("bottomright",
     legend=cannonical.names.cache[c(1,3,5)],
     col=color.set.cache[c(1,3,5)],
@@ -341,7 +362,7 @@ The performance graph of this experiment is shown in \autoref{fig:cache}. Only
 the effects of the cache on DPCA* and WDPCA* with $w=2$ and $w=8$ are shown to
 reduce visual clutter, the effects on DPCA*+ and WDPCA* with $w=4$ were also
 tested.
-The dashed lines in the plot represent the
+The solid lines in the plot represent the
 performance of an algorithm with caching enabled, while the dotted line shows
 the performance with the cache disabled. It shows that using a cache has a
 large effect on DPCA*, but not on WDPCA*-2. An analysis of variance shows that

@@ -268,7 +268,11 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
     paths = []
     for group in groups:
         paths += group.paths
-    return paths, 'NA', 'NA'
+    return {'paths': paths,
+            'initial': 'NA',
+            'solved': 'NA',
+            'sizes': 'NA',
+        }
 
 def groups_conflict(groups):
     num_groups = len(groups)

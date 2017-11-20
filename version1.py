@@ -303,7 +303,7 @@ def version1(agents, start_time, max_time, visualize=False):
     sizes = (len(c.agents) for c in conflicts)
     return {'paths': paths,
             'initial': init_conflicts,
-            'solved': solved_conflicts,
+            'solved': len(conflicts),
             'sizes': sizes,
         }
 

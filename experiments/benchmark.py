@@ -103,9 +103,12 @@ def main(runs, max_agents):
             result = [instance, num_agents, algorithm.name]
             start_time = timeit.default_timer()
             try:
-                paths, init, final = algorithm.entry(*problem,
-                                        start_time=start_time,
-                                        max_time=MAX_TIME, **algorithm.kwargs)
+                data = algorithm.entry(*problem,
+                                       start_time=start_time,
+                                       max_time=MAX_TIME, **algorithm.kwargs)
+                paths = data['paths']
+                init = data['initial']
+                final = data['solved']
                 length = sum(len(p) for p in paths)
                 end_time = timeit.default_timer()
                 result += [end_time - start_time, length, init, final]

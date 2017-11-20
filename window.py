@@ -370,7 +370,10 @@ def window_version(agents, window, start_time, max_time, visualize=False):
         im.save(f'conflict_{count:05}.png')
         im = vis.draw_paths_with_conflicts(actual_paths, conflicts)
         im.save(f'final_paths.png')
-    return actual_paths, init_conflicts, solved_conflicts
+    return {'paths': actual_paths,
+            'initial': init_conflicts,
+            'solved': solved_conflicts,
+        }
 
 def convert_conflicts(agents, conflicts):
     conflict_objs = {}

@@ -222,7 +222,10 @@ def poc(agents, start_time=None, max_time=1):
     conflicts = set()
     for agent in agents:
         conflicts.update(agent.old_conflicts)
-    return paths, init_conflicts, len(conflicts)
+    return {'paths': paths,
+            'initial': init_conflicts,
+            'solved': len(conflicts),
+        }
 
 def find_conflicts(agents, conflicts):
     conflict_sets = {}

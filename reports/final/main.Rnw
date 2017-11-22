@@ -46,6 +46,7 @@ solved.title = "Proportion of instances that were solved by each algorithm."
 conflicts.title = "Mean number of dialogues that needed to be completed to find
 a solution for instances with $n$ agents."
 sizes.title="Comparison of number of agents in DPCA*+ dialogues."
+quality.title="Number of loops in paths."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
@@ -53,6 +54,8 @@ file = rev(list.files('../../results', 'cache*'))[1]
 dat.cache = read.csv(paste('../../results/', file, sep=""), header=T)
 file = rev(list.files('../../results', 'conflictsize-*'))[1]
 sizes.dat = read.csv(paste('../../results/', file, sep=""), header=T)
+file = rev(list.files('../../results', 'quality*'))[1]
+quality.dat = read.csv(paste('../../results/', file, sep=""), header=T)
 
 algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4", "Window8")
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
@@ -131,6 +134,10 @@ cache.sum = summary(cache.anova)[[1]]
 
 sizes.aggr = aggregate(cbind(X2, X3, X4, X5) ~ num.agents,
                        data=sizes.dat, FUN=mean)
+
+quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
+						 FUN=mean,
+                         data=quality.dat)
 @
 
 \begin{document}

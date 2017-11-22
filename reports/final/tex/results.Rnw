@@ -184,26 +184,6 @@ legend("bottomleft", legend=cannonical.names, col=color.set, pch=16, bty="n",
        cex=.8)
 @
 
-<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
-op <- par(mar = c(4, 3.8, 1, 1))
-plot(1,
-    type='l',
-    xlim=c(0,40),
-    ylim=c(0,70),
-    xlab='Number of agents',
-    ylab='Dialogues',
-    frame.plot = F,
-    yaxs="i", xaxs="i"
-)
-for(i in 1:length(algorithms))
-{
-    lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts,
-      col=color.set[i])
-}
-legend("topleft", legend=cannonical.names[2:7], col=color.set[2:7], pch=16,
-    bty="n", cex=.8)
-@
-
 \autoref{fig:solved} shows how many instances each algorithm can solve within
 the time limit for varying number of agents in an instance. It shows that there
 is indeed a little difference in performance of WDPCA* when the size of the
@@ -241,6 +221,73 @@ amount of instances. A smaller window means that the algorithm is able to solve
 more problem instances. At the same time this also comes at a cost, a smaller
 window size results in longer sum path lengths as shown by
 \autoref{tbl:quality}.
+
+<<loops,echo=F,warning=F,cache=T,cache.beater=quality.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=quality.title>>=
+op <- par(mar = c(3.8, 3.8, 1, 1))
+plot(c(), c(),
+     xlim=c(0,40),
+     ylim=c(0,0.8),
+     frame.plot=F,
+     type='n',
+     xlab="Number of agents",
+     ylab="Number of loops"
+)
+for(i in 5:7) {
+    lines(quality.aggr[quality.aggr[,2]==algorithms[i],]$loops,
+    col=color.set[i])
+}
+legend("topleft",
+       legend=cannonical.names[5:7],
+       col=color.set[5:7],
+       pch=16)
+@
+
+The length of the paths alone do not tell the full story of the quality of the
+solution. Agents may have a node $N$ in its path multiple times. This can
+either be because an agent has a \emph{wait} action on that node. It can also
+be because there is a loop in an agent's path. In this case the agent visits
+other nodes between two visits of node $N$. To analyse the quality of the paths
+the number of loops in each problem instance was recorded. Only the loops that
+occur before the agent first visits its destination node were counted. After an
+agent reaches its goal node there is still the possibility of loops, however
+these loops mean that the agent has moved off its goal node to allow other
+agents to move through. These loops are expected behaviours that occur when
+agents cooperate. We also do not count \emph{wait} actions as loops, so only
+the number of unique times that an agent visits a node are counted.
+
+The mean number of occurring loops for each number of agents is shown in
+\autoref{fig:loops}. Only the results for WDPCA* are shown, no loops were found
+in the solutions provided by OD+ID and other versions of the algorithm. They
+plan a path from the starting position to the goal position, loops can be
+avoided because agents have full knowledge what their plan will be before
+executing it. We can see that there is an increase in the mean number of loops
+as the number of agents in a problem instance increases. How many loops occur
+depends on the size of the window that has been utilised. A larger window means
+that agents have a larger view of the world and are better able to create a
+solution where agents get closer to their goal without having to go back. When
+$w=2$ then agents may make one or two moves to only discover that they now have
+a conflict. Sometimes the solution to a conflict is to backtrack and agents
+will revisit nodes that they have been to earlier.
+
+<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
+op <- par(mar = c(4, 3.8, 1, 1))
+plot(1,
+    type='l',
+    xlim=c(0,40),
+    ylim=c(0,70),
+    xlab='Number of agents',
+    ylab='Dialogues',
+    frame.plot = F,
+    yaxs="i", xaxs="i"
+)
+for(i in 1:length(algorithms))
+{
+    lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts,
+      col=color.set[i])
+}
+legend("topleft", legend=cannonical.names[2:7], col=color.set[2:7], pch=16,
+    bty="n", cex=.8)
+@
 
 The number of dialogues that have taken place on average is shown in
 \autoref{fig:dialogues}. It shows that more dialogues are needed when the

@@ -25,6 +25,7 @@ to help bridge the gap between argumentation and cooperative pathfinding.
         WHCA* \cite{silver2005} & Decoupled & No & Yes & Window
         & Yes \\
 		DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
+        DiMPP \cite{chouhan2017} & Decentralized & Yes & Yes & Ring & No \\
         ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
         %Proposed & Decentralized & No & Partial & All & Before
     \end{tabular}
@@ -215,6 +216,53 @@ Because agents only communicate in a limited range there is no indication
 whether agents will have conflicts at a later point in time. This lack of a
 global overview means that agents must include strategies to resolve deadlocks
 when they occur, there is no way to prevent deadlocks from happening.
+
+Another method that doesn't use a central processor is Distributed Multi-agent
+Path Planning (DiMPP) \cite{chouhan2017}. This is a distributed algorithm that
+is complete, it is guaranteed that it will find a solution. To find the
+solution all agents are only allowed to communicate in a unidirectional ring:
+agent $a_i$ receives messages from $a_{i-1}$ and will send messages to
+$a_{i+1}$, counting is modulo $n$ so agent $a_n$ will send its messages to
+$a_1$. Sending and receiving messages is done by all agents at the same time.
+The algorithm finds a solution by evaluating different priority orders. Naively
+doing so would require the algorithm to evaluate $n!$ priority schemes for $n$
+agents. Instead of this naive search the algorithm will only evaluate the
+orderings
+\[ \langle a_1, a_2, \ldots, a_{n-1}, a_n \rangle \]
+\[ \langle a_2, a_3, \ldots, a_n, a_1 \rangle \]
+\[ \vdots \]
+\[ \langle a_n, a_1, \ldots a_{n-2}, a_{n-1} \rangle \]
+Doing so means that the algorithm only has to evaluate $n$ orderings instead of
+all possible $n!$ permutations. The algorithm finds the priority ordering
+by letting $a_1$ find its optimal path. It will then send its path to $a_2$
+which will find an optimal path that does not conflict with the path of $a_1$.
+After this $a_2$ will send the global plan (the paths from $a_1$ and $a_2$) to
+$a_3$. This process of calculating the optimal path for an agent considering
+the constraints imposed by the paths of the algorithm continues around the
+ring. If an agent $a_i$ is not able to find a path that has no conflicts with
+the paths in the global plan then it will reset the global plan to contain no
+paths. It will now start this procedure again by calculating an optimal path to
+its destination and putting this as the only path in the global plan and
+passing the global plan on to $a_{i+1}$. When an agent $a_j$ receives a global
+plan in which it already has a path then it knows that all agents have found a
+conflict free path and the algorithm has found a solution to the problem. In
+the case that all agents have reset the global plan but no agent ever receives
+a global plan that includes a path for itself then the algorithm has failed to
+find a solution. DiMPP has been proven to be a complete algorithm, it will
+evaluate all $n$ priority orderings which is sufficient to find a solution if
+one exists. Proof for the completeness of the algorithm are given in
+\cite[subsection 5.1]{chouhan2017}. The main idea is that an ordering that
+starts with $a_1$ will never lead to a solution if any agent is not able to
+find a conflict free path, it doesn't matter which agents will always have
+conflicting paths. So when the algorithm evaluates \[ \langle a_1, a_2, \ldots,
+a_{n-1}, a_n \rangle \] and fails to find a solution it will not have to
+consider the $(n-1)!$ other orderings where $a_1$ has the highest priority. The
+algorithm requires no central processor but it does not fully exploit the
+distribution in the multi-agent system. Because agent $a_{i+1}$ has to wait for
+$a_i$ to finish planning there is a dependency between agents that means that
+they will have to wait until other agents finish their calculations. This
+algorithm is also not online like most decentralized algorithms because the
+global plan will be constructed before it is executed.
 
 Optimal Reciprocal Collision Avoidance (ORCA) \cite{vandenberg2011} is a
 decentralised cooperative pathfinding algorithm that requires no communication

@@ -54,12 +54,6 @@ Weights = namedtuple('Weights',
 
 Algorithm = namedtuple('Algorithm', ['name', 'entry', 'kwargs'])
 ALGORITHMS = [
-    Algorithm('ODID', odid_entry, {}),
-    Algorithm('Naive', poc_entry, {}),
-    Algorithm('Base', version1_entry,
-              {'weights': Weights(4.743788, 5.290992, 1)}),
-    Algorithm('Plus', version1b_entry,
-              {'weights': Weights(0.3129151, 5.569737, 2.677335)}),
     Algorithm('Window8', window_entry,
               {'window_size': 8, 'weights': Weights(9.352366, 22.87437, 1)}),
     Algorithm('Window4', window_entry,

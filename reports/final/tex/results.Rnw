@@ -416,10 +416,13 @@ large effect on DPCA*, but not on WDPCA*-2. An analysis of variance shows that
 caching does have an effect on the time to solve an instance
 $(F(\Sexpr{cache.sum[['Df']][3]},
 \Sexpr{cache.anova$df.residual}) = \Sexpr{round(cache.sum[['F value']][3], 2)},
-p = \Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$ while there
-is also an interaction between the algorithm and whether the cache is enabled
-$(F(\Sexpr{cache.sum[['Df']][4]}, \Sexpr{cache.anova$df.residual}) =
+p = \Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$. So there is indeed a
+significant improvement in the performance of an algorithm when the cache is
+employed.
+There is also an interaction between the algorithm and whether the cache is
+enabled $(F(\Sexpr{cache.sum[['Df']][4]}, \Sexpr{cache.anova$df.residual}) =
 \Sexpr{round(cache.sum[['F value']][4], 2)},
-p=\Sexpr{signif(cache.sum[['Pr(>F)']][4], 3)})$. This
-interaction confirms that the effect of the cache does indeed depend on whether
-a window is used and what size it is.
+p=\Sexpr{signif(cache.sum[['Pr(>F)']][4], 3)})$. This confirms what the
+performance graph in \autoref{fig:cache} shows, the effectiveness of the cache
+depends on the algorithm that is used. Using no window or a large window
+benefit more from employing a cache than when a small window is used.

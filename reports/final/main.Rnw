@@ -57,11 +57,13 @@ sizes.dat = read.csv(paste('../../results/', file, sep=""), header=T)
 file = rev(list.files('../../results', 'quality*'))[1]
 quality.dat = read.csv(paste('../../results/', file, sep=""), header=T)
 
-algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4", "Window8")
+algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
+               "Window8", "DiMPP")
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
-                     "WDPCA*-4", "WDPCA*-8")
+                     "WDPCA*-4", "WDPCA*-8", "DiMPP")
 cannonical.names.cache = cannonical.names[3:7]
-color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
+color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+              "maroon")
 color.set.cache = color.set[3:7]
 
 len = length(unique(dat$instance))
@@ -72,6 +74,7 @@ plus    = sort(dat[dat$algorithm=='Plus',]$time * 1000)
 window2 = sort(dat[dat$algorithm=='Window2',]$time * 1000)
 window4 = sort(dat[dat$algorithm=='Window4',]$time * 1000)
 window8 = sort(dat[dat$algorithm=='Window8',]$time * 1000)
+dimpp   = sort(dat[dat$algorithm=='DiMPP',]$time * 1000)
 
 dat.sub = subset(dat, !is.na(time))
 solved = aggregate(time ~ factor(algorithm, levels=algorithms),

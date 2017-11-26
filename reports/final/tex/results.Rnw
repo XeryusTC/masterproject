@@ -98,6 +98,7 @@ lines(seq(length(plus)),  plus,  col='grey')
 lines(seq(length(window2)), window2, col='magenta')
 lines(seq(length(window4)), window4, col='cyan')
 lines(seq(length(window8)), window8, col='orange')
+lines(seq(length(dimpp)), dimpp, col='maroon')
 legend("bottomright", legend=cannonical.names, col=color.set, pch=16, bty="n",
        cex=.8)
 @

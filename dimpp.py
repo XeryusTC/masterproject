@@ -30,7 +30,7 @@ class Agent:
 
         while open_set:
             time = timeit.default_timer()
-            if start_time != None and (time - start_time) > maxtime:
+            if start_time != None and (time - start_time) > max_time:
                 raise TimeExceeded()
             _, time_step, cur = heapq.heappop(open_set)
             if cur == self.goal:
@@ -90,7 +90,6 @@ def dimpp(agents, start_time, max_time):
     n = len(agents)
 
     for a in range(n):
-        print(f'Order starting with agent {a}')
         agents[a].plan([], start_time, max_time)
         global_plan = [agents[a].path]
         try:
@@ -99,7 +98,6 @@ def dimpp(agents, start_time, max_time):
                 if start_time != None and (cur_time - start_time) > max_time:
                     raise TimeExceeded()
                 j = (a + i) % n
-                print(f'  Subplan for agent {j}')
                 agents[j].plan([], start_time, max_time)
                 # Go to next agent if there are no conflicts
                 conflicts = util.paths_conflict(global_plan + [agents[j].path])
@@ -124,7 +122,6 @@ def dimpp(agents, start_time, max_time):
                     raise util.NoPathsFoundException()
                 global_plan.append(agents[j].path)
         except util.NoPathsFoundException:
-            print('Replanning with next agent')
             continue
         # If this is reached then we should have a good solution
         conflicts = util.paths_conflict(global_plan)
@@ -132,7 +129,7 @@ def dimpp(agents, start_time, max_time):
         global_plan = global_plan[n - a:] + global_plan[:n - a]
         assert len(global_plan) == n
         assert global_plan[0][0] == agents[0].start
-        return global_plan
+        return {'paths': global_plan, 'initial': 0, 'solved': 0}
     # If we go through all agents and no plan has been found then we've failed
     raise util.NoPathsFoundException
 

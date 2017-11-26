@@ -13,6 +13,7 @@ import version1
 import version1b
 import standard_algorithm
 import window
+import dimpp
 
 MAX_TIME = 2
 OBSTACLES = 0.2
@@ -47,6 +48,11 @@ def window_entry(world, starts, goals, start_time, max_time, window_size,
     return window.window_version(agents, window_size, start_time, max_time,
                                  False)
 
+def dimpp_entry(world, starts, goals, start_time, max_time):
+    agents = [dimpp.Agent(world, starts[i], goals[i])
+              for i in range(len(starts))]
+    return dimpp.dimpp(agents, start_time, max_time)
+
 Weights = namedtuple('Weights',
                      ['path_len', 'conflict_count', 'partial_solved'])
 
@@ -64,6 +70,7 @@ ALGORITHMS = [
               {'window_size': 4, 'weights': Weights(8.735623, 7.914287, 1)}),
     Algorithm('Window2', window_entry,
               {'window_size': 2, 'weights': Weights(3.113396, 9.46371, 1)}),
+    Algorithm('DiMPP', dimpp_entry, {}),
 ]
 
 def main(runs, max_agents):

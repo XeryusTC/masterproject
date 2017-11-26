@@ -3,9 +3,12 @@ require(plyr)
 file = rev(list.files('results', 'benchmark*'))[1]
 dat = read.csv(paste('results/', file, sep=""), header=T)
 
-algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4", "Window8")
-cannonical_names = c("OD+ID", "NPPCPF", "PPCPF", "PPCPF+", "WPPCPF-2", "WPPCPF-4", "WPPCPF-8")
-color_set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
+algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
+               "Window8", "dimpp")
+cannonical_names = c("OD+ID", "NPPCPF", "PPCPF", "PPCPF+", "WPPCPF-2",
+                     "WPPCPF-4", "WPPCPF-8", "DiMPP")
+color_set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+              "maroon")
 
 len = length(unique(dat$instance))
 od      = sort(dat[dat$algorithm=='ODID',]$time * 1000)
@@ -15,6 +18,7 @@ plus    = sort(dat[dat$algorithm=='Plus',]$time * 1000)
 window2 = sort(dat[dat$algorithm=='Window2',]$time * 1000)
 window4 = sort(dat[dat$algorithm=='Window4',]$time * 1000)
 window8 = sort(dat[dat$algorithm=='Window8',]$time * 1000)
+dimpp   = sort(dat[dat$algorithm=='DiMPP',]$time * 1000)
 
 plot(1,
 	 type='l',
@@ -33,6 +37,7 @@ lines(seq(length(plus)),  plus,  col='grey')
 lines(seq(length(window2)), window2, col='magenta')
 lines(seq(length(window4)), window4, col='cyan')
 lines(seq(length(window8)), window8, col='orange')
+lines(seq(length(dimpp)), dimpp, col='maroon')
 legend("bottomright",
        legend=cannonical_names,
        col=color_set,

@@ -228,10 +228,12 @@ The algorithm finds a solution by evaluating different priority orders. Naively
 doing so would require the algorithm to evaluate $n!$ priority schemes for $n$
 agents. Instead of this naive search the algorithm will only evaluate the
 orderings
-\[ \langle a_1, a_2, \ldots, a_{n-1}, a_n \rangle \]
-\[ \langle a_2, a_3, \ldots, a_n, a_1 \rangle \]
-\[ \vdots \]
-\[ \langle a_n, a_1, \ldots a_{n-2}, a_{n-1} \rangle \]
+\begin{eqnarray*}
+	a_1 > a_2 > &\ldots& > a_{n-1} > a_n \\
+	a_2 > a_3 > &\ldots& > a_n > a_1 \\
+	&\vdots & \\
+	a_n > a_1 > &\ldots& > a_{n-2} > a_{n-1}
+\end{eqnarray*}
 Doing so means that the algorithm only has to evaluate $n$ orderings instead of
 all possible $n!$ permutations. The algorithm finds the priority ordering
 by letting $a_1$ find its optimal path. It will then send its path to $a_2$

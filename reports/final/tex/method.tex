@@ -276,56 +276,74 @@ conflict free set of paths for all agents.
 
 \paragraph{Example of conflict resolution} Consider the cooperative pathfinding
 problem in \autoref{fig:example-initial}. It shows a $4 \times 4$ grid with
-three agents in it and the initial optimal paths they find during the first
-step of the algorithm. Agent $a_1$ has a path that consists of three
-\emph{south} moves, $p_{a_{1},1} = \{\text{\emph{south, south, south}}\}$,
-while both $a_2$ and $a_3$ have paths that consist of three consecutive
-\emph{east} moves, $p_{a_2,1} = p_{a_3,1} = \{\text{\emph{east, east,
-east}}\}$. No agents have a \emph{wait} move on their path. All three
-agents share their paths with each other, agents $a_1$ and $a_2$ discover that
-they have a conflict after their first action. This means that they will have
-to resolve this situation so that they will not collide. They start a dialogue
-in its initial stage, the opening. All messages are broadcast to all agents in
-the conflict dialogue, in this case $a_1$ and $a_2$:
+three agents in it in their starting positions. The initial optimal paths they
+found during the first step of the algorithm are shown as arrows.
+Agent $a_1$ has a path that consists of three \emph{south} moves, $p_{a_{1},1}
+= \{\text{\emph{south, south, south}}\}$, while both $a_2$ and $a_3$ have paths
+that consist of three consecutive \emph{east} moves, $p_{a_2,1} = p_{a_3,1} =
+\{\text{\emph{east, east, east}}\}$. None of the agents has a \emph{wait}
+action in their path. After finding the initial paths all three agents share
+their paths with each other, agents $a_1$ and $a_2$ discover that they collide
+after their first action. This means that they will have to resolve this
+conflict to prevent the collision.
+
+Before discussing the details of how the agents resolve the conflict in this
+situation some definitions are needed. A proposal where agent $a_i$ has
+priority over a agent $a_j$ is represented as $a_i > a_j$. Agents can cast
+votes on proposals, $\vote_{a_n}(a_i > a_j)$ is the vote of $a_n$ on the
+proposal $a_i > a_j$. To be able to cast votes agents need to evaluate a
+proposal. An evaluation  is based on two effects which can be weighted
+differently. The first effect is the difference in path length before and after
+a proposal has been adopted. The second effect is the change in the number of
+conflicts that an agent is involved in, this effect is weighted three times
+heavier than the former effect. Qualitatively this means that $\vote_{a_n}(a_i
+> a_j) = 1 \cdot \Delta l + 3 \cdot \Delta c$ where $\Delta l$ is the
+difference in path lengths and $\Delta c$ is the difference in conflicts.
+Agents only communicate their final vote and not how they arrived at it.
+
+Continuing with the example, after the agents have determined that they have a
+conflict they start a new dialogue. The dialogue starts in its initial stage,
+the opening. All messages are broadcast to all agents in the conflict dialogue,
+in this case $a_1$ and $a_2$:
 \\ \-\qquad $a_1$: no earlier conflicts
 \\ \-\qquad $a_2$: no earlier conflicts
 
 Because both agents don't have any conflicts that occur at an earlier time
-(this is time step 1) the dialogue continues to the proposal stage. Both agents
-propose to go first:
+(this is the first time step) the dialogue can move on to the proposal stage.
+Both agents make a proposal in which they go first:
 \\ \-\qquad $a_2$: propose $a_2 > a_1$
 \\ \-\qquad $a_1$: propose $a_1 > a_2$
 
-Both agents have made a proposal to resolve the conflict so the dialogue can
-move towards the evaluation stage. Because $a_2$ entered a proposal before
-$a_1$ its proposal will be evaluated first. Agent $a_2$ has the highest
-priority so its path doesn't need to change so its path remains $p_{a_2,1}$. It
-sends its new path to $a_2$:
+Both agents have made a proposal to resolve the conflict. The dialogue can
+move to the evaluation stage. Agent $a_2$'s proposal will be evaluated first
+because $a_2$ submitted the proposal before $a_1$. In this proposal agent $a_2$
+has the highest priority so it doesn't need to update its plan and its path
+remains $p_{a_2,1}$. It updates $a_1$ of the fact that its path hasn't changed
+and still consists of three consecutive \emph{east} actions:
 \\ \-\qquad $a_2$: new path $p_{a_2,1} = \{\text{\emph{east, east, east}}\}$
 
 Agent $a_1$ does have to yield to $a_2$ so it will have to consider possible
 conflicts that arise with $p_{a_2,1}$ and plan around them. It finds a new path
 $p_{a_1,2} = \{\text{\emph{south east, south, south west}}\}$ which is shown in
-\autoref{fig:example-prop1}. After finding the new path $a_2$ will evaluate its
-quality, to do this it will have to look at the new length of the path and
-whether any new conflicts were introduced. Say that the influence of the change
-in path length has a weight of 1 while the introduction of conflicts has a
-weight of 3. The agent had one conflict before the dialogue and it has a new
-conflict with $a_3$ after planning the new path so there is no change in the
-number of conflicts that $a_1$ is involved in, or $\Delta c = 0$. It can send
-its evaluation to $a_2$:
+\autoref{fig:example-prop1}. After finding the new path $a_1$ will evaluate its
+quality so that it can send its vote to $a_2$. Before adopting the proposal the
+agent had one conflict, this has not changed after making a new plan so $\Delta
+c = 0$. There is no difference in the length of the paths before and after
+temporarily adopting the constraints of the proposal, so $\Delta l = $. This
+means that agent $a_1$ can send the vote to $a_2$. It will also send its new
+path along with the proposal
 \\ \-\qquad $a_1$: new path $p_{a_1,2} = \{\text{\emph{south east, south,
 south west}}\}$
-\\ \-\qquad $a_1$: $\eval(a_1, a_2 > a_1) = 1 \cdot (|p_{a_1,2}| - |p_{a_1,1}|)
-+ 3
-\cdot \Delta c = 0$
+\\ \-\qquad $a_1$: $\vote_{a_1}(a_2 > a_1) = 0$
 
-where $|p_{a_i,j}|$ is the number of actions in the $j$th path of
-$a_i$. The evaluation of proposal $a_2 > a_1$ by $a_1$ is similar to how $a_2$
-did its evaluation, but $a_1$ has one fewer conflict so $\Delta c = -1$:
-\\ \-\qquad $a_2$: $\eval(a_2, a_2 > a_1) = 1 \cdot (|p_{a_2,1}| - |p_{a_2,1}|)
-+ 3
-\cdot \Delta c = -3$
+Now that $a_2$ knows the new path of agent $a_1$ after adopting to $a_2 > a_1$
+it can also vote on the proposal. This happens in a similar vain as $a_1$'s
+evaluation, there is however one fewer conflict for $a_1$ as its path doesn't
+conflict with that of $a_2$ any more. Achieving this was the goal of the
+dialogue. The path remained the same so $\Delta l = 0$ and $\Delta c = -1$, the
+vote of $a_2$ is then $\vote_{a_2} = 1 \cdot \Delta l + 3 \cdot \Delta c = -3$.
+This vote is then cast:
+\\ \-\qquad $a_2$: $\vote_{a_2}(a_2 > a_1) = -3$
 
 Now that this proposal has been evaluated by both agents they can find the sum
 score of the proposal which is $\eval(a_2 > a_1) = \eval(a_1, a_2 > a_1) +

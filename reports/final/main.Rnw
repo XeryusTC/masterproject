@@ -16,6 +16,11 @@
 
 \graphicspath{{images/}}
 
+% Change capitalisation of hyperref labels
+\renewcommand*{\sectionautorefname}{Section}
+\renewcommand*{\subsectionautorefname}{Subsection}
+\renewcommand*{\subsubsectionautorefname}{Subsubsection}
+
 \DeclareMathOperator{\pos}{pos}
 \DeclareMathOperator{\eval}{eval}
 \DeclareMathOperator{\vote}{vote}

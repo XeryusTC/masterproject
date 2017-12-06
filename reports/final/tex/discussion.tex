@@ -75,3 +75,33 @@ claims and agents should be able to argue for or against its adaptation. A
 voting system similar to the one used by DPCA* could also be used.
 
 % weights dependent on agents
+
+% Discuss why loops occur:
+%When
+%$w=2$ then agents may make one or two moves to only discover that they now have
+%a conflict. Sometimes the solution to a conflict is to backtrack and agents
+%will revisit nodes that they have been to earlier
+
+% Discuss why smaller windows have more dialogues:
+%This is to be expected because agents do not start a dialogue for every
+%conflict on the most optimal path, but only for those conflicts that occur
+%within $w$ time steps. After they solve these conflicts they execute
+%$\sfrac{w}{2}$ steps of the plan and move the centre of the window to their
+%new
+%position. Next they start resolving any conflicts that occur within the
+%updated
+%window. This means that when agents have a conflict that lies between
+%$\sfrac{w}{2}$ and $w$ time steps then they are likely to have a dialogue
+%about
+%it several times. So when $w$ is small there are more dialogues because agents
+%need to coordinate more often.
+
+% Discuss why \autoref{fig:dialogues} trails off towards the end:
+%This is likely to be because the algorithms are only able to find a solution
+%to problems with few conflicts. More complex problems with many agents would
+%require more dialogues but these can't be completed within the 2000ms time
+%limit. We can see that the point where the growth in the number of  dialogues
+%required to solve an instance starts to increase coincides with
+%\autoref{fig:solved}. The start of the steep cliff for each respective
+%algorithm in \autoref{fig:solved} is around the same number of agents as where
+%the growth in the number of dialogues starts to decrease.

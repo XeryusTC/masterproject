@@ -228,12 +228,10 @@ The algorithm finds a solution by evaluating different priority orders. Naively
 doing so would require the algorithm to evaluate $n!$ priority schemes for $n$
 agents. Instead of this naive search the algorithm will only evaluate the
 orderings
-\begin{eqnarray*}
-	a_1 > a_2 > &\ldots& > a_{n-1} > a_n \\
-	a_2 > a_3 > &\ldots& > a_n > a_1 \\
-	&\vdots & \\
-	a_n > a_1 > &\ldots& > a_{n-2} > a_{n-1}
-\end{eqnarray*}
+\[ \langle a_1, a_2, \ldots, a_{k-1}, a_k \rangle \]
+\[ \langle a_2, a_3, \ldots, a_k, a_1 \rangle \]
+\[ \vdots \]
+\[ \langle a_k, a_1, \ldots a_{k-2}, a_{k-1} \rangle \]
 Doing so means that the algorithm only has to evaluate $n$ orderings instead of
 all possible $n!$ permutations. The algorithm finds the priority ordering
 by letting $a_1$ find its optimal path. It will then send its path to $a_2$
@@ -256,8 +254,9 @@ one exists. Proof for the completeness of the algorithm are given in
 \cite[subsection 5.1]{chouhan2017}. The main idea is that an ordering that
 starts with $a_1$ will never lead to a solution if any agent is not able to
 find a conflict free path, it doesn't matter which agents will always have
-conflicting paths. So when the algorithm evaluates \[ \langle a_1, a_2, \ldots,
-a_{n-1}, a_n \rangle \] and fails to find a solution it will not have to
+conflicting paths. So when the algorithm evaluates
+\[ \langle a_1, a_2, \ldots, a_{k-1}, a_k \rangle \]
+and fails to find a solution it will not have to
 consider the $(n-1)!$ other orderings where $a_1$ has the highest priority. The
 algorithm requires no central processor but it does not fully exploit the
 distribution in the multi-agent system. Because agent $a_{i+1}$ has to wait for

@@ -1,9 +1,12 @@
 file = rev(list.files('results', 'quality*'))[1]
 quality.dat = read.csv(paste('results/', file, sep=""), header=T)
 
-algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4", "Window8")
-cannonical_names = c("OD+ID", "NPPCPF", "PPCPF", "PPCPF+", "WPPCPF-2", "WPPCPF-4", "WPPCPF-8")
-color_set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange")
+algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
+               "Window8", "DiMPP")
+cannonical_names = c("OD+ID", "NPPCPF", "PPCPF", "PPCPF+", "WPPCPF-2",
+                     "WPPCPF-4", "WPPCPF-8", "DiMPP")
+color_set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+              "purple")
 
 quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm, FUN=mean,
                          data=quality.dat)

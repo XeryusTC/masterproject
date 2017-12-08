@@ -1,7 +1,7 @@
 file = rev(list.files('results', 'conflictsize-*'))[1]
 sizes.dat = read.csv(paste('results/', file, sep=""), header=T)
 
-sizes.aggr = aggregate(cbind(X2, X3, X4, X5) ~ num.agents, data=conflict.dat, FUN=mean)
+sizes.aggr = aggregate(cbind(X2, X3, X4, X5) ~ num.agents, data=sizes.dat, FUN=mean)
 
 plot(1,
      type='n',

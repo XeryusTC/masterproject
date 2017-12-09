@@ -465,3 +465,32 @@ planning structure. Partial global planning starts out with letting each agent
 make their individual goals, next agents communicate information on where plans
 interact, finally they will alter their plans such that their actions are
 better coordinated and there are no negative influences.
+
+Continual Planning \cite{brenner2009} aims to achieve coordination in a
+multi-agent setting where the environment can be partially observable and is
+highly dynamic. Here plan creation and execution are interleaved so that agents
+are better able to respond to changes in their environment. This is similar to
+Pollock's OSCAR \cite{pollock1995} but Continual Planning specifies when
+switching between planning and executing should happen and it is designed to
+work in a multi-agent system. \emph{Assertions} are used as post- and
+preconditions to switch between planning and execution. During the planning
+stage an agent will postpone creating a plan for a sub-problem and create an
+assertion instead. At this point the agent can start executing the plan. When
+the assertion is satisfied then the agent will stop executing and the planner
+will resume planning and find a way to achieve the sub-goal for which planning
+was originally postponed. Agents can also ask each other to achieve certain
+goals or execute actions. Often agents will request of another agent to reach a
+sub-goal instead of executing a multi-step plan. The agent can then determine
+its own plan to achieve this new sub-goal and its other goals. This allows for
+flexibility in cooperation as agents are able to plan according to other
+constraints that may have been imposed on them. Continual Planning has been
+applied to the cooperative pathfinding problem. One of the main finds was that
+a full view of the problem does not necessarily lead to a better solution.
+Agents with a limited sensing and communication range are often able to find a
+solution in the same time while the length of their paths is about equal. This
+is attributed to the difficulty of finding a plan with full observability is
+often hard to do and slow while finding a partial plan, executing it and
+finding a new partial plan when conflicts arise is faster. This comes at the
+trade-off that agents may get stuck during the execution and reach a state in
+which no plan can be found that successfully solves the cooperative pathfinding
+problem.

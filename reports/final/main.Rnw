@@ -51,7 +51,7 @@ used while solid lines indicate that the cache was used."
 solved.title = "Proportion of instances that were solved by each algorithm."
 conflicts.title = "Mean number of dialogues that needed to be completed to find
 a solution for instances with $n$ agents."
-sizes.title="Comparison of number of agents in DPCA*+ dialogues."
+sizes.title="Comparison of occurence of different sizes of DPCA*+ dialogues."
 quality.title="Number of loops in paths."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]

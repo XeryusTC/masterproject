@@ -246,7 +246,38 @@ version of the algorithm that solves fewer instances than OD+ID and DiMPP. All
 versions of DPCA* and WDPCA* are able to solve at least double the amount of
 instances as OD+ID. A smaller window means that the algorithm is able to solve
 more problem instances. This comes at a trade-off as a smaller window size also
-results in a larger sum of the path lengths for a solution.
+results in a larger sum of the path lengths for a solution. This can also be
+seen in \autoref{fig:lengths} where the sum of the path lengths is plotted as a
+function of the number of agents in a problem. It shows that WDPCA* finds
+longer paths than any other algorithm tested while OD+ID and DPCA* calculate
+shorter routes for the same number of agents in a problem. The graph for OD+ID
+shows heavy fluctuation between 20 and 26 agents. This may be because this
+algorithm was not able to solve all instances with this number of agents and is
+more sensitive to outliers because of this.
+
+<<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
+op <- par(mar = c(3.8, 3.8, 1, 1))
+plot(c(),
+     type='n',
+     xlim=c(5,40),
+     ylim=c(100,360),
+     frame.plot=F,
+     xlab='Agents in problem instance',
+     ylab='Sum of path lengths',
+     yaxs="i",
+     xaxs="i"
+)
+for (i in 1:length(algorithms))
+{
+    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color.set[i])
+}
+legend("topleft",
+       legend=cannonical.names,
+       col=color.set,
+       pch=16,
+       cex=.8,
+       bty='n')
+@
 
 <<loops,echo=F,warning=F,cache=T,cache.beater=quality.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=quality.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))

@@ -30,7 +30,7 @@
 \author{Xeryus Stokkel \\ Supervisor: prof. dr. Bart Verheij}
 \title{Argumentation Dialogues for Cooperative Pathfinding}
 
-<<preprocess,echo=F,message=F>>=
+<<preprocess,echo=F,message=F,cache=F>>=
 require(knitr)
 require(xtable)
 require(plyr)
@@ -53,6 +53,9 @@ conflicts.title = "Mean number of dialogues that needed to be completed to find
 a solution for instances with $n$ agents."
 sizes.title="Comparison of occurence of different sizes of DPCA*+ dialogues."
 quality.title="Number of loops in paths."
+lengths.title="Mean sum of path length versus the number of agents in the
+problem instance. The results for 2 to 10 agents have been cut of because the
+path lengths for all algorithms are near identical for those amount of agents."
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
@@ -94,6 +97,8 @@ solved.aggr = aggregate(time ~ factor(algorithm, levels=algorithms) +
                         na.action=na.pass)
 lengths = aggregate(length ~ factor(algorithm, levels=algorithms), data=dat,
                     FUN=mean)
+dat.lengths = aggregate(length ~ num.agents + factor(algorithm,
+levels=algorithms), data=dat, FUN=mean)
 naive.vs.odid = mean(subset(dat, algorithm=="ODID")$time < subset(dat,
                         algorithm=="Naive")$time, na.rm=T)
 base.vs.plus = t.test(dat[dat$algorithm=="Base","time"],

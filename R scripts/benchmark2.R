@@ -123,3 +123,23 @@ legend("topleft",
        legend=cannonical_names[2:7],
        col=color_set[2:7],
        pch=16)
+
+dat.lengths = aggregate(length ~ num.agents + factor(algorithm, levels=algorithms), data=dat, FUN=mean)
+plot(c(),
+     type='l',
+     xlim=c(0,40),
+     ylim=c(0,360),
+     frame.plot=F,
+     xaxs="i", yaxs="i"
+)
+for (i in 1:length(algorithms))
+{
+    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color_set[i])
+}
+legend("topleft",
+       legend=cannonical_names,
+       col=color_set,
+       pch=16,
+       cex=0.8,
+       bty='n')
+

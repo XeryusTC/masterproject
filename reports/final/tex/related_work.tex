@@ -297,7 +297,8 @@ in the fields of legal argumentation (AI \& Law), defeasible reasoning and
 multi-agent systems. One of the main pillars is non-monotonic logic. A logic is
 non-monotonic when a conclusion that follows based on the premises does not
 necessarily hold any more when additional premises are added
-\cite{vaneemeren2014}. A classic example of this is that birds can fly, so when
+\cite{vaneemeren2014,modgil2013}. A classic example of this is that birds can
+fly, so when
 you see a bird you assume that it can fly. However, when you're told that the
 bird is a penguin and that penguins can't fly then you will no longer conclude
 that the bird can fly. A argument is defeasible when it can be defeated by
@@ -327,44 +328,44 @@ be distilled into three main forms \cite{vaneemeren2014}:
 	conclusion, thereby attacking an argument.
 \end{description}
 
-A model of argumentation that adds mathematical structure to arguments has been
-proposed in a highly influential paper by Dung \cite{dung1995}.
-%A formal model of argumentation that introduces a structure to ease the
-%computation of validity in arguments has been proposed in a highly influential
-%paper by Dung \cite{dung1995}.
-This work focused mainly on the argument attacks as a formal relation, giving
-the model the name of abstract argumentation. The main concept is the
-\emph{argumentation framework}, a directed graph in which the nodes form
-arguments and the edges between them represent one argument attacking another.
-An important concept that Dung introduced was that of admissibility of sets of
-arguments. A set of arguments is admissible when it is conflict free and
-acceptable. A set being conflict free means that no argument in the set attacks
-another argument in the set. Acceptability means that when an argument is
-attacked by another argument outside of the set, then the set attacks that
-argument. In other words the admissible set defends itself from attacking
-arguments. On top of this Dung formulated other semantics. The preferred
-extension is the set theoretically maximal admissible set, that is, it is the
-largest possible admissible set such that adding one argument from the
-argumentation framework would make it not admissible. There is also the stable
-extension, this is an admissible set that attacks all arguments that are not in
-the set.
-
-One important notion of an argumentation framework is that of the grounded
-extension. This extension is simple to compute by labelling the arguments in
-the argumentation framework as `justified' or `defeated':
-\begin{enumerate}
-	\item All unlabelled arguments $\alpha$ in the framework can be labelled as
-	`justified' if all arguments that attack $\alpha$ are labelled as
-	`defeated'. Note that when $\alpha$ is not attacked that it can then also
-	be labelled as `justified'.
-	\item All unlabelled arguments $\alpha$ in the framework that are attacked
-	by an argument that has been labelled `justified' is labelled as `defeated'.
-	\item Steps 1 and 2 are repeated until all arguments have been labelled.
-\end{enumerate}
-A finite argumentation framework is labelled in a finite amount of steps. All
-arguments that have been labelled as `justified' are included in the grounded
-extension. All arguments that have been labelled `defeated' are not included in
-the grounded extension.
+%A model of argumentation that adds mathematical structure to arguments has been
+%proposed in a highly influential paper by Dung \cite{dung1995}.
+%%A formal model of argumentation that introduces a structure to ease the
+%%computation of validity in arguments has been proposed in a highly influential
+%%paper by Dung \cite{dung1995}.
+%This work focused mainly on the argument attacks as a formal relation, giving
+%the model the name of abstract argumentation. The main concept is the
+%\emph{argumentation framework}, a directed graph in which the nodes form
+%arguments and the edges between them represent one argument attacking another.
+%An important concept that Dung introduced was that of admissibility of sets of
+%arguments. A set of arguments is admissible when it is conflict free and
+%acceptable. A set being conflict free means that no argument in the set attacks
+%another argument in the set. Acceptability means that when an argument is
+%attacked by another argument outside of the set, then the set attacks that
+%argument. In other words the admissible set defends itself from attacking
+%arguments. On top of this Dung formulated other semantics. The preferred
+%extension is the set theoretically maximal admissible set, that is, it is the
+%largest possible admissible set such that adding one argument from the
+%argumentation framework would make it not admissible. There is also the stable
+%extension, this is an admissible set that attacks all arguments that are not in
+%the set.
+%
+%One important notion of an argumentation framework is that of the grounded
+%extension. This extension is simple to compute by labelling the arguments in
+%the argumentation framework as `justified' or `defeated':
+%\begin{enumerate}
+%	\item All unlabelled arguments $\alpha$ in the framework can be labelled as
+%	`justified' if all arguments that attack $\alpha$ are labelled as
+%	`defeated'. Note that when $\alpha$ is not attacked that it can then also
+%	be labelled as `justified'.
+%	\item All unlabelled arguments $\alpha$ in the framework that are attacked
+%	by an argument that has been labelled `justified' is labelled as `defeated'.
+%	\item Steps 1 and 2 are repeated until all arguments have been labelled.
+%\end{enumerate}
+%A finite argumentation framework is labelled in a finite amount of steps. All
+%arguments that have been labelled as `justified' are included in the grounded
+%extension. All arguments that have been labelled `defeated' are not included in
+%the grounded extension.
 
 \subsubsection{Dialogues}
 Multiple agents can have an argument through a dialogue. Walton and
@@ -430,6 +431,23 @@ used to create a plan. There are variants of this model that require fewer
 stages while still allowing for the same expressiveness
 \cite{dunin-keplicz2011}.
 
+There are also some problems with \cite{mcburney2007} when modelling
+deliberation dialogues. The model does not have an easy method of integrating
+additional information into the deliberative process. It also doesn't have a
+method of dealing with failures to find a course of action. The closing stage
+can only be reached when the agents have settled on a specific plan. It may be
+the case that it is not possible to find a satisfactory solution. This makes it
+impossible for the dialogue to reach the closing stage. These two shortcomings
+are raised and addressed by \cite{walton2014}. The problem of integrating
+additional information into the dialogue is addressed by adding a knowledge
+base that is specific to the dialogue which is initially filled with
+information in the opening phase. It is possible to extend the knowledge base
+in the information seeking stage of the dialogue. The extended model lists ten
+criteria for when a dialogue can be closed. Some of these reasons are: all
+proposals were discussed, the quality of the arguments in support/attack of a
+proposal, whether agents followed procedural rules, and the accuracy of the
+knowledge base.
+
 \subsection{Coordination}
 Argumentation can be used to allow coordination between agents by letting them
 deliberate in a dialogue. Cooperative pathfinding is a particular instance of a
@@ -450,8 +468,9 @@ reason. This allows an agent to adapt to a changing environment and changing
 desires. Although this design focusses on planning actions for a single agent
 it can easily be extended to planning for groups of agents.
 
-Coordination in a multi-agent system can be done through partial global
-planning \cite[pp. 202--204]{woodridge2009}, \cite{durfee1991}. The goal is to
+Coordination in a multi-agent system can be done through Partial Global
+Planning (PGP) \cite[pp. 202--204]{durfee1991,decker1992,woodridge2009}. The
+goal is to
 let agents cooperate without any one of them formulating a global plan, instead
 agents will coordinate with other agents only when they need to. This leads to
 the construction of many small local plans, which can be communicated to other
@@ -464,7 +483,11 @@ similar to that of decoupled cooperative pathfinding because they use a similar
 planning structure. Partial global planning starts out with letting each agent
 make their individual goals, next agents communicate information on where plans
 interact, finally they will alter their plans such that their actions are
-better coordinated and there are no negative influences.
+better coordinated and there are no negative influences. Generalized PGP
+\cite{decker1992} extends this with real-time planning, negotiation, and
+coordination relationships between goals. This allows the framework to be used
+in settings other than the multi-sensor network that PGP was originally
+developed for.
 
 Continual Planning \cite{brenner2009} aims to achieve coordination in a
 multi-agent setting where the environment can be partially observable and is
@@ -472,10 +495,10 @@ highly dynamic. Here plan creation and execution are interleaved so that agents
 are better able to respond to changes in their environment. This is similar to
 Pollock's OSCAR \cite{pollock1995} but Continual Planning specifies when
 switching between planning and executing should happen and it is designed to
-work in a multi-agent system. \emph{Assertions} are used as post- and
-preconditions to switch between planning and execution. During the planning
-stage an agent will postpone creating a plan for a sub-problem and create an
-assertion instead. At this point the agent can start executing the plan. When
+work in a multi-agent system. \emph{Assertions} are used as preconditions to
+switch between planning and execution. During the planning phase an agent will
+postpone creating a plan for a sub-problem and create an assertion instead. The
+agent can start executing the plan when it has created these assertions. When
 the assertion is satisfied then the agent will stop executing and the planner
 will resume planning and find a way to achieve the sub-goal for which planning
 was originally postponed. Agents can also ask each other to achieve certain
@@ -483,14 +506,15 @@ goals or execute actions. Often agents will request of another agent to reach a
 sub-goal instead of executing a multi-step plan. The agent can then determine
 its own plan to achieve this new sub-goal and its other goals. This allows for
 flexibility in cooperation as agents are able to plan according to other
-constraints that may have been imposed on them. Continual Planning has been
+constraints that may have been imposed. Continual Planning has been
 applied to the cooperative pathfinding problem. One of the main finds was that
 a full view of the problem does not necessarily lead to a better solution.
 Agents with a limited sensing and communication range are often able to find a
 solution in the same time while the length of their paths is about equal. This
 is attributed to the difficulty of finding a plan with full observability is
 often hard to do and slow while finding a partial plan, executing it and
-finding a new partial plan when conflicts arise is faster. This comes at the
+finding a new partial plan when new conflicts arise is faster. This comes at the
 trade-off that agents may get stuck during the execution and reach a state in
 which no plan can be found that successfully solves the cooperative pathfinding
-problem.
+problem. These findings are similar to those of using a window to restrict
+cooperation to a limited temporal range in WHCA* \cite{silver2005}.

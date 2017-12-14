@@ -326,7 +326,7 @@ increases, but at some point this trend trails off. This point lies between 25
 and 30 agents depending on the algorithm. There is a peak in the number of
 dialogues between 28 and 35 agents.
 
-<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='b',fig.cap=sizes.title>>=
+<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='n',

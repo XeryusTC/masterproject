@@ -18,6 +18,12 @@
 %solution to the conflict does not outweigh the speed of starting several
 %dialogues which come to a conclusion quickly.
 
+We have seen that only PCA* is slower and solves fewer problem instances than
+OD+ID and DiMPP. All other versions of the proposed algorithm can solve more
+instances and are generally faster than the two reference algorithms. This
+comes with the caveat that DPCA* and its variants do find solutions in which
+the paths are often longer.
+
 %window version being better
 WDPCA* is able to solve more problem instances than DPCA* without a window. How
 many more instances can be solved depends on the size of the window. As a
@@ -118,3 +124,21 @@ voting system similar to the one used by DPCA* could also be used.
 %\autoref{fig:solved}. The start of the steep cliff for each respective
 %algorithm in \autoref{fig:solved} is around the same number of agents as where
 %the growth in the number of dialogues starts to decrease.
+
+% Dialogues are pragmatic
+% TODO: make this a coherent story
+Deliberation dialogue models are complex. \cite{mcburney2007} has 8 stages,
+most of which aren't used here. Instead \cite{dunin-keplicz2011} is used for
+simplicity. It is verbose enough for this purpose but \cite{mcburney2007} may
+be more appropriate for more complex applications (think planning trains),
+\cite{walton2014} may be appropriate then too. \cite{mcburney2007,walton2014}
+are both meant to model human deliberation dialogues, not necessarily meant for
+calculation/communication time optimal. Agents sharing their paths may be
+considered information sharing step of dialogue.
+
+The propose and evaluate stages have been compounded. Some approaches only
+allow one proposal to be made and evaluate that, while the next proposal to be
+entered has to wait for the next proposal stage. We allow agents to make
+proposals at the same time and all entered proposals will be evaluated in
+sequence during the same round. Use more complex dialogues (arguments) and
+judgement aggregation to achieve final result instead of voting.

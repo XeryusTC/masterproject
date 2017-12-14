@@ -29,10 +29,29 @@ reduces the algorithm to be almost reactive. There is barely any global
 planning any more because agents don't look far ahead when trying to find their
 way to the destination. Agents mainly solve conflicts that will
 happen during the next time step, and some conflicts that happen one time step
-later. Agents will also determine whether they have conflicts after action.
+later. Agents will also determine whether they have conflicts after each action.
 This shows that it is a valid strategy to create many small plans with
-low computational effort instead of a complete global plan, but creating plans
-that are too small has a negative effect on the quality of the solution.
+low computational effort instead of a complete global plan, but cooperating in
+too small a window has a negative effect on the quality of the solution.
+
+Part of the lower quality of a solution when $w$ is small is because the
+algorithm becomes more reactive. Agents will move towards their goal and notice
+that they have a conflict with another agent. It may be that the best solution
+for an agent is to backtrack and move to the position it just came from.
+Sometimes agents also move out of the way of another agent and move to a grid
+cell that it has visited earlier on its way to its goal. It may have been
+possible to avoid these loops by increasing the size of the window. Agents can
+then look further ahead and coordinate their plans earlier preventing the need
+for backtracking. This shows that there is a clear trade-off between finding a
+solution in a low amount of time and finding a good solution with few loops. In
+some applications it may be undesirable to have loops because an observer might
+see it as unintelligent behaviour.
+
+% Discuss why loops occur:
+%When
+%$w=2$ then agents may make one or two moves to only discover that they now have
+%a conflict. Sometimes the solution to a conflict is to backtrack and agents
+%will revisit nodes that they have been to earlier
 
 There is an interaction between which algorithm is used and whether previously
 found paths were stored in a cache and reused. From \autoref{fig:cache} it
@@ -75,12 +94,6 @@ claims and agents should be able to argue for or against its adaptation. A
 voting system similar to the one used by DPCA* could also be used.
 
 % weights dependent on agents
-
-% Discuss why loops occur:
-%When
-%$w=2$ then agents may make one or two moves to only discover that they now have
-%a conflict. Sometimes the solution to a conflict is to backtrack and agents
-%will revisit nodes that they have been to earlier
 
 % Discuss why smaller windows have more dialogues:
 %This is to be expected because agents do not start a dialogue for every

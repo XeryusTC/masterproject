@@ -124,6 +124,25 @@ voting system similar to the one used by DPCA* could also be used.
 %\autoref{fig:solved}. The start of the steep cliff for each respective
 %algorithm in \autoref{fig:solved} is around the same number of agents as where
 %the growth in the number of dialogues starts to decrease.
+In several figures there is a clear initial trend which trails off when the
+number of agents in the problem instance becomes larger. The number of
+dialogues per number of agents in \autoref{fig:dialogues} is an example of
+this. There is an initial exponential trend which flattens out in the last last
+quarter of each plot. The plots for WDPCA* break the exponential trend starting
+from between 25 agents and 33 agents per instance. The point where the growth
+in the number of dialogues required to solve a problem decreases coincide with
+the point in \autoref{fig:solved} where each algorithm has a cliff in the
+fraction of instances that have been solved. This suggests that the effect on
+the number of dialogues is caused by the algorithm not being able to find a
+solution to complex problem instances within the 2000ms time limit. Complex
+problems are those that require many dialogues to find a priority scheme that
+allows all agents to find a path to their destination. This in turn suggests
+that DPCA* successfully finding a solution to a problem instance depends on the
+number of dialogues required to find that solution.
+%This effect is likely caused by the algorithms only being able to find a
+%solution to problem instances with a large number of agents that have a simple
+%solution. More complex problems with many agents would require more dialogues
+%but this requires more than 2000ms to complete all dialogues.
 
 % Dialogues are pragmatic
 % TODO: make this a coherent story

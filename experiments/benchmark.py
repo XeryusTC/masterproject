@@ -87,7 +87,7 @@ def main(runs, max_agents):
     f = open(f'results/benchmark-{datetime.now()}.csv', 'w')
     writer = csv.writer(f)
     result = ['instance', 'num agents', 'algorithm', 'time', 'length',
-              'initial conflicts', 'solved conflicts']
+              'initial conflicts', 'solved conflicts', 'extra length']
     writer.writerow(result)
 
     global_start_time = timeit.default_timer()
@@ -103,7 +103,7 @@ def main(runs, max_agents):
         except rra_star.NoValidPathExists:
             optimal_length = 'NA'
         result = [instance, num_agents, 'optimal', 'NA', optimal_length, 'NA',
-                  'NA']
+                  'NA', 'NA']
         writer.writerow(result)
 
         for algorithm in ALGORITHMS:
@@ -118,7 +118,8 @@ def main(runs, max_agents):
                 final = data['solved']
                 length = sum(len(p) for p in paths)
                 end_time = timeit.default_timer()
-                result += [end_time - start_time, length, init, final]
+                result += [end_time - start_time, length, init, final,
+                           length - optimal_length]
             except odid.TimeExceeded:
                 print('Time exceeded')
                 result += ['NA', 'NA', 'NA', 'NA']

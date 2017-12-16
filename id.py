@@ -268,6 +268,16 @@ def odid2(agents, w, starts, goals, start_time=None, max_time=5):
     paths = []
     for group in groups:
         paths += group.paths
+
+    #print('before:', sum(len(p) for p in paths))
+    for i in range(agents):
+        try:
+            while paths[i][-1] == paths[i][-2]:
+                paths[i] = paths[i][:-1]
+        except IndexError:
+            pass
+    #print('after:', sum(len(p) for p in paths))
+
     return {'paths': paths,
             'initial': 'NA',
             'solved': 'NA',

@@ -80,15 +80,16 @@ def eval_weights(algorithm, weights, num_problems, max_agents):
             continue
         # Do the actual cooperative planning
         try:
-            paths = algorithm.entry(world, starts, goals, start_time, MAX_TIME,
+            res = algorithm.entry(world, starts, goals, start_time, MAX_TIME,
                                     **algorithm.kwargs)
-            actual.append(sum(len(path) for path in paths))
+            actual.append(sum(len(path) for path in res['paths']))
         except (odid.TimeExceeded, rra_star.NoValidPathExists,
                 util.NoPathsFoundException, version1b.ConflictNotSolved):
             actual.append(float('inf'))
 
     diff = [res[1] - res[0] for res in zip(optimal, actual)
                            if res[1] != float('inf')]
+    print(diff)
     if len(diff) == 0:
         return float('inf')
     return sum(diff) / len(diff)

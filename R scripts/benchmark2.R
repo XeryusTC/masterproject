@@ -143,3 +143,19 @@ legend("topleft",
        cex=0.8,
        bty='n')
 
+dat.extra = aggregate(extra.length ~ num.agents + factor(algorithm, levels=algorithms),
+                      data=dat,
+                      FUN=mean)
+plot(c(),
+     type='n',
+     xlim=c(0,40),
+     ylim=c(0,50),
+     frame.plot=F,
+     xaxs="i",
+     xlab='Number of agents',
+     ylab='Length'
+)
+for (i in 1:length(algorithms))
+{
+    lines(dat.extra[dat.extra[,2]==algorithms[i],]$extra, col=color.set[i])
+}

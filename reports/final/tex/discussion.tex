@@ -1,6 +1,7 @@
 \section{Discussion}\label{sec:discussion}
 % TODO: scalability
 % TODO: more compartmentalized than decoupled methods
+% TODO: discuss WHCA* vs Continual Planning vs WDPCA*
 
 % DPCA*+ and PCA are simular, later is simpler
 %With DPCA* agents resolve conflicts in pairs only while DPCA*+ can have larger
@@ -182,18 +183,78 @@ number of dialogues required to find that solution.
 
 % Dialogues are pragmatic
 % TODO: make this a coherent story
-Deliberation dialogue models are complex. \cite{mcburney2007} has 8 stages,
-most of which aren't used here. Instead \cite{dunin-keplicz2011} is used for
-simplicity. It is verbose enough for this purpose but \cite{mcburney2007} may
-be more appropriate for more complex applications (think planning trains),
-\cite{walton2014} may be appropriate then too. \cite{mcburney2007,walton2014}
-are both meant to model human deliberation dialogues, not necessarily meant for
-calculation/communication time optimal. Agents sharing their paths may be
-considered information sharing step of dialogue.
+The model of deliberation dialogues as proposed by McBurney, Hitchcock and
+Parsons (MHP model) \cite{mcburney2007} is quite complex. Walton et al.
+\cite{walton2014} have expanded on this so that the human deliberation
+dialogues can be modelled more accurately while addressing some of the
+shortcomings of the MHP model. Although this model explains how human dialogues
+work it is too complex to be used in WDPCA*. Instead we use the simpler
+\textsc{TeamLog} model \cite{dunin-keplicz2011}. Both models have a
+opening part, a closing part, and a argumentation part where all
+deliberation takes place. In the MHP model the argumentation part consists of
+four stages while \textsc{TeamLog} only has two stages. These two stages are
+sufficient to be able to solve the conflicts that occur in the cooperative
+pathfinding problem. WDPCA* uses a more pragmatic approach to deliberation
+dialogues than both models do. The dialogues only consist of making proposals
+and evaluating them, there isn't much room for discussion. This is partially
+because the proposals only consist of a priority ordering. The simplicity of
+the problem formulation does not allow for much more richness in the dialogue.
 
-The propose and evaluate stages have been compounded. Some approaches only
-allow one proposal to be made and evaluate that, while the next proposal to be
-entered has to wait for the next proposal stage. We allow agents to make
-proposals at the same time and all entered proposals will be evaluated in
-sequence during the same round. Use more complex dialogues (arguments) and
-judgement aggregation to achieve final result instead of voting.
+\begin{figure}[t]
+    \centering
+    \def\svgscale{.7}
+    \input{images/repair.pdf_tex}
+    \caption{An example of why it is preferred to make an entire new plan than
+    it is to alter an existing plan.}
+    \label{fig:repair}
+\end{figure}
+
+Another cause of the simplicity is that agents will find a completely new plan
+after adapting a priority ordering instead of altering their current plan. This
+is done so that agents will always use the most optimal path. If agents were to
+repair their plans locally they may end up with suboptimal paths. For example
+see \autoref{fig:repair}, agent $a_1$ has to move one step \emph{west} while
+$a_2$ has found a route which consists of two moves \emph{east} followed by one
+step \emph{south west} and \emph{south}. Given the priority scheme $a_1 > a_2$
+it is better for $a_2$ to formulate a new plan instead of solving the conflict
+by plan repair. Formulating a new plan would result in the path $\{
+\emph{south}, \emph{south east}, \emph{east}, \emph{east} \}$. Repairing the
+plan by moving out of $a_1$'s way and following the original plan may result in
+the path \{ \emph{south}, \emph{north east}, \emph{east}, \emph{south east},
+\emph{east} \}. The repaired plan is one step longer than the new plan. It also
+seems less intelligent because the agent moves in the north east direction
+while its goal is to the south and to the east of its position. Plan repair
+will never be able to find a path which is shorter than creating a new plan. It
+is also more likely that an agent exhibits less intelligent behaviour when
+using plan repair.
+
+Richness in dialogues also depends on the domain. Our problem formulation is
+very abstract and generic. The only argument that agents can make against a
+priority proposal is that there is no valid path to their destination.
+Applications like traffic management can impose additional constraints on the
+problem. In air and rail traffic management agents have to keep to a schedule.
+Agents can make about keeping to their schedule. In multi robot systems the
+agents may need to recharge and they should be able to make arguments about why
+they need to have a high priority so that they can reach a charging station
+without too much delay. Applications may have constraints like these which do
+not fit well in an evaluation function, but they are well expressed in a logic.
+This also gives a greater explanatory power than what WDPCA* has with just its
+evaluation function and its limited argumentative capability.
+
+%Deliberation dialogue models are complex. \cite{mcburney2007} has 8 stages,
+%most of which aren't used here. Instead \cite{dunin-keplicz2011} is used for
+%simplicity. It is verbose enough for this purpose but \cite{mcburney2007} may
+%be more appropriate for more complex applications (think planning trains),
+%\cite{walton2014} may be appropriate then too. \cite{mcburney2007,walton2014}
+%are both meant to model human deliberation dialogues, not necessarily meant for
+%calculation/communication time optimal. Agents sharing their paths may be
+%considered information sharing step of dialogue.
+
+%The propose and evaluate stages have been compounded. Some approaches only
+%allow one proposal to be made and evaluate that, while the next proposal to be
+%entered has to wait for the next proposal stage. We allow agents to make
+%proposals at the same time and all entered proposals will be evaluated in
+%sequence during the same round. Use more complex dialogues (arguments) and
+%judgement aggregation to achieve final result instead of voting.
+
+Problem formulation is generic enough to apply to traffic management etc

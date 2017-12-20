@@ -258,3 +258,27 @@ evaluation function and its limited argumentative capability.
 %judgement aggregation to achieve final result instead of voting.
 
 Problem formulation is generic enough to apply to traffic management etc
+
+\section{Conclusion}
+In this thesis we have combined ideas from partial global planning, continual
+planning and argumentation and applied them to cooperative pathfinding.
+A new novel algorithm called WDPCA* was developed starting from the decoupled
+model for cooperative pathfinding. Pairs of agents solve conflicts in their
+paths by finding determining a priority order. One agent will have to give
+priority to the other and consider it to be a moving obstacle. Partial global
+planning is used to allow agents to incrementally build their private priority
+order. Doing so means that the agents will coordinate their paths such that
+there are no conflicts between them. Resolving conflicts is done in a
+deliberation dialogue. During such a dialogue agents will discuss possible
+priority orders that lead to a solution to the conflict. If there is more than
+one possibility they will vote on which priority scheme they prefer. The
+resulting priority scheme is adapted by both agents that participate in a
+dialogue.
+
+Generally agents will resolve all their conflicts before they start to execute
+their plan. This has several limitations: all computation is done before
+execution, and finding a solution may require agents to alternate giving and
+having priority. The most important limitation is that agents will stop
+cooperating once they reach their goal. This may mean that they block the paths
+of early agents and do not cooperate with agents that need to pass them. To
+address these limitation

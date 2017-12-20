@@ -287,7 +287,9 @@ plot(c(), c(),
      frame.plot=F,
      type='n',
      xlab="Number of agents",
-     ylab="Number of loops"
+     ylab="Number of loops",
+     xaxs="i",
+     yaxs="i"
 )
 for(i in 5:7) {
     lines(quality.aggr[quality.aggr[,2]==algorithms[i],]$loops,
@@ -296,7 +298,9 @@ for(i in 5:7) {
 legend("topleft",
        legend=cannonical.names[5:7],
        col=color.set[5:7],
-       pch=16)
+       pch=16,
+       cex=.8,
+       bty='n')
 @
 
 The length of the paths alone do not tell the full story of the quality of the

@@ -2,42 +2,46 @@
 Path planning for a single agent has long been considered a solved problem.
 When multiple agents have to find their way through a shared space then the
 problem becomes more complicated. The agents have to find paths around
-obstacles, and they also need to ensure that they do not collide with each
+obstacles while they also need to ensure that they do not collide with each
 other. Even when agents can prevent collisions then it is still possible that
-congestions or even deadlocks may occur. To avoid this there is a need for
-coordination between the agents. Cooperative pathfinding finds its application
-in robotics, aviation, road traffic management, crowd simulations, and video
-games \cite{standley2011}.
+congestions or even deadlocks may occur. Agents need to be able to get to their
+destination as soon as possible so these situations are undesirable. To avoid
+them there is a need for coordination between the agents. Cooperative
+multi-agent pathfinding finds its application in robotics, aviation, road
+traffic management, crowd simulations, and video games \cite{standley2011}.
 
-%TODO: Discuss cooperative pathfinding and abstract solutions.
-The most straightforward approach to the cooperative pathfinding problem is to
-search the Cartesian product of the state spaces of all agents. This approach
-is computationally inefficient \cite{sharon2013} as the time to find a
+%Discuss cooperative pathfinding and abstract solutions.
+The most straightforward approach to the multi-agent pathfinding (MAPF) problem
+is to search the Cartesian product of the state spaces of all agents. This
+approach is computationally inefficient \cite{sharon2013} as the time to find a
 solution is exponential in the number of agents. Another common approach is to
-assign all agents a priority. Agents plan a path to their destination in
-descending order of priority, they consider agents with a higher priority to be
-a moving obstacle and avoid planning movements that conflict with those of
-higher priority agents. Both of these approaches result in abstract solutions;
-there is often no clear reason why a certain solution
-was the one arrived at. The algorithm has found a set of conflict free paths
-and that set was returned as the working solution without any indication about
-the considerations of why it is a good plan.
+impose a hierarchy on the agents by assigning them a unique priority. Agents
+plan a path to their destination in descending order of priority. When it is an
+agent's turn to plan their path they have to consider agents with a higher
+priority as a moving obstacle. This means that they have to avoid planning any
+movements that conflict with those of higher priority agents. Both of these
+approaches result in abstract solutions; there is often no clear reason why a
+particular solution was the one arrived at. The algorithm has found a set of
+conflict free paths and that set was returned as the working solution without
+any indication about the considerations of why it is a good plan.
 
-These two approaches to solving the cooperative pathfinding problem both rely
-on a central processor \cite{chouhan2017}. The former method uses a central
-processor to plan for all the agents. The latter method requires that a central
-processor determines a priority ordering that the agents have to adhere to.
-After this has been done then agents can make their individual plans. While
-doing so they need to communicate with each other about their paths but this
-does not require a central
-point of communication. Next to these two centralised methods there are also
-decentralized approaches where agents only communicate in a small range. There
-is no central processor that can be a single point of failure. As a trade-off
-these methods usually have no global view of the problem so agents can make
-decisions early on that will lead to congestions or deadlocks later without any
-agent noticing at the time that the decision was made.
+These two common approaches to solving the multi-agent pathfinding problem both
+rely on a central processor \cite{chouhan2017}. The first is a category of
+centralized methods that use a central processor to create a plan for all the
+agents. The other category requires that a central processor determines a
+priority ordering that the agents have to adhere to. After this has been done
+then the calculation of the plans for the agents can be decoupled. This allows
+the agents to make their individual plan on their own processor. During this
+decoupled planning they need to communicate with each other about their paths
+but this does not require a central point of communication. Next to the
+centralized and decoupled methods there are also fully decentralized approaches
+where agents only communicate in a small range. There is no central processor
+that can be a single point of failure. As a trade-off these methods usually
+have no global view of the problem. This means that agents can make decisions
+early on that will lead to congestions or deadlocks later without any agent
+noticing at the time that the decision was made.
 
-%TODO: Discuss how partial global planning gives local to global view, and
+%Discuss how partial global planning gives local to global view, and
 %allows for cooperation.
 Without a central processor it is hard to create a plan that is globally well
 coordinated. There are methods that do achieve a global plan without any single
@@ -49,30 +53,34 @@ each other. They will then exchange information on their plans and adapt them
 to better coordinate their activities. Nodes can even take over each others
 tasks to spread the computational load. Coordination is not rigid and nodes have
 some freedom in how they execute their plan if circumstances change without
-having to re-coordinate with the other nodes. None of the involved nodes ever
+the need to re-coordinate with the other nodes. None of the involved nodes ever
 has a global view, but the end result is a plan that is globally coordinated
 with each node holding a part of the global plan.
 
 This method of constructing a global plan from local views can also be applied
 to cooperative pathfinding. Agents only have to coordinate with those agents
-that they have a conflict with. The freedom in planning allows agents to find
-alternative paths without having to update all other agents that an agent
-previously had a conflict with. This allows for a truly decentralised approach,
-agents only communicate with other agents when they have to, and there is no
-need to wait for a central processor to tell agents what to do.
+that they have a conflicting path with. The freedom in planning allows agents
+to find an alternative path without having to update all other agents. Other
+agents that have previously been coordinated with don't need to update their
+plan as a response. This is only necessary when new conflicts arise because of
+the alternative path. This allows for a truly decentralised approach where
+agents  only communicate with other agents when they have to. There is also no
+need to wait for a central processor to tell agents what to do. At the same
+time plans are well coordinated without lacking a global view like the
+decentralized multi-agent pathfinding algorithms.
 
 Other methods of decentralised coordination have been developed by the field of
 argumentation. Formal models of argumentation have been used in Artificial
-Intelligence in expert systems, multi-agent systems
-and law \cite{vaneemeren2014}. An important concept in argumentation is that of
+Intelligence in expert systems, multi-agent systems and law
+\cite{vaneemeren2014}. An important concept in argumentation is that of
 defeasible reasoning: the conclusion that can be drawn from a set of premises
 does not need to hold when additional premises are added. This is in contrast
 with classical logic where adding additional premises will never invalidate a
-conclusion. Defeasible reasoning allows arguments to be made for or against a
+conclusion. Defeasible reasoning allow arguments to be made for or against a
 conclusion. Arguments can also support or attack each other and thereby
 strengthen or weaken a case for a conclusion.
 
-Commonly argumentation in a multi-agent system is modelled as a dialogue game.
+Commonly argumentation in a multi-agent systems is modelled as a dialogue game.
 In such a dialogue game the agents represent the players and the game rules
 prescribes how the dialogue should occur \cite{walton1995}. There are rules
 about what arguments agents can put forward, when they are allowed to do so,
@@ -80,28 +88,50 @@ and there can be rules about which agent gets to speak when. Most forms of
 dialogue games also have rules about when the dialogue is finished and which
 agent(s) have won if applicable. These dialogues can be used to give reasons
 about why a group of agents decided to take a certain course of action. They
-can thus be used to remove some of the abstractness of cooperative pathfinding
+can be used to remove some of the abstractness of multi-agent pathfinding
 solutions by showing arguments for a course of action instead of coming up with
 a solution without any method of explaining why it is the best solution.
 
-%%TODO: describe how to combine these three views
-Dialogues can be used in cooperative pathfinding by applying techniques from
+% describe how to combine these three views
+Dialogues can be used in multi-agent pathfinding by applying techniques from
 partial global planning. When agents have a conflict then they need to
 cooperate to avoid conflicts. They can do so by starting a dialogue in which
-they share and evaluate different hypothesis to solve the conflict. The
-hypotheses offered will be discussed and evaluated in the dialogue and the best
-one (according to various criteria) is used as the solution to a conflict. All
-agents involved in the dialogue adapt their plans so that there are no
-conflicts between them any more. This means that there are many small local
-changes to agent's plans. The end result is a global solution to the
-cooperative pathfinding problem without any agent having known it explicitly or
-been vital to its calculation like in a centralized approach.
+they share and evaluate different hypothesis to solve the conflict. A
+hypothesis consists of a priority ordering for the agents that are involved in
+a conflict. The hypotheses offered will be discussed and evaluated in the
+dialogue and the agents will give their preference for each proposal. The
+proposal which is most preferred is used as the solution to the conflict. All
+agents involved in the dialogue adapt the hypothesis. Next they update their
+plans so that there are no conflicts between them any more. This means that
+there are many small local changes to an agent's position in the hierarchy and
+therefore also in their plans. The end result is a global solution to the
+multi-agent pathfinding problem without any agent having known it explicitly.
+There is also no single agent which has been vital to its calculation like in a
+centralized approach.
+
+By combining partial global planning, deliberation dialogues and we can develop
+an algorithm that is able to overcome the weaknesses which other multi-agent
+pathfinding algorithms have. Using the decoupled method as a starting point we
+use partial global planning to remove the reliance on a central processor to
+determine the hierarchy. This also prevents a common pitfall of decentralized
+methods which are not able to coordinate plans on a global level. So we
+essentially achieve a decentralized algorithm that is able to create a global
+plan. To enable the use of partial global planning we use deliberation
+dialogues so that agents can determine a hierarchy in a decentralized fashion.
+Another benefit of using deliberation dialogues is that it is possible to get
+reasons why agents settled on a particular hierarchy. This makes it possible to
+explain to an end-user why the solution is the best solution. This is not
+possible with conventional multi-agent pathfinding algorithms because they only
+compute a solution according to an algorithm without having any explanatory
+power.
+
+% TODO: MAPF is a subcase of coordination
 
 The rest of this thesis is structured as follows. First, a formal description
 of the cooperative pathfinding problem is given in \autoref{sec:problem}.
 Previous work in cooperative pathfinding, argumentation and partial global
 planning is discussed in \autoref{sec:related}. A new method to find
-conflict-free paths is proposed in \autoref{sec:method}. This method is
+conflict-free paths is proposed in \autoref{sec:method}. The method is
 evaluated and compared to other algorithms in \autoref{sec:results}. Final
 remarks on the proposed method and its implications are discussed in
 \autoref{sec:discussion}.

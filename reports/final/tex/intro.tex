@@ -7,11 +7,11 @@ other. Even when agents can prevent collisions then it is still possible that
 congestions or even deadlocks may occur. Agents need to be able to get to their
 destination as soon as possible so these situations are undesirable. To avoid
 them there is a need for coordination between the agents. Cooperative
-multi-agent pathfinding finds its application in robotics, aviation, road
+cooperative pathfinding finds its application in robotics, aviation, road
 traffic management, crowd simulations, and video games \cite{standley2011}.
 
 %Discuss cooperative pathfinding and abstract solutions.
-The most straightforward approach to the multi-agent pathfinding (MAPF) problem
+The most straightforward approach to the cooperative pathfinding problem
 is to search the Cartesian product of the state spaces of all agents. This
 approach is computationally inefficient \cite{sharon2013} as the time to find a
 solution is exponential in the number of agents. Another common approach is to
@@ -25,7 +25,7 @@ particular solution was the one arrived at. The algorithm has found a set of
 conflict free paths and that set was returned as the working solution without
 any indication about the considerations of why it is a good plan.
 
-These two common approaches to solving the multi-agent pathfinding problem both
+These two common approaches to solving the cooperative pathfinding problem both
 rely on a central processor \cite{chouhan2017}. The first is a category of
 centralized methods that use a central processor to create a plan for all the
 agents. The other category requires that a central processor determines a
@@ -67,7 +67,7 @@ the alternative path. This allows for a truly decentralised approach where
 agents  only communicate with other agents when they have to. There is also no
 need to wait for a central processor to tell agents what to do. At the same
 time plans are well coordinated without lacking a global view like the
-decentralized multi-agent pathfinding algorithms.
+decentralized cooperative pathfinding algorithms.
 
 Other methods of decentralised coordination have been developed by the field of
 argumentation. Formal models of argumentation have been used in Artificial
@@ -88,12 +88,12 @@ and there can be rules about which agent gets to speak when. Most forms of
 dialogue games also have rules about when the dialogue is finished and which
 agent(s) have won if applicable. These dialogues can be used to give reasons
 about why a group of agents decided to take a certain course of action. They
-can be used to remove some of the abstractness of multi-agent pathfinding
+can be used to remove some of the abstractness of cooperative pathfinding
 solutions by showing arguments for a course of action instead of coming up with
 a solution without any method of explaining why it is the best solution.
 
 % describe how to combine these three views
-Dialogues can be used in multi-agent pathfinding by applying techniques from
+Dialogues can be used in cooperative pathfinding by applying techniques from
 partial global planning. When agents have a conflict then they need to
 cooperate to avoid conflicts. They can do so by starting a dialogue in which
 they share and evaluate different hypothesis to solve the conflict. A
@@ -105,12 +105,12 @@ agents involved in the dialogue adapt the hypothesis. Next they update their
 plans so that there are no conflicts between them any more. This means that
 there are many small local changes to an agent's position in the hierarchy and
 therefore also in their plans. The end result is a global solution to the
-multi-agent pathfinding problem without any agent having known it explicitly.
+cooperative pathfinding problem without any agent having known it explicitly.
 There is also no single agent which has been vital to its calculation like in a
 centralized approach.
 
 By combining partial global planning, deliberation dialogues and we can develop
-an algorithm that is able to overcome the weaknesses which other multi-agent
+an algorithm that is able to overcome the weaknesses which other cooperative
 pathfinding algorithms have. Using the decoupled method as a starting point we
 use partial global planning to remove the reliance on a central processor to
 determine the hierarchy. This also prevents a common pitfall of decentralized
@@ -121,7 +121,7 @@ dialogues so that agents can determine a hierarchy in a decentralized fashion.
 Another benefit of using deliberation dialogues is that it is possible to get
 reasons why agents settled on a particular hierarchy. This makes it possible to
 explain to an end-user why the solution is the best solution. This is not
-possible with conventional multi-agent pathfinding algorithms because they only
+possible with conventional cooperative pathfinding algorithms because they only
 compute a solution according to an algorithm without having any explanatory
 power.
 

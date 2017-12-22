@@ -47,7 +47,7 @@ leads the agent to its destination and it does not collide with other agents
 during the execution of this plan. Because CA* is based on A* it will find the
 shortest path which does so.
 
-\subsection{Partial Cooperative A*}
+\subsection{Partial Cooperative A* (PCA*)}
 The heart of the algorithm is the conflict resolution step. The most
 straightforward approach to solving conflicts is by going through all possible
 agent orderings. An ordering determines which agent has priority over another
@@ -118,7 +118,7 @@ interact.
 %permutations which means that the amount of priority permutations that need to
 %be evaluated is low.
 
-\subsection{Dialogue-based Partial Cooperative A*}
+\subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
 \begin{table}
     \centering
     \caption{Stages of a conflict resolution dialogue.}
@@ -414,7 +414,7 @@ This penalty weight is included in the evaluation if there are two or more
 agents that still have a conflict with each other after adapting a priority
 proposal. It is a penalty for when a proposal only partially solves a conflict.
 
-\subsection{Windowed Dialogue-based Partial Cooperative A*}
+\subsection{Windowed Dialogue-based Partial Cooperative A* (WDPCA*)}
 One of the issues with DPCA* and DPCA*+ is that all dialogues and computation
 occur before execution of the plan. Both planning and execution take time
 without requiring the same resources so it is also possible to do them at the
@@ -460,6 +460,7 @@ destination do not have to update their plan. When there would be no window all
 agents would have to recalculate and solve all conflicts again, even if they
 would not need to update their plan, leading to wasted computational resources.
 
+\subsection{Summary}
 An overview of all proposed algorithms is given in \autoref{tbl:proposed}, the
 categories shown are similar to those in \autoref{tbl:planning-overview}. Some
 of the columns from \autoref{tbl:planning-overview} are missing in

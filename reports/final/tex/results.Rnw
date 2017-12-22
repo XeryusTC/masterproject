@@ -4,17 +4,17 @@
 % TODO: investigate run time vs number of conflicts found
 
 The three proposed algorithms are tested and compared against the complete
-algorithm OD+ID and the decentralized algorithm DiMPP. To do this we compare
-them on a large set of problem instances.
-The exact size of the problem set depends on the experiment.
-Each instance in the set consists of a $16 \times 16$ 8-connected grid. Each
-grid cell has
+algorithm OD+ID and the fully decentralized algorithm DiMPP. To do this we
+compare them on a large set of problem instances. The exact size of the problem
+set depends on the experiment. Each instance in the set consists of a $16
+\times 16$ 8-connected grid. Each grid cell has
 a $20\%$ chance of containing an impassable obstacle. Agents cannot enter these
 grid locations, but the obstacles do not block agents from moving along
 diagonals as explained in \autoref{sec:problem}. Agents are placed randomly in
-the grid such that no two agents have the same starting position, each agent is
-also given a randomly chosen destination location, again these are picked in
-such a way that no two agents have the same destination. Note that the starting
+the grid such that no two agents have the same starting position. Each agent is
+also given a randomly chosen destination location. These are also picked in
+such a way that no two agents have the same destination. Note that it is
+possible that the starting
 position of one agent might be the destination of another. All experiments were
 implemented in Python 3.6 and run on a single core of an AMD FX-8120 clocked at
 3.1GHz.

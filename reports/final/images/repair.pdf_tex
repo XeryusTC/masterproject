@@ -36,7 +36,7 @@
   }%
   \providecommand\rotatebox[2]{#2}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{200.089572bp}%
+    \setlength{\unitlength}{171.74311452bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -48,12 +48,12 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.78218169)%
+  \begin{picture}(1,0.74623045)%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{repair.pdf}}%
-    \put(0.35634298,0.58986674){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
+    \put(0.33263217,0.60469938){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{repair.pdf}}%
-    \put(0.14349188,0.63138371){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
-    \put(0.14349188,0.52471185){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_1$}}}%
-    \put(0.78116058,0.16433926){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_2$}}}%
+    \put(0.08464968,0.65306879){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
+    \put(0.08464968,0.52879058){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_1$}}}%
+    \put(0.82756655,0.10893796){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_2$}}}%
   \end{picture}%
 \endgroup%

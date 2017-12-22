@@ -5,27 +5,28 @@
     \def\svgscale{.7}
     \input{images/world.pdf_tex}
     \caption{A small space shared by some agents. Obstacles are black, agents
-        are circles inscribed with the agent's number ($a_i$), the destination
-        for
-        agent $a_i$ is given by $g_i$.}
+        are circles inscribed with the agent's number ($a_i$). The destination
+        for agent $a_i$ is given by $g_i$.}
     \label{fig:world}
 \end{figure}
 
-The problem of cooperative pathfinding can be defined as follows.
-A shared space is divided into discrete cells such that it forms an 8-connected
-grid. Some of the cells in this grid are static obstacles while the other cells
-are open. A set of $k$ agents $\{a_1, a_k\}$ occupy cells within the grid, the
-agents have goal positions $g_1, \ldots, g_k$. A set of paths need to be found,
-one for each agent, such that each agent gets to its goal position without
-crashing into any of the other agents.
-A path consists of a series of moves, which can either
-be to move to one of the neighbouring cells or \emph{wait} at the current
-location. Each time step an agent can take exactly one of these actions.
-An example initial configuration is shown in \autoref{fig:world}. The goal is
-to find a series of moves, or paths, one for each agent, such that the agents
-reach their destination without colliding with other agents or running into the
-static obstacles. Each action has unit cost, with the exception of waiting in
-the goal position. The cost function of moving is then
+The problem of multi-agent pathfinding can be defined as follows. A shared
+space is divided into discrete cells such that it forms an 8-connected grid.
+Some of the cells in this grid are static obstacles while the other cells are
+open. A set of $k$ agents $\{a_1, \ldots, a_k\}$ occupy cells within the grid,
+the agents have respective goal positions $g_1, \ldots, g_k$. A set of paths
+need to be found, one for each agent, such that each agent gets to its goal
+position without colliding with any of the other agents. A path consists of a
+series of actions. An action can either be to move to one of the eight
+neighbouring cells or \emph{wait} at the current location. Each time step an
+agent must do exactly one of these actions. An example initial configuration is
+shown in \autoref{fig:world}.
+
+The goal is to find a series of moves, or paths, one for each agent, such that
+the agents reach their destination in as little time as possible. They have to
+do this without colliding with other agents or running into the static
+obstacles. Each action has unit cost, with the exception of waiting in the goal
+position. The cost function is then
 \[
 \text{\textsc{cost}(P,Q)} =
 \begin{cases}
@@ -33,9 +34,9 @@ the goal position. The cost function of moving is then
     1 & \text{otherwise}
 \end{cases}
 \]
-where $P$ is the node where the agent started, $Q$ is the node where the agent
-ended up in, and $G$ is the agent's goal node. A single agent's path has a cost
-that is the sum of the costs of all its actions. The cost of a solution is
+where $P$ is the node where the agent is located, $Q$ is the node where the
+agent moves to, and $G$ is the agent's goal node. A single agent's path has a
+cost that is the sum of the costs of all its actions. The cost of a solution is
 defined as the sum of the costs of the paths of the agents. The most
 appropriate solution to the problem is the solution with the lowest cost.
 
@@ -46,7 +47,7 @@ stationary agents. Examples of each of these conflicts are given
 in \autoref{fig:conflicts}, it shows that conflicts involving agents moving
 along the same edge or moving along crossing edges can only occur when agents
 are in neighbouring cells. A conflict in which agents move to the same cell can
-happen whenever the agents are at most two actions away from each other. An
+happen whenever the agents are at most two actions away from each other. A
 single action can result in an agent having multiple conflicts at the same
 time. If \autoref{fig:conflict-position} had an agent $a_3$ in the top right
 cell moving to the bottom middle cell then $a_2$ would have a conflict with
@@ -55,10 +56,10 @@ Agents are allowed to move along a diagonal even when the two cells on the
 opposing diagonal are blocked, i.e. $a_5$ in \autoref{fig:world} can move to its
 destination in a single time step. An agent $a_i$ can move to a cell occupied by
 agent $a_j$ given that $a_j$ will move to a different cell at the same time.
-Agents $a_1, \ldots a_4$ in \autoref{fig:world} can reach their respective
-destinations
-by ``rotating'' clockwise. They can do this in a single time step without
-requiring any additional empty cells. $a_7$ and $a_8$ cannot move to their
+Agents $a_1$, $a_2$, $a_3$ and $a_4$ in \autoref{fig:world} can reach their
+respective destinations by ``rotating'' clockwise. They can do this in a single
+time step without requiring any additional empty cells. Agents $a_7$ and $a_8$
+cannot move to their
 destinations in a single time step because that would mean that they move along
 crossing edges at the same time. They can also not swap places because then
 they would be travelling along the same edge.
@@ -89,7 +90,7 @@ they would be travelling along the same edge.
 		\label{fig:conflict-crossing}
 	\end{subfigure}
 	\caption{Examples of conflicting actions. Agents are circles inscribed with
-	$a_j$, their movements are indicated by the arrows starting in the cell
+	$a_i$. Their movements are indicated by the arrows starting in the cell
 	they occupy, the action ends in the cell that the arrow points to.}
 	\label{fig:conflicts}
 \end{figure}

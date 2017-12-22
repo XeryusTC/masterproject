@@ -23,8 +23,9 @@
 %solution to the conflict does not outweigh the speed of starting several
 %dialogues which come to a conclusion quickly.
 
-We have seen that only PCA* is slower and solves fewer problem instances than
-OD+ID and DiMPP. All other versions of the proposed algorithm can solve more
+We have seen that only PCA* takes longer to solve problem instances and solves
+fewer instances than OD+ID and DiMPP. All other versions of the proposed
+algorithm can solve more
 instances and are generally faster than the two reference algorithms. This
 comes with the caveat that DPCA* and especially WDPCA* find solutions in which
 the paths are often longer than those found with the state-of-the-art
@@ -37,8 +38,8 @@ to create a plan for that agent.
 
 Centralized methods are slower than decentralized methods however they do often
 find a solution in which each agent's path is as short as possible. They are
-also able to find a solution to the problem if one exists. To do so they often
-need sufficient computation time which is not what the experimental setup
+also able to find a solution to the problem if one exists. Often there is a
+need for a lot of computation time which is not what the experimental setup
 allows for. Instead the experiments are focused on finding a solution in as
 little time as possible. We consider being able to find a solution in
 a reasonable time to be more important than being able to find a solution when

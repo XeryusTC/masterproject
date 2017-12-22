@@ -1,20 +1,21 @@
 \section{Algorithm}\label{sec:method}
 Decoupled algorithms are able to solve cooperative pathfinding problems while
-requiring only minimal resources. The agents calculate paths to their
-destination individually so this is inherently distributed. To achieve this
-there has to be a predetermined priority order for the agents so that they can
-plan paths that have no conflicts. This is often done by a central processor
-that knows the optimal paths of all agents. This central processor can then
+requiring only minimal computational resources. The agents calculate paths to
+their destination individually so this is inherently distributed. A hierarchy
+is imposed on the agents by assigning them a priority order. This order allows
+agents to avoid conflicts without a central processor making a plan. However a
+central processor is still needed to determine the priority order. This central
+processor can then
 find dependencies between agents to determine possible priority orderings that
 can be used to solve the problem \cite{latombe1991,bennewitz2002}. This means
 that decoupled methods are mostly distributed with a single centralized
 bottleneck. All agents will have to halt calculating a solution while the
 priority scheme is determined by the central processor. The central processor
 in its turn has to wait for all agents to calculate and communicate their
-optimal paths before it is able to determine the priority order.
+optimal paths before it is able to calculate the priority order.
 
 To overcome this bottleneck the calculation of the priority ordering can also
-become distributed. The three step base decoupled method can be
+become distributed. The base three step decoupled method can be
 altered to allow for this. The first step where each agent plans its optimal
 path without regard for the other agents remains the same. Next agents share
 the paths that they found with each other. Each agent can now determine where
@@ -28,7 +29,7 @@ conflict. Agents will only need to solve the first conflict that occurs in
 their path because solving it may have the side-effect of solving later
 conflicts. After a conflict has been successfully solved then the agents
 involved can work on solving the next conflict.
-Below are the details of three different versions of this algorithm, each
+Below are the details of three different versions of this algorithm. Each
 version of the algorithm has some improvements over the previous version.
 
 Each of the three algorithms builds upon a more general search algorithm
@@ -39,7 +40,8 @@ algorithm searches both the space and time dimensions to ensure that paths are
 conflict free. To be able to do this an agent needs to know the paths of the
 other agents that can potentially conflict with its own path. The algorithm
 works like regular A* with the addition that it has to consider the moves that
-other agents make. It does this by not expand nodes that would cause a conflict
+other agents make. It does this by not taking actions that would cause a
+conflict
 with the path of an agent of higher priority. This results in a path which
 leads the agent to its destination and it does not collide with other agents
 during the execution of this plan. Because CA* is based on A* it will find the

@@ -44,7 +44,7 @@ $^1$ University of Groningen \\
 brontitall@dds.nl,
 bart.verheij@rug.nl
 }
-\title{Argumentation Dialogues for Cooperative Pathfinding}
+\title{Argumentation Dialogues for Decentralised Cooperative Pathfinding}
 
 <<preprocess,echo=F,message=F,cache=F>>=
 require(knitr)

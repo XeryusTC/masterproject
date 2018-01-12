@@ -5,9 +5,9 @@ dat = read.csv(paste('results/', file, sep=""), header=T)
 
 algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
                "Window8", "dimpp")
-cannonical_names = c("OD+ID", "NPPCPF", "PPCPF", "PPCPF+", "WPPCPF-2",
-                     "WPPCPF-4", "WPPCPF-8", "DiMPP")
-color_set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
+                     "WDPCA*-4", "WDPCA*-8", "DiMPP")
+color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
               "maroon")
 
 len = length(unique(dat$instance))
@@ -39,8 +39,8 @@ lines(seq(length(window4)), window4, col='cyan')
 lines(seq(length(window8)), window8, col='orange')
 lines(seq(length(dimpp)), dimpp, col='maroon')
 legend("bottomright",
-       legend=cannonical_names,
-       col=color_set,
+       legend=cannonical.names,
+       col=color.set,
        pch=16)
 
 #solved = apply(dat[algorithms], 2, function(col)1-sum(is.na(col))/length(col))
@@ -49,14 +49,14 @@ solved = aggregate(time ~ factor(algorithm, levels=algorithms),
                    data=dat,
                    FUN=function(x)1-sum(is.na(x))/length(x),
                    na.action = na.pass)
-bp = barplot(solved$time * 100,
-        names.arg=cannonical_names,
-        cex.names = .8,
-        xlab='Algorithm',
-        ylab='Percentage solved',
-        ylim=c(0,100),
-        col=color_set)
-text(x = bp, y=solved$time * 100, xpd=T, label=solved$time*100, pos=3, cex=.8)
+#bp = barplot(solved$time * 100,
+#        names.arg=cannonical_names,
+#        cex.names = .8,
+#        xlab='Algorithm',
+#        ylab='Percentage solved',
+#        ylim=c(0,100),
+#        col=color_set)
+#text(x = bp, y=solved$time * 100, xpd=T, label=solved$time*100, pos=3, cex=.8)
 
 solved.aggr = aggregate(time ~ factor(algorithm, levels=algorithms) + num.agents, data=dat,
                         FUN=function(x)1-sum(is.na(x))/length(x),
@@ -71,20 +71,20 @@ plot(1,
 )
 for(i in 1:length(algorithms))
 {
-    lines(solved.aggr[solved.aggr[,1]==algorithms[i],]$time, col=color_set[i])
+    lines(solved.aggr[solved.aggr[,1]==algorithms[i],]$time, col=color.set[i])
 }
 legend("bottomleft",
-       legend=cannonical_names,
-       col=color_set,
+       legend=cannonical.names,
+       col=color.set,
        pch=16)
 
-lengths = aggregate(length ~ factor(algorithm, levels=algorithms), data=dat, FUN=mean)
-bp2 = barplot(lengths$length,
-              names.arg=cannonical_names,
-              col=color_set,
-              cex.names = .8,
-              xlab='Algorithm',
-              ylab='Mean path length')
+#lengths = aggregate(length ~ factor(algorithm, levels=algorithms), data=dat, FUN=mean)
+#bp2 = barplot(lengths$length,
+#              names.arg=cannonical_names,
+#              col=color_set,
+#              cex.names = .8,
+#              xlab='Algorithm',
+#              ylab='Mean path length')
 
 # percentage that OD+ID is faster than Naive
 naive.vs.odid = mean(dat[dat$algorithm=="ODID","time"] < dat[dat$algorithm=="Naive","time"], na.rm=T)
@@ -117,11 +117,11 @@ plot(1,
 )
 for(i in 1:length(algorithms))
 {
-    lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts, col=color_set[i])
+    lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts, col=color.set[i])
 }
 legend("topleft",
-       legend=cannonical_names[2:7],
-       col=color_set[2:7],
+       legend=cannonical.names[2:7],
+       col=color.set[2:7],
        pch=16)
 
 dat.lengths = aggregate(length ~ num.agents + factor(algorithm, levels=algorithms), data=dat, FUN=mean)
@@ -134,11 +134,11 @@ plot(c(),
 )
 for (i in 1:length(algorithms))
 {
-    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color_set[i])
+    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color.set[i])
 }
 legend("topleft",
-       legend=cannonical_names,
-       col=color_set,
+       legend=cannonical.names,
+       col=color.set,
        pch=16,
        cex=0.8,
        bty='n')

@@ -1,0 +1,190 @@
+% !TeX document-id = {81191a9b-cc7a-4dfa-a09e-7e87a51baad2}
+% !TeX TXS-program:compile = txs:///knit2pdf
+\documentclass[a4paper]{article}
+
+% IJCAI-ECAI style
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+\usepackage{ijcai18}
+\usepackage{times}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage[small]{caption}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{color}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage{subcaption}
+\usepackage[hidelinks]{hyperref}
+\usepackage[all]{hypcap}
+
+\graphicspath{{images/}}
+
+% Change capitalisation of hyperref labels
+\renewcommand*{\sectionautorefname}{Section}
+\renewcommand*{\subsectionautorefname}{Subsection}
+\renewcommand*{\subsubsectionautorefname}{Subsubsection}
+
+\DeclareMathOperator{\pos}{pos}
+\DeclareMathOperator{\eval}{eval}
+\DeclareMathOperator{\vote}{vote}
+
+\newcommand{\agentsupb}{40 }
+
+\author{
+Xeryus Stokkel$^1$,
+Bart Verheij$^1$,
+\\
+$^1$ University of Groningen \\
+brontitall@dds.nl,
+bart.verheij@rug.nl
+}
+\title{Argumentation Dialogues for Cooperative Pathfinding}
+
+<<preprocess,echo=F,message=F,cache=F>>=
+require(knitr)
+require(xtable)
+require(plyr)
+require(tikzDevice)
+
+# settings
+options("xtable.caption.placement" = "top")
+options("xtable.table.placement" = "t")
+options("xtable.hline.after" = c(0))
+options("scipen" = 1)
+
+# Figure titles
+perfgraph.title = "Comparison of performance of various algorithms on $10 000$
+problem instances."
+cachegraph.title = "Comparison of performance of various algorithms with and
+without the use of a path cache. Dotted lines indicate that path cache wasn't
+used while solid lines indicate that the cache was used."
+solved.title = "Proportion of instances that were solved by each algorithm."
+conflicts.title = "Mean number of dialogues that needed to be completed to find
+a solution for instances with $n$ agents."
+sizes.title="Comparison of occurence of different sizes of DPCA*+ dialogues."
+quality.title="Number of loops in paths."
+lengths.title="Mean sum of path length versus the number of agents in the
+problem instance. The results for 2 to 10 agents have been cut of because the
+path lengths for all algorithms are near identical for those amount of agents."
+
+file = rev(list.files('../../results', 'benchmark*'))[1]
+dat = read.csv(paste('../../results/', file, sep=""), header=T)
+file = rev(list.files('../../results', 'cache*'))[1]
+dat.cache = read.csv(paste('../../results/', file, sep=""), header=T)
+file = rev(list.files('../../results', 'conflictsize-*'))[1]
+sizes.dat = read.csv(paste('../../results/', file, sep=""), header=T)
+file = rev(list.files('../../results', 'quality*'))[1]
+quality.dat = read.csv(paste('../../results/', file, sep=""), header=T)
+
+algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
+               "Window8", "DiMPP")
+cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
+                     "WDPCA*-4", "WDPCA*-8", "DiMPP")
+cannonical.names.cache = cannonical.names[3:7]
+color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+              "maroon")
+color.set.cache = color.set[3:7]
+
+len = length(unique(dat$instance))
+od      = sort(dat[dat$algorithm=='ODID',]$time * 1000)
+naive   = sort(dat[dat$algorithm=='Naive',]$time * 1000)
+base    = sort(dat[dat$algorithm=='Base',]$time * 1000)
+plus    = sort(dat[dat$algorithm=='Plus',]$time * 1000)
+window2 = sort(dat[dat$algorithm=='Window2',]$time * 1000)
+window4 = sort(dat[dat$algorithm=='Window4',]$time * 1000)
+window8 = sort(dat[dat$algorithm=='Window8',]$time * 1000)
+dimpp   = sort(dat[dat$algorithm=='DiMPP',]$time * 1000)
+
+dat.sub = subset(dat, !is.na(time))
+solved = aggregate(time ~ factor(algorithm, levels=algorithms),
+                   data=dat,
+                   FUN=function(x)1-sum(is.na(x))/length(x),
+                   na.action=na.pass)
+solved.aggr = aggregate(time ~ factor(algorithm, levels=algorithms) +
+                               num.agents,
+                        data=dat,
+                        FUN=function(x)1-sum(is.na(x))/length(x),
+                        na.action=na.pass)
+lengths = aggregate(length ~ factor(algorithm, levels=algorithms), data=dat,
+                    FUN=mean)
+dat.lengths = aggregate(length ~ num.agents + factor(algorithm,
+levels=algorithms), data=dat, FUN=mean)
+naive.vs.odid = mean(subset(dat, algorithm=="ODID")$time < subset(dat,
+                        algorithm=="Naive")$time, na.rm=T)
+base.vs.plus = t.test(dat[dat$algorithm=="Base","time"],
+                      dat[dat$algorithm=="Plus","time"],
+                      paired=T, alternative = "less")
+
+# Influence of window on solve time
+windowdat = subset(dat, algorithm %in% c("Window2", "Window4", "Window8"))
+w.anova = anova(lm(windowdat$time ~ windowdat$algorithm +
+                    windowdat$num.agents))
+t.2vs4 = t.test(dat[dat$algorithm=="Window2","time"],
+                dat[dat$algorithm=="Window4","time"])
+t.2vs8 = t.test(dat[dat$algorithm=="Window2","time"],
+                dat[dat$algorithm=="Window8","time"])
+t.4vs8 = t.test(dat[dat$algorithm=="Window4","time"],
+                dat[dat$algorithm=="Window8","time"])
+
+conflicts.aggr = aggregate(cbind(initial.conflicts, solved.conflicts) ~
+                           algorithm + num.agents, data=dat, FUN=mean)
+
+len.cache = length(unique(dat.cache$instance))
+base.nocache    = sort(dat.cache[dat.cache$algorithm=='Base' &
+                                     dat.cache$cache=='False',]$time * 1000)
+plus.nocache    = sort(dat.cache[dat.cache$algorithm=='Plus' &
+                                     dat.cache$cache=='False',]$time * 1000)
+window2.nocache = sort(dat.cache[dat.cache$algorithm=='Window2' &
+                                     dat.cache$cache=='False',]$time * 1000)
+window4.nocache = sort(dat.cache[dat.cache$algorithm=='Window4' &
+                                     dat.cache$cache=='False',]$time * 1000)
+window8.nocache = sort(dat.cache[dat.cache$algorithm=='Window8' &
+                                     dat.cache$cache=='False',]$time * 1000)
+base.cache      = sort(dat.cache[dat.cache$algorithm=='Base' &
+                                     dat.cache$cache=='True',]$time * 1000)
+plus.cache      = sort(dat.cache[dat.cache$algorithm=='Plus' &
+                                     dat.cache$cache=='True',]$time * 1000)
+window2.cache   = sort(dat.cache[dat.cache$algorithm=='Window2' &
+                                     dat.cache$cache=='True',]$time * 1000)
+window4.cache   = sort(dat.cache[dat.cache$algorithm=='Window4' &
+                                     dat.cache$cache=='True',]$time * 1000)
+window8.cache   = sort(dat.cache[dat.cache$algorithm=='Window8' &
+                                     dat.cache$cache=='True',]$time * 1000)
+aggr.cache = aggregate(. ~ num.agents + algorithm + cache, data=dat.cache,
+                       FUN=mean)
+cache.model = lm(time ~ num.agents + algorithm * cache, data=aggr.cache)
+cache.anova = aov(cache.model)
+cache.sum = summary(cache.anova)[[1]]
+
+sizes.aggr = aggregate(cbind(X2, X3, X4, X5) ~ num.agents,
+                       data=sizes.dat, FUN=mean)
+
+quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
+						 FUN=mean,
+                         data=quality.dat)
+@
+
+\begin{document}
+
+\maketitle
+
+\input{tex/abstract}
+\input{tex/intro}
+\input{tex/problem}
+\input{tex/related_work}
+\input{tex/method}
+<<resuls-file,child='tex/results.Rnw'>>=
+@
+\input{tex/discussion}
+
+
+\bibliographystyle{plain}
+\bibliography{literature}
+
+\end{document}

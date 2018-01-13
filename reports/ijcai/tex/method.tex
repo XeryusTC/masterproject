@@ -1,135 +1,56 @@
-\section{Algorithm}\label{sec:method}
+\section{Family of algorithms}\label{sec:method}
 Decoupled algorithms are able to solve cooperative pathfinding problems while
-requiring only minimal computational resources. The agents calculate paths to
-their destination individually so this is inherently distributed. A hierarchy
-is imposed on the agents by assigning them a priority order. This order allows
-agents to avoid conflicts without a central processor making a plan. However a
-central processor is still needed to determine the priority order. This central
-processor can then
-find dependencies between agents to determine possible priority orderings that
-can be used to solve the problem \citep{latombe1991,bennewitz2002}. This means
-that decoupled methods are mostly distributed with a single centralized
-bottleneck. All agents will have to halt calculating a solution while the
-priority scheme is determined by the central processor. The central processor
-in its turn has to wait for all agents to calculate and communicate their
-optimal paths before it is able to calculate the priority order.
-
-To overcome this bottleneck the calculation of the priority ordering can also
-become distributed. The base three step decoupled method can be
-altered to allow for this. The first step where each agent plans its optimal
-path without regard for the other agents remains the same. Next agents share
-the paths that they found with each other. Each agent can now determine where
-its path and the paths of other agents
-have conflicting moves that would lead to a collision. The agents will then be
-able to solve the conflicts without having to wait for slower agents to
-calculate and communicate their optimal paths. To solve conflicts agents will
-start a dialogue where possible solutions are proposed, evaluated and adapted.
-The proposals made consist of a priority order for the agents involved in the
-conflict. Agents will only need to solve the first conflict that occurs in
-their path because solving it may have the side-effect of solving later
-conflicts. After a conflict has been successfully solved then the agents
-involved can work on solving the next conflict.
-Below are the details of three different versions of this algorithm. Each
-version of the algorithm has some improvements over the previous version.
-
-Each of the three algorithms builds upon a more general search algorithm
-Cooperative A* (CA*). This algorithm is a variation on A* \citep{hart1968} that
-allows teams of agents to cooperate. Each agent searches for a path
-individually, but they can take each other's actions into account. The
-algorithm searches both the space and time dimensions to ensure that paths are
-conflict free. To be able to do this an agent needs to know the paths of the
-other agents that can potentially conflict with its own path. The algorithm
-works like regular A* with the addition that it has to consider the moves that
-other agents make. It does this by not taking actions that would cause a
-conflict
-with the path of an agent of higher priority. This results in a path which
-leads the agent to its destination and it does not collide with other agents
-during the execution of this plan. Because CA* is based on A* it will find the
-shortest path which does so.
+requiring only minimal computational resources. The agents calculate their path 
+individually so this is inherently distributed. Calculating a hierarchy needs 
+to be done centrally so all dependencies between agents can be taken into 
+account \citep{latombe1991,bennewitz2002}. This means that there is a single 
+centralized bottleneck in an otherwise distributed system. In this article we 
+aim to overcome this bottleneck and make the calculation of the priority 
+ordering distributed as well. Below are the details of two different versions 
+of this algorithm. The second version version of the algorithm has some 
+improvements over the previous version. Each algorithm is build upon 
+Cooperative A*, a variation on A* \citep{hart1968} which allows teams of agents 
+to cooperate. This variant does not allow agents to expand nodes if it would 
+mean that the action will conflict with the path of an agent with higher 
+priority.
 
 \subsection{Partial Cooperative A* (PCA*)}
-The heart of the algorithm is the conflict resolution step. The most
-straightforward approach to solving conflicts is by going through all possible
-agent orderings. An ordering determines which agent has priority over another
-agent. The ordering $a_1 > a_2$ indicates that $a_1$ can plan freely while
-$a_2$ has to consider $a_1$ as a moving obstacle. Usually decoupled methods use
-a permutation of the priority ordering $a_1 > a_2 > \ldots > a_k$ that all
-agents have to adhere to. In Partial Cooperative A* (PCA*) start by finding
-their optimal paths without considering the presence of the other agents and
-communicating the results with each other. When agents detect that there is a
-conflict in their individual plans then they will try to find a priority
-ordering between them that will solve the conflict. Agents will always try to
-find a solution to the conflict that is closest to their current position
-first. This is because the solution to earlier occurring conflicts may also
-have the effect of solving or creating later conflicts. There is no need to
-waste computational resources on solving a conflict that will be solved by
-implication when an earlier occurring conflict is solved.
+The algorithm follows the approach of decoupled methods. During the first step 
+agents calculate their optimal path and share them with each other. This allows 
+each agent to determine where they have conflicts. During the second step the 
+agents will start dialogues for each conflict and update their plan after each 
+dialogue they finish. The result of the dialogue is a partial priority 
+ordering. Other methods calculate a permutation of the full priority scheme 
+$a_1 > a_2 > \ldots > a_k$. The result of a dialogue is a priority ordering for 
+the agents involved in the dialogue, ignoring those that did not partake.
 
-To find the most suitable priority ordering scheme all possible orderings
-between the agents that are involved in the conflict are evaluated. So a
-conflict with two agents will result in the ordering $a_1 > a_2$ and $a_2 >
-a_1$. The agents temporarily adapt the first ordering and plan new paths with
-the constraints it introduces and the agents measure the length of the paths
-that they found. Next they will adapt the second ordering and create a new plan
-using its constraints and they also measure the length of their path with this
-ordering. The priority scheme for which the sum of the path lengths is the
-lowest is permanently adapted by the agents. Because the solution with the
-lowest sum path length is used there is no consideration for the effects that
-the solution has on conflicts that occur later.
-
-Only the agents that occur in a priority ordering adapt it. This means that an
-agent $a_3$ does not know about the ordering that agents $a_1$ and $a_2$ have
-settled on, say that they picked $a_2 > a_1$. When $a_3$ and $a_1$ have a
-conflict then this will also find a solution to it. If they settle on a
-solution $a_1 > a_3$ then only $a_1$ knows $a_2 > a_1 > a_3$, the other two
-agents only know the partial priorities. In this case the global priority is
-known by $a_1$. It will not always be the case that one agent knows the
-full priority ordering. The ordering is implied by the partial orderings that
-the agents do know about. This is similar to how plans are constructed in
-partial global planning where no agent knows what the global plan is either.
-% TODO: incremental plans
-
-The orderings that are found do not need to be unambiguous, if $a_1$ and $a_3$
-had used the solution $a_3 > a_1$ then $a_1$ would have orderings $a_2 > a_1$
-and $a_3 > a_1$ but no $a_2 > a_3$ or $a_3 > a_2$. This leaves $a_2$ and $a_3$
-free to use any priority scheme in the event that they also have a conflict in
-their paths. This also allows for circular priority orderings, something which
-conventional decoupled algorithms do not support. This is possible because the
-circular ordering is implicit in all the partial orderings that individual
-agents know about. The implied global priority also doesn't need to be
-complete, not every agent needs to be present in it. This is easiest to see
-when considering only agents $a_1$ and $a_5$ in \autoref{fig:world}, for this
-example the other agents do not exist. There is no need to establish an
-ordering for these two agents since their paths never meet. This has the effect
-of implied Independence Detection \citep{standley2010} because these agents will
-never have to communicate beyond sharing the paths that they have found with
-each other. There is no need for them to coordinate because their plans never
-interact.
-% Simplicity of algorithm b/c not able to predict consequences
-% priorities form PGP
-
-%The simplest approach to resolving the conflicts is by creating all possible
-%ordering permutations for the agents involved in the conflict. The permutation
-%that has the lowest sum path length is used as the solution for the conflict.
-%This simple method of evaluating the various solutions is unlikely to find the
-%most appropriate one because it is not able to predict the consequences of
-%selecting one solution over the others.
-%Most conflicts involve just two agents, so there are only two possible ordering
-%permutations which means that the amount of priority permutations that need to
-%be evaluated is low.
+Agents will always solve the conflict that occurs the earliest in their path. 
+When an agent is invited to a dialogue that occurs later it will notify the 
+agents in that conflict of this and the dialogue is put on hold. This is 
+because solving a conflict may have the side-effect of solving conflicts that 
+occur at a later time. During a dialogue the agents that participate will 
+evaluate all possible priority orders for them. They will use the priority 
+order that has the smallest increase in total path length for the group of 
+agents. There is no consideration for other effects on the solution. Only the 
+agents that participate in the conflict adapt the priority, other agents in the 
+problem are not notified of what the solution is. It may be the case that some 
+agents will not have any conflicts which also means that they do not occur in 
+any priority ordering and will not be present in the implied global hierarchy. 
+This has the effect of implied Independence Detection because these agents will 
+never have communicated beyond sharing their optimal path.
 
 \subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
 \begin{table}
     \centering
     \caption{Stages of a conflict resolution dialogue.}
     \label{tbl:stages}
-    \begin{tabular}{l|l|l}
-        Stage & Goal & Next stage \\ \hline
+    \begin{tabularx}{\columnwidth}{l|X|l}
+        Stage & Purpose & Next stage \\ \hline
         Opening & Exchange information & Proposal \\
         Proposal & Make (incomplete) priority proposals & Evaluation \\
         Evaluation & Vote on suitability of proposals & Proposal, Closing \\
         Closing & Permanently adapt best proposal & \\
-    \end{tabular}
+    \end{tabularx}
 \end{table}
 
 Going through all possible permutations and evaluating them on a single
@@ -255,7 +176,7 @@ this path because they can solve these conflicts in a later dialogue. Using a
 cache should reduce the overall amount of time that is required to find a
 conflict free set of paths for all agents.
 
-\begin{figure}
+\begin{figure*}
     \centering
     \begin{subfigure}[t]{.3\textwidth}
         \centering
@@ -285,7 +206,7 @@ conflict free set of paths for all agents.
     indicated by the arrows. The red dot represent where two paths have
     conflicting moves.}
     \label{fig:example}
-\end{figure}
+\end{figure*}
 
 \paragraph{Example of conflict resolution} Consider the cooperative pathfinding
 problem in \autoref{fig:example-initial}. It shows a $4 \times 4$ grid with
@@ -490,6 +411,6 @@ the evaluations with each other.
         Algorithm & Communication & Online & Valuations \\ \hline
         PCA*   & All & No & No \\
         DPCA*  & All & No & Yes \\
-        WDPCA* & Window & Yes & Yes \\
     \end{tabular}
 \end{table}
+

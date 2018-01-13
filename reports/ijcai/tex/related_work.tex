@@ -52,7 +52,8 @@ planning and execution.
 
 There are a few common strategies that are used to tackle the intractability of 
 the cooperative pathfinding problem. Centralised methods use one single 
-processor to calculate the paths for all agents. They are often complete; they 
+processor to calculate the paths for all agents. They are often complete 
+meaning that they 
 will find a solution to the problem if one exists. This also means that they 
 are slow. An alternative strategy is to decouple the agents from each other. 
 Each agent plans its own path after a hierarchy is enforced on the agents. 
@@ -113,7 +114,7 @@ only required to update their plan if they conflict with that of a higher
 priority agent.
 
 Windowed Hierarchical Cooperative A* (WHCA*) is a decoupled algorithm that has
-been very successful in the video-game industry \citep{silver2005,botea2013}. 
+been very successful in the video-game industry \citep{silver2005}. 
 It uses a reservation table in which agents can denote where they plan to be at 
 each time step. The agents use this reservation table for a window of $w$ time 
 steps, after this limit they ignore reservations of other agents. After 
@@ -128,10 +129,10 @@ been proposed by \citep{wei2016}. Agents move towards their destination and only
 communicate with other agents that are at most two grid cells away. Agents use 
 various strategies to deal with different conflict situations. It requires 
 slightly less computation time than OD+ID and on average the agents need fewer 
-movement steps to reach their goal positions. Although completeness is not 
-discussed the algorithm is based on decoupled methods which are generally not 
-complete. Because of the limited communication range there is an increased risk 
-of deadlocks which requires additional strategies to resolve them.
+movement steps to reach their goal positions. Because of the limited 
+communication range there is an increased risk of deadlocks which requires 
+additional strategies to resolve them. Although completeness is not discussed 
+the algorithm is based on decoupled methods which are generally not complete.
 
 Another method that doesn't use a central processor is Distributed Multi-agent
 Path Planning (DiMPP) \citep{chouhan2017}. This is a distributed algorithm of 

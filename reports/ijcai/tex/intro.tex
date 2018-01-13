@@ -44,23 +44,21 @@ networks to distribute and coordinate tasks among the nodes that make up the
 network \citep{durfee1991}. The nodes create their individual plans without 
 regard for each other. They will then exchange information on their plans and 
 adapt them to better coordinate their activities. Coordination is not rigid and 
-nodes have some freedom in how they execute their plan if circumstances change 
+nodes are free to change their plan when circumstances change 
 without the need to re-coordinate with the other nodes. None of the involved 
-nodes ever has a global view, but the end result is a plan that is globally 
+nodes ever has a global view, but the end result is a plan that is globally well
 coordinated with each node holding the part of the global plan that is relevant 
 to it.
 
 % describe how to combine these three views
 Dialogues can be used in cooperative pathfinding by applying techniques from
-partial global planning. When agents have a conflict then they need to
-cooperate to resolve it. They can do so by starting a dialogue in which
-they share and evaluate different hypothesis to solve the conflict. A
+partial global planning. Agents can resolve conflicts by starting a dialogue in 
+which they share and evaluate different hypothesis to solve the conflict. A
 hypothesis consists of a priority ordering for the agents that are involved in
 the conflict. The hypotheses offered will be discussed and evaluated in the
-dialogue and the agents will select the most preferred proposal as the solution 
+dialogue and the agents will select the best proposal as the solution 
 to the conflict. All agents involved in the dialogue adapt the priority 
-ordering. Next they update their plan so that they adhere to the constraints 
-set by the priority ordering. This means that there are many small local 
+ordering and adopt their plan to it. This means that there are many small local 
 changes to an agent's position in the global hierarchy and therefore also in 
 their plans. The end result is a global solution to the cooperative pathfinding 
 problem without any agent having known it explicitly. There is also no single 
@@ -69,7 +67,7 @@ agent which has been vital to its calculation like in a centralized approach.
 The rest of this article is structured as follows. First, a formal description
 of the cooperative pathfinding problem is given in \autoref{sec:problem}.
 Previous work in cooperative pathfinding, argumentation and partial global
-planning is discussed in \autoref{sec:related}. A new method to find
+planning is discussed in \autoref{sec:related}. A family of methods to find
 conflict-free paths is proposed in \autoref{sec:method}. The method is
 evaluated and compared to other algorithms in \autoref{sec:results}. Final
 remarks on the proposed method and its implications are discussed in

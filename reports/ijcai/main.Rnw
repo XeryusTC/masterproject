@@ -1,6 +1,6 @@
 % !TeX document-id = {81191a9b-cc7a-4dfa-a09e-7e87a51baad2}
 % !TeX TXS-program:compile = txs:///knit2pdf
-\documentclass[a4paper]{article}
+\documentclass{article}
 
 % IJCAI-ECAI style
 \pdfpagewidth=8.5in
@@ -20,6 +20,7 @@
 \usepackage{graphicx}
 \usepackage{calc}
 \usepackage{subcaption}
+\usepackage[square]{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage[all]{hypcap}
 
@@ -184,7 +185,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \input{tex/discussion}
 
 
-\bibliographystyle{plain}
+\bibliographystyle{named}
 \bibliography{literature}
 
 \end{document}

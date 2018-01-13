@@ -46,7 +46,7 @@ to cast a vote on the suitability of a proposal. To be able to
 evaluate a proposal properly there are several weights that need to be set so
 that each effect is taken into account sufficiently without having an
 exaggerated effect on the final evaluation. To set the weights simulated
-annealing \cite{kirkpatrick1983} is used with an initial temperature of 100
+annealing \citep{kirkpatrick1983} is used with an initial temperature of 100
 which drops to 1 in unit steps. Each iteration of the simulated annealing
 process consists of 200 problem instances which contain between 2 and 50
 agents. The number of agents in the problem instances forms a uniform

@@ -36,7 +36,7 @@ all decentralized. Centralized methods are generally slower than decentralized
 algorithms because they consider a state space which combines the state spaces
 of all agents. Decentralized methods only use the state space of a single agent
 to create a plan for that agent. This results in a reduction in the complexity
-of the problem \cite{bennewitz2002,sharon2013}.
+of the problem \citep{bennewitz2002,sharon2013}.
 
 Although centralized methods are slower than decentralized methods they do often
 find a solution in which each agent's path is as short as possible. They are
@@ -49,7 +49,7 @@ a reasonable time to be more important than being able to find a solution when
 given hours or even days to calculate a solution. In a real-time applications
 like video games or groups of autonomous robots it is more important to find a
 solution in reasonable time than it is to find the most optimal solution
-\cite{botea2013}.
+\citep{botea2013}.
 Because WDPCA* is fully decentralized it is able to find a solution in a
 reasonable amount of time while sacrificing the quality of the solution. This
 means that WDPCA* is more suitable for real-time applications because it is
@@ -134,7 +134,7 @@ the paths are also shorter and easier to calculate. Retrieving a short path
 which consists only of a limited amount of actions from the cache is not much
 faster than calculating the path outright.
 
-WDPCA* is based on the A* algorithm \cite{hart1968} but this can be changed to
+WDPCA* is based on the A* algorithm \citep{hart1968} but this can be changed to
 any pathfinding algorithm. Dialogues result in a priority ordering for agents,
 which in turn determines which agents should be considered moving obstacles by
 other agents. This is independent from which path planning algorithm is used.
@@ -143,7 +143,7 @@ algorithm
 is able to handle moving obstacles or can be modified to handle moving
 obstacles then it can be used instead of A* in WDPCA*. This means that our
 algorithm can be adapted to work with other discrete space algorithms, or even
-continuous space algorithms like RRT* \cite{lavalle1998,lavalle2001}.
+continuous space algorithms like RRT* \citep{lavalle1998,lavalle2001}.
 
 The world defined in \autoref{sec:problem} is an abstracted version of reality
 which only allows for very basic arguments and evaluations to be made during a
@@ -200,12 +200,12 @@ also be employed.
 % Dialogues are pragmatic
 % TODO: make this a coherent story
 The model of deliberation dialogues as proposed by McBurney, Hitchcock and
-Parsons (MHP model) \cite{mcburney2007} is quite complex. Walton et al.
-\cite{walton2014} have expanded on this so that the human deliberation
+Parsons (MHP model) \citep{mcburney2007} is quite complex. Walton et al.
+\citep{walton2014} have expanded on this so that the human deliberation
 dialogues can be modelled more accurately while addressing some of the
 shortcomings of the MHP model. Although this model explains how human dialogues
 work it is too complex to be used in WDPCA*. Instead we use the simpler
-\textsc{TeamLog} model \cite{dunin-keplicz2011}. Both models have a
+\textsc{TeamLog} model \citep{dunin-keplicz2011}. Both models have a
 opening part, a closing part, and a argumentation part where all
 deliberation takes place. In the MHP model the argumentation part consists of
 four stages while \textsc{TeamLog} only has two stages. These two stages are
@@ -257,11 +257,11 @@ not fit well in an evaluation function, but they are well expressed in a logic.
 This also gives a greater explanatory power than what WDPCA* has with just its
 evaluation function and its limited argumentative capability.
 
-%Deliberation dialogue models are complex. \cite{mcburney2007} has 8 stages,
-%most of which aren't used here. Instead \cite{dunin-keplicz2011} is used for
-%simplicity. It is verbose enough for this purpose but \cite{mcburney2007} may
+%Deliberation dialogue models are complex. \citep{mcburney2007} has 8 stages,
+%most of which aren't used here. Instead \citep{dunin-keplicz2011} is used for
+%simplicity. It is verbose enough for this purpose but \citep{mcburney2007} may
 %be more appropriate for more complex applications (think planning trains),
-%\cite{walton2014} may be appropriate then too. \cite{mcburney2007,walton2014}
+%\citep{walton2014} may be appropriate then too. \citep{mcburney2007,walton2014}
 %are both meant to model human deliberation dialogues, not necessarily meant for
 %calculation/communication time optimal. Agents sharing their paths may be
 %considered information sharing step of dialogue.

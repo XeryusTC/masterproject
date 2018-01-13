@@ -7,7 +7,7 @@ agents to avoid conflicts without a central processor making a plan. However a
 central processor is still needed to determine the priority order. This central
 processor can then
 find dependencies between agents to determine possible priority orderings that
-can be used to solve the problem \cite{latombe1991,bennewitz2002}. This means
+can be used to solve the problem \citep{latombe1991,bennewitz2002}. This means
 that decoupled methods are mostly distributed with a single centralized
 bottleneck. All agents will have to halt calculating a solution while the
 priority scheme is determined by the central processor. The central processor
@@ -33,7 +33,7 @@ Below are the details of three different versions of this algorithm. Each
 version of the algorithm has some improvements over the previous version.
 
 Each of the three algorithms builds upon a more general search algorithm
-Cooperative A* (CA*). This algorithm is a variation on A* \cite{hart1968} that
+Cooperative A* (CA*). This algorithm is a variation on A* \citep{hart1968} that
 allows teams of agents to cooperate. Each agent searches for a path
 individually, but they can take each other's actions into account. The
 algorithm searches both the space and time dimensions to ensure that paths are
@@ -101,7 +101,7 @@ complete, not every agent needs to be present in it. This is easiest to see
 when considering only agents $a_1$ and $a_5$ in \autoref{fig:world}, for this
 example the other agents do not exist. There is no need to establish an
 ordering for these two agents since their paths never meet. This has the effect
-of implied Independence Detection \cite{standley2010} because these agents will
+of implied Independence Detection \citep{standley2010} because these agents will
 never have to communicate beyond sharing the paths that they have found with
 each other. There is no need for them to coordinate because their plans never
 interact.
@@ -134,7 +134,7 @@ interact.
 
 Going through all possible permutations and evaluating them on a single
 criterion is not the most clever method of finding a priority ordering
-\cite{bennewitz2002}. This would mean that the entire search space is
+\citep{bennewitz2002}. This would mean that the entire search space is
 exhaustively examined until a working solution is found. To avoid evaluating
 all possible permutations and thereby reducing the time required to find a
 solution some improvements can be made. Utilising a dialogue to solve conflicts
@@ -432,7 +432,7 @@ for the next $w$ time steps so they get closer to their goal. To achieve this
 the graph can be changed so that the nodes at the window boundary connect
 directly to the goal node. This can be achieved by changing the cost function
 defined in \autoref{sec:problem} between adjacent nodes $P$ and $Q$
-\cite{silver2005}
+\citep{silver2005}
 \[
 \text{\textsc{cost}(P,Q)} =
 \begin{cases}

@@ -182,7 +182,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \input{tex/problem}
 \input{tex/related_work}
 \input{tex/method}
-<<resuls-file,child='tex/results.Rnw'>>=
+<<resuls-file,child='results.Rnw'>>=
 @
 \input{tex/discussion}
 

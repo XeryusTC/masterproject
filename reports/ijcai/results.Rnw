@@ -43,7 +43,7 @@ an instance by assigning minimal explicit priorities are preferred.
     \end{tabularx}
 \end{table}
 
-<<perfgraph,sanitize=T,echo=F,warning=F,cache=T,cache.beater=dat,dev='pdf',fig.height=2,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
+<<perfgraph,echo=F,warning=F,cache=T,cache.beater=dat,dev='tikz',fig.height=2,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(),
     type='l',
@@ -90,7 +90,7 @@ ms as shown by a one-sided paired t-test $(t(\Sexpr{base.vs.plus$parameter}) =
 3)})$. Both algorithms perform similar to DiMPP until 2500 instances. After
 that point DiMPP is slower.
 
-<<solved,echo=F,cache=T,cache.beater=solved.aggr,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=solved.title>>=
+<<solved,echo=F,cache=T,cache.beater=solved.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=solved.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
@@ -127,7 +127,7 @@ xtable(quality.table[c(1:4,8),],
 )
 @
 
-<<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
+<<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(),
      type='n',
@@ -165,7 +165,7 @@ better comparison is given in \autoref{fig:lengths}. This shows that PCA* finds
 the shortest paths followed by OD+ID. DPCA* and DPCA*+ find longer paths while
 DiMPP causes the largest detours.
 
-<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
+<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
@@ -194,7 +194,7 @@ rises exponentially when the number of agents increases, but at some point this
 trend trails off. This point lies around 15 agents for PCA* and around 25
 agents for DPCA* and DPCA*+.
 
-<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
+<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='n',

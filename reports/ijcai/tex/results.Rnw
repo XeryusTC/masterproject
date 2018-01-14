@@ -1,75 +1,35 @@
 %!TeX root = ../main.Rnw
 
 \section{Experimental results}\label{sec:results}
-% TODO: investigate run time vs number of conflicts found
+The proposed algorithms are tested and compared against the complete algorithm 
+OD+ID and the decentralized algorithm DiMPP. We compare them on a large set of 
+randomly generated problem instances. Each instance in the set consists of a 
+$16 \times 16$ 8-connected grid. Each grid cell has a $20\%$ chance of 
+containing an impassable obstacle as specified in \autoref{sec:problem}. Agents 
+are placed randomly in the grid such that no two agents have the same starting 
+position. Each agent is also given a randomly chosen destination location. 
+These are also picked in such a way that no two agents have the same 
+destination. Note that the starting position of one agent might be the 
+destination of another. There is a time limit of 2000ms to solve each problem 
+instance. This limit is arbitrary but it was picked to show representative 
+results. All experiments were implemented in Python 3.6 and ran 
+on a single core of an AMD FX-8120 clocked at 3.1GHz. Our main hypothesis is 
+that our proposed algorithms are able to solve more problem instances and are 
+able to find solutions faster than OD+ID is. We expect that OD+ID finds higher 
+quality paths. We expect that our proposed methods perform on an equal or 
+slightly worse level than DiMPP on all aspects.
 
-The three proposed algorithms are tested and compared against the complete
-algorithm OD+ID and the decentralized algorithm DiMPP. To do this we compare
-them on a large set of problem instances.
-The exact size of the problem set depends on the experiment.
-Each instance in the set consists of a $16 \times 16$ 8-connected grid. Each
-grid cell has
-a $20\%$ chance of containing an impassable obstacle. Agents cannot enter these
-grid locations, but the obstacles do not block agents from moving along
-diagonals as explained in \autoref{sec:problem}. Agents are placed randomly in
-the grid such that no two agents have the same starting position, each agent is
-also given a randomly chosen destination location, again these are picked in
-such a way that no two agents have the same destination. Note that the starting
-position of one agent might be the destination of another. All experiments were
-implemented in Python 3.6 and run on a single core of an AMD FX-8120 clocked at
-3.1GHz.
-
-There are several experiments that are done to compare the proposed algorithms
-to OD+ID and DiMPP. First the weights that determine the evaluation of
-proposals made during dialogues need to be set. The empirically found weights
-are discussed in \autoref{sec:evalweights}. The main experiments are carried
-out in \autoref{sec:expval}. The main hypothesis for that section is that the
-proposed algorithms are able to solve more problem instances and are able to
-solve them faster than OD+ID. It is expected that OD+ID finds better quality
-solutions. The quality of a solution is primarily quantified as the sum of the
-lengths of the paths that agents have to take to arrive at their destination
-position. The number of loops that occur within an agent's path is used as a
-secondary measurement of the quality of a solution. We expect that the proposed
-methods perform on an equal or slightly worse level to DiMPP on all of these
-aspects. The number of agents in a problem instance may also influence the
-ability of the algorithms to find a solution within a reasonable time limit so
-we also measured this. Finally the effect of using a path cache on the time to
-find a solution solution is also recorded. This is not compared to OD+ID or
-DiMPP because these do not support similar techniques.
-
-\subsection{Evaluation weights}\label{sec:evalweights}
-
-DPCA* and WDPCA* both need to evaluate proposals made by agents. The evaluation
-of a proposal is based on the effects that they have on an agent's plan and how
-many conflicts the agent will have to solve in the future. This is in turn used
-to cast a vote on the suitability of a proposal. To be able to
-evaluate a proposal properly there are several weights that need to be set so
-that each effect is taken into account sufficiently without having an
-exaggerated effect on the final evaluation. To set the weights simulated
-annealing \citep{kirkpatrick1983} is used with an initial temperature of 100
-which drops to 1 in unit steps. Each iteration of the simulated annealing
-process consists of 200 problem instances which contain between 2 and 50
-agents. The number of agents in the problem instances forms a uniform
-distribution. For each drop in temperature a new unique set of 200 problem
-instances is generated to avoid overfitting to a certain set of problems. There
-is a time limit of 2000ms to solve each instance. Note that the time limit is
-arbitrary, it was picked to show results that can be expected in an application
-while not spending too much time on very complex instances that require a lot
-of computation.
-
-The results of the simulated annealing process are shown in
-\autoref{tbl:annealing}. The path length weight refers to the increase in path
-length that lower priority agents suffer when they have to take a new longer
-path. The weight is multiplied with the number of steps that the new path is
-longer than the path before solving a conflict. Some proposals have the side
-effect of creating or solving additional conflicts which is weighted by the
-conflicts solved weight. Each additional conflict increases the evaluation by
-this number while each solved conflict reduces the vote by this number. Each
-proposal is expected to reduce the number of conflicts by one, this is the
-conflict that is currently being discussed. The partial solved weight is used
-in cases where multiple agents take part in a dialogue and the proposal that is
-being evaluation only assigns a priority to some of the agents in the conflict
-but this doesn't solve the conflict for all agents involved.
+Before being able to evaluate DPCA* we have to determine the weights that are 
+used during voting. To do this we used simulated annealing 
+\citep{kirkpatrick1983} with an initial temperature of 100 which drops to 1 in 
+unit steps. Each iteration of the simulated annealing process consists of 200 
+problem instances which contain between 2 and 50 agents. After each drop of 
+temperature we generate a new set of 200 problem instances to prevent 
+overfitting. The results of annealing are shown in \autoref{tbl:annealing}. The 
+path length weight measures the increase of path length; the conflicts solved 
+weight measures how many additional conflicts were solved by a proposal; and 
+the partial solution weight is used as a penalty so that proposals which solve 
+an instance by assigning minimal explicit priorities are preferred.
 
 \begin{table}[t]
     \centering
@@ -82,16 +42,6 @@ but this doesn't solve the conflict for all agents involved.
         \Sexpr{cannonical.names[4]} & 0.312 & 5.570 & 2.677
     \end{tabularx}
 \end{table}
-
-\subsection{Experimental evaluation}\label{sec:expval}
-To compare the algorithms they are all given a large set of cooperative
-pathfinding problems that have to be solved. Each instance is constructed
-following the same procedure as used to find the optimal evaluation weights.
-Each instance has between 2 and \agentsupb agents, the number of agents still
-forms a uniform distribution. The time it takes to solve each instance in the
-set of problems is recorded. There is a time limit of 2000ms to calculate a
-solution for each instance. This is the same tile limit as that was used to
-find optimal evaluation weights.
 
 <<perfgraph,sanitize=T,echo=F,warning=F,cache=T,cache.beater=dat,dev='pdf',fig.height=2,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
@@ -118,79 +68,33 @@ legend("bottomright",
        cex=.8)
 @
 
-% TODO: add reference to performance graph origin
-When the instances are sorted in ascending order by the time it requires to
-solve them then they can be plotted in a \emph{performance graph} as shown in
-\autoref{fig:perfgraph}. The $x$-axis shows
-the index of the sorted instance while the $y$-axis shows the time it takes an
-algorithm to solve that instance. This sorting is done for each algorithm
-independently. Because of this it is not necessarily the case that the $n$th
-instance for one algorithm is the same as the $n$th instance for a different
-algorithm. The graph shows several different pieces of information. The
-first is a comparison of run times for the different algorithms. A lower line
-means that an algorithm was able to solve problem instances quicker. At the
-same time the graph also shows how many instances an algorithm can solve within
-the 2000 ms time limit. Instances that were not solved are not included in the
-graph, so how far a plot extends along the $x$-axis indicates how many problem
-instances were solved by an algorithm. A plot that extends further to the right
-indicates that an algorithm was able to solve more instances than a plot that
-does not extend as far.
-
-%The graph in \autoref{fig:perfgraph} shows the performance characteristic for
-%the tested algorithms.
-The performance graph in \autoref{fig:perfgraph} shows that only the PCA* is
-generally slower than the complete algorithm OD+ID. When looking at individual
-instances  we can see that $\Sexpr{round(naive.vs.odid * 100, 1)}\%$ of the
-instances that were solved by both PCA* and OD+ID solved the latter was faster.
-All other methods are faster than OD+ID and are able to find a solution to more
-instances. The performance of DiMPP is similar to that of DPCA* and DPCA*+. Up
-to 2200 instances DiMPP is faster than the two proposed algorithms. After that
-point the algorithm is slower and it is not able to solve as many problem
-instances.
-The DPCA* and DPCA*+ versions of the algorithm have an almost equal
-performance. DPCA* is slightly faster on each individual instance by
-$\Sexpr{signif(abs(base.vs.plus$estimate * 1000), 2)}$ ms as shown by a
-one-sided paired t-test $(t(\Sexpr{base.vs.plus$parameter}) =
+To compare the algorithms we give them a set of 10000 problem instances which 
+have between 2 and \agentsupb agents. When we record the time required to solve 
+each instance and sort them in ascending order we can plot them in a 
+\emph{performance graph} as shown in \autoref{fig:perfgraph}. The $x$-axis 
+shows the index of the sorted instance. It is not necessarily the case that the 
+$n$th instance for one algorithm is the same as the $n$th instance for a 
+different algorithm. The $y$-axis shows the time it takes an algorithm to solve 
+that instance. A lower line in the performance graph means that the algorithm 
+was able to solve instances faster. Instances that were not solved within the 
+2000ms time limit are not plotted so the performance graph also indicates how 
+many instances were successfully solved by an algorithm. When a plot which 
+extends further along the $x$-axis it means that the algorithm was able to 
+solve more instances. \autoref{fig:perfgraph} shows that PCA* is generally 
+slower than OD+ID. The latter was able to solve $\Sexpr{round(naive.vs.odid * 
+100, 1)}\%$ of the instances that both algorithms were able to solve faster. 
+DPCA* and DPCA*+ have a similar performance. DPCA* is slightly faster on each 
+individual instance by $\Sexpr{signif(abs(base.vs.plus$estimate * 1000), 2)}$ 
+ms as shown by a one-sided paired t-test $(t(\Sexpr{base.vs.plus$parameter}) =
 \Sexpr{round(base.vs.plus$statistic, 2)}, p=\Sexpr{signif(base.vs.plus$p.value,
-3)})$. They are able to solve about the same number of instances, DPCA* solves
-$\Sexpr{round(solved$time[3] * 100, 1)}\%$ of instances while DPCA*+ is able to
-solve $\Sexpr{round(solved$time[4] * 100, 1)}\%$. This indicates that the added
-complexity in DPCA*+ does not decrease the time required to solve a problem
-instance.
-
-The size of the window also has a small influence on the performance. From
-\autoref{fig:perfgraph} we can see that the use of any window means that
-the algorithm is faster and is able to solve more problem instances. We can
-also see that the graphs for different window sizes are similar to each other.
-There seems to be a trade-off between the size of the window and the time to
-solve instances. A larger window is able to solve early instances faster, but
-after about 3500 instances it takes more time to solve problems than when a
-smaller window is used.
-An analysis of variance test shows that there is a difference in the time to
-reach a solution for different window sizes $(F(\Sexpr{w.anova[['Df']][1]},
-\Sexpr{w.anova[['Df']][3]}) = \Sexpr{round(w.anova[['F value']][1], 2)},
-p=\Sexpr{signif(w.anova[['Pr(>F)']][1], 3)})$. Individual t-tests show that
-$w=2$ differs from $w=8$ in run time ($t(\Sexpr{floor(t.2vs8$parameter)}) =
-\Sexpr{round(t.2vs8$statistic, 2)}, p=\Sexpr{signif(t.2vs8$p.value, 3)}$).
-There is no difference between $w=4$ and the other window sizes
-($t(\Sexpr{floor(t.2vs4$parameter)})
-= \Sexpr{round(t.2vs4$statistic, 2)}, p=\Sexpr{signif(t.2vs4$p.value, 3)}$ for
-$w=2$ and $t(\Sexpr{floor(t.4vs8$parameter)}) = \Sexpr{round(t.4vs8$statistic,
-2)}, p=\Sexpr{signif(t.4vs8$p.value, 3)}$ for $w=8$). This indicates that there
-are only small differences in the time required to solve instances between
-different sizes of windows. With regards to run time the choice of window size
-does not have a large effect. There is only a significant difference between
-$w=2$ and $w=8$. This means that the choice of window size barely matters. Just
-using a window to limit communication itself has a larger effect on the
-performance of DPCA*.
-%The window size has a large effect on the sum of the path lengths of the
-%agents as shown in \autoref{tbl:length}.
+3)})$. Both algorithms perform similar to DiMPP until 2500 instances. After 
+that point DiMPP is slower.
 
 <<solved,echo=F,cache=T,cache.beater=solved.aggr,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=solved.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
-    xlim=c(0,35),
+    xlim=c(0,40),
     ylim=c(0,1),
     xlab='Agents in problem instance',
     ylab='Percentage solved',
@@ -209,25 +113,6 @@ legend("bottomleft",
        cex=.8)
 @
 
-\autoref{fig:solved} shows how many instances each algorithm can solve within
-the time limit for varying number of agents in an instance. It shows that there
-is indeed a little difference in performance of WDPCA* when the size of the
-window is varied. A smaller window means that instances with more agents are
-more likely to be solved. It also shows that there is a trade-off between a
-smaller window and the ability to find solutions. WDPCA* with a small window is
-not able to solve as many instances with a medium amount of agents as WDPCA*
-with a larger window. WDPCA*-2 is not able to solve all instances from 10
-agents onwards while for WDPCA*-8 this happens from 22 agents, just before
-there is a cliff in the percentage of instances solved. The graph also shows a
-similar picture as \autoref{fig:perfgraph} where OD+ID and PCA* solved only few
-instances while DPCA* and its windowed variants are able to solve problems that
-include  more agents. DiMPP is in between PCA* and DPCA* in terms of the number
-of agents it can find a solution for within the time limit.
-\autoref{fig:solved} shows that DPCA* and DPCA*+ have the same overall
-performance. They both solve the same fraction of instances for any number of
-agents. This again suggests that the added complexity of DPCA*+ does not mean
-that it is able to solve more instances of the cooperative pathfinding problem.
-
 <<quality,echo=F,cache=T,cache.beater=solved,results='asis'>>=
 quality.table = t(rbind(paste(round(solved$time * 100, 1), "%"),
                         round(lengths$length, 2)))
@@ -242,25 +127,11 @@ xtable(quality.table[c(1:4,8),],
 )
 @
 
-As shown by \autoref{tbl:quality} \Sexpr{cannonical.names[2]} is the only
-version of the algorithm that solves fewer instances than OD+ID and DiMPP. All
-versions of DPCA* and WDPCA* are able to solve at least double the amount of
-instances as OD+ID. A smaller window means that the algorithm is able to solve
-more problem instances. This comes at a trade-off as a smaller window size also
-results in a larger sum of the path lengths for a solution. This can also be
-seen in \autoref{fig:lengths} where the sum of the path lengths is plotted as a
-function of the number of agents in a problem. It shows that WDPCA* finds
-longer paths than any other algorithm tested while OD+ID and DPCA* calculate
-shorter routes for the same number of agents in a problem. The graph for OD+ID
-shows heavy fluctuation between 20 and 26 agents. This may be because this
-algorithm was not able to solve all instances with this number of agents and is
-more sensitive to outliers because of this.
-
 <<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(),
      type='n',
-     xlim=c(5,35),
+     xlim=c(5,40),
      ylim=c(100,360),
      frame.plot=F,
      xlab='Agents in problem instance',
@@ -280,11 +151,25 @@ legend("topleft",
        bty='n')
 @
 
+\autoref{fig:solved} shows how many instances each algorithm can solve within
+the time limit for varying number of agents in an instance. It shows a
+similar picture as \autoref{fig:perfgraph} where OD+ID and PCA* solved only few
+instances while DPCA* and DPCA*+ are able to solve problems that include more 
+agents. \autoref{tbl:quality} paints a similar picture with regards to the 
+number of instances solved. DPCA* and DPCA*+ are able to solve double the 
+amount of instances as OD+ID and PCA*. DiMPP falls in the middle of these two 
+groups in both comparisons. In general DPCA* and DPCA*+ find longer paths than 
+OD+ID but they are also able to solve instances with more agents for which the 
+sum path length is longer by virtue of there being more agents with paths. A 
+better comparison is given in \autoref{fig:lengths}. This shows that PCA* finds 
+the shortest paths followed by OD+ID. DPCA* and DPCA*+ find longer paths while 
+DiMPP causes the largest detours.
+
 <<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
-    xlim=c(0,35),
+    xlim=c(0,40),
     ylim=c(0,35),
     xlab='Number of agents',
     ylab='Dialogues',
@@ -301,26 +186,22 @@ legend("topleft", legend=cannonical.names[2:4], col=color.set[2:4], pch=16,
 @
 
 The average number of dialogues that have taken place to find a solution is
-shown in
-\autoref{fig:dialogues}. It shows that more dialogues are needed when the
-problem instance contains more agents. DPCA* and DPCA*+ are very similar again,
-so there is little difference in this aspect of the algorithms as well.
-\autoref{fig:dialogues} also shows that more dialogues take place when a window
-is applied to conflict resolution, and with a decreasing size in window there
-are more dialogues that take place. One thing that is noticeable is that the
-number of dialogues required rises exponentially when the number of agents
-increases, but at some point this trend trails off. This point lies between 25
-and 30 agents depending on the algorithm. There is a peak in the number of
-dialogues between 28 and 35 agents.
+shown in \autoref{fig:dialogues}. It shows that more dialogues are needed when 
+the problem instance contains more agents. DPCA* and DPCA*+ need a similar 
+amount of dialogues, and they need a large amount more than PCA*.
+again, One thing that is noticeable is that the number of dialogues required 
+rises exponentially when the number of agents increases, but at some point this 
+trend trails off. This point lies around 15 agents for PCA* and around 25 
+agents for DPCA* and DPCA*+.
 
 <<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='n',
-    xlim=c(1,35),
+    xlim=c(1,40),
     ylim=c(0,15),
-    xlab="Number of agents in problem",
-    ylab="Number of conflicts",
+    xlab="Agents in problem",
+    ylab="Agents in conflicts",
     xaxs="i",
     yaxs="i",
     frame.plot = F
@@ -338,70 +219,11 @@ legend("topleft",
        bty='n')
 @
 
-The similarities in performance of DPCA* and DPCA*+ can be explained by
-\autoref{fig:conflict-sizes}. It shows the number of dialogues that occur
-depending on the number of agents in a conflict. The number of conflicts is
-split by the number of agents that are part of the conflict.
-It shows that most conflicts occur between two agents and that most dialogues
-thus only have two agents participating. It is not a given that there are
-dialogues with more agents involved in any problem instance. The peak of the
-number of dialogues with three or more agents in a single has a value of
-$\Sexpr{signif(max(sizes.aggr$X3), 3)}$. For dialogues with four agents
-this is even lower $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ dialogues per
-instance at most. This means that in most problem instances there will only be
-dialogues in which two agents try to solve a conflict. Only rarely do dialogues
-with more than two agents occur. DPCA*+ often doesn't have to solve more
-complex dialogues, but it uses a more complex strategy to reach a successful
-conclusion for each dialogue and therefore it is slightly slower than DPCA*.
-
-<<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='pdf',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
-op <- par(mar = c(3.8, 3.8, 1, 1))
-plot(c(), c(),
-    type='l',
-    log='y',
-    col='red',
-    xlim=c(1,len.cache),
-    ylim=c(5, 2000),
-    xlab='Instance',
-    ylab='Time (ms)',
-    frame.plot=F, yaxs="i"
-)
-lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3)
-lines(seq(length(plus.nocache)), plus.nocache, col=color.set.cache[2], lty=3)
-lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=1)
-lines(seq(length(plus.cache)), plus.cache, col=color.set.cache[2], lty=1)
-legend("bottomright",
-    legend=cannonical.names.cache[c(1,2)],
-    col=color.set.cache[c(1,2)],
-    pch=16,
-    bty="n", cex=.8)
-@
-
-The agents make use of a path cache to reduce the amount of calculation
-required when they resolve conflicts. If the cache is in use then there should
-be a noticeable decrease in the time it takes to solve problems when compared
-to when agents don't cache paths. To measure the effect of caching on solving
-cooperative pathfinding problems a separate experiment was conducted. A new set
-of 1000 problem instances was generated. Each instance had between 2 and 40
-agents in it. Each instance was presented to DPCA* and WDPCA* twice: once with
-the path cache disabled and once with the cache enabled. Similar to other
-experiments the algorithms had to solve each instance within 2000ms.
-
-The performance graph of this experiment is shown in \autoref{fig:cache}. Only
-the effects of the cache on DPCA* and WDPCA* with $w=2$ and $w=8$ are shown to
-reduce visual clutter. The effects on DPCA*+ and WDPCA* with $w=4$ were also
-tested. The solid lines in the plot represent the performance of an algorithm
-with caching enabled, while the dotted line shows the performance with the
-cache disabled. It shows that using a cache has a large effect on DPCA*, but
-not on WDPCA*-2. An analysis of variance shows that caching does have an effect
-on the time to solve an instance $(F(\Sexpr{cache.sum[['Df']][3]},
-\Sexpr{cache.anova$df.residual}) = \Sexpr{round(cache.sum[['F value']][3], 2)},
-p = \Sexpr{signif(cache.sum[['Pr(>F)']][3], 3)})$. So there is indeed a
-significant improvement in the performance of an algorithm when the cache is
-employed. There is also an interaction between the algorithm and whether the
-cache is enabled $(F(\Sexpr{cache.sum[['Df']][4]},
-\Sexpr{cache.anova$df.residual}) = \Sexpr{round(cache.sum[['F value']][4], 2)},
-p = \Sexpr{signif(cache.sum[['Pr(>F)']][4], 3)})$. This confirms that the
-effectiveness of the cache depends on the algorithm that is used. Using no
-window or a large window benefit more from employing a cache than when a small
-window is used.
+There have been many similarities between DPCA* and DPCA*+ in the above graphs. 
+\autoref{fig:conflict-sizes} shows how many agents participate in most DPCA*+ 
+dialogues. It shows that most dialogues involve just two agents. There are on 
+average $\Sexpr{signif(max(sizes.aggr$X3), 3)}$ dialogues per instance with 
+three agents involved, and only $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ with 
+four agents involved. DPCA*+ often does not have to solve more complex 
+dialogues than DPCA* but it does use a more complex strategy and thus it is 
+slightly slower.

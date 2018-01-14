@@ -50,7 +50,7 @@ need to be found, one for each agent, such that each agent gets to its goal
 position without colliding with any of the other agents. A path consists of a
 series of actions. An action can either be to move to one of the eight
 neighbouring cells or \emph{wait} at the current location. Each time step an
-agent must do exactly one of these actions. Each action has unit cost, with the 
+agent must do exactly one of these actions. Each action has unit cost, with the
 exception of waiting in the goal position. The cost function is then
 \[
 \text{\textsc{cost}(P,Q)} =
@@ -68,16 +68,16 @@ appropriate solution to the problem is a solution for which the cost is minimal.
 The paths of two agents are not in conflict iff at no time step the agents
 occupy the same cell, agents move along the same edge (swap positions), or
 agents move along crossing edges. Obstacle cells can be considered as
-stationary agents. Examples of each of these conflicts are given in 
-\autoref{fig:conflicts}. A single action can result in an agent having multiple 
-conflicts at the same time. If \autoref{fig:conflict-position} had an agent 
-$a_3$ in the top right cell moving to the bottom middle cell then $a_2$ would 
-have a conflict with both $a_1$ and $a_3$ at the same time. Agents are allowed 
-to move along a diagonal even when the two cells on the opposing diagonal are 
-blocked, i.e. $a_5$ in \autoref{fig:world} can move to its destination in a 
-single time step. An agent $a_i$ can move to a cell occupied by agent $a_j$ 
-given that $a_j$ will move to a different cell at the same time. Agents $a_1$, 
-$a_2$, $a_3$ and $a_4$ in \autoref{fig:world} can reach their respective 
-destinations in a single time step by ``rotating'' clockwise. Agents $a_7$ and 
-$a_8$ cannot move to their destinations in a single time step because that 
+stationary agents. Examples of each of these conflicts are given in
+\autoref{fig:conflicts}. A single action can result in an agent having multiple
+conflicts at the same time. If \autoref{fig:conflict-position} had an agent
+$a_3$ in the top right cell moving to the bottom middle cell then $a_2$ would
+have a conflict with both $a_1$ and $a_3$ at the same time. Agents are allowed
+to move along a diagonal even when the two cells on the opposing diagonal are
+blocked, i.e. $a_5$ in \autoref{fig:world} can move to its destination in a
+single time step. An agent $a_i$ can move to a cell occupied by agent $a_j$
+given that $a_j$ will move to a different cell at the same time. Agents $a_1$,
+$a_2$, $a_3$ and $a_4$ in \autoref{fig:world} can reach their respective
+destinations in a single time step by ``rotating'' clockwise. Agents $a_7$ and
+$a_8$ cannot move to their destinations in a single time step because that
 would mean that they move along crossing edges at the same time.

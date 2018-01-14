@@ -1,67 +1,67 @@
 \section{Introduction}\label{sec:intro}
-Path planning for a single agent is considered a solved problem 
-\citep{sharon2013}. When multiple agents have to find their way through a 
-shared 
-space then the problem becomes more complicated. The agents have to find paths 
-around obstacles while they also need to ensure that they do not collide with 
-each other. Even when agents can prevent collisions then it is still possible 
-that congestions or even deadlocks may occur. To avoid these undesirable 
-situations there is a need for coordination between the agents. This problem is 
-addresd in the studo of what is called cooperative pathfinding. It finds its 
-application in robotics, aviation, road traffic management, crowd simulations, 
+Path planning for a single agent is considered a solved problem
+\citep{sharon2013}. When multiple agents have to find their way through a
+shared
+space then the problem becomes more complicated. The agents have to find paths
+around obstacles while they also need to ensure that they do not collide with
+each other. Even when agents can prevent collisions then it is still possible
+that congestions or even deadlocks may occur. To avoid these undesirable
+situations there is a need for coordination between the agents. This problem is
+addresd in the studo of what is called cooperative pathfinding. It finds its
+application in robotics, aviation, road traffic management, crowd simulations,
 and video games \citep{standley2011}.
 
 %Discuss cooperative pathfinding and abstract solutions.
 The most straightforward approach to the cooperative pathfinding problem
 is to search the Cartesian product of the state spaces of all agents. This
-approach is computationally inefficient \citep{sharon2013,hopcroft1984} as the 
-time to find a solution is exponential in the number of agents. Another common 
-approach is to impose a hierarchy on the agents by assigning them a unique 
-priority. Agents plan a path to their destination in descending order of 
-priority. When it is an agent's turn to plan their path they consider agents 
-with a higher priority as moving obstacles \citep{bennewitz2002}. These methods 
-use a central processor to calculate the entire solution or an agent hierarchy. 
-This means that they have a single bottleneck. Decentralised methods do not 
-rely on a central processor. As a trade-off they have no global view of the 
-problem meaning that agents can cause future deadlocks without being aware of 
+approach is computationally inefficient \citep{sharon2013,hopcroft1984} as the
+time to find a solution is exponential in the number of agents. Another common
+approach is to impose a hierarchy on the agents by assigning them a unique
+priority. Agents plan a path to their destination in descending order of
+priority. When it is an agent's turn to plan their path they consider agents
+with a higher priority as moving obstacles \citep{bennewitz2002}. These methods
+use a central processor to calculate the entire solution or an agent hierarchy.
+This means that they have a single bottleneck. Decentralised methods do not
+rely on a central processor. As a trade-off they have no global view of the
+problem meaning that agents can cause future deadlocks without being aware of
 it.
 
 % Argumentation
 Methods of decentralised coordination have been developed by the field of
-computational argumentation. Formal models of argumentation have been used in 
+computational argumentation. Formal models of argumentation have been used in
 Artificial Intelligence in expert systems, multi-agent systems and law
-\citep{vaneemeren2014}. Commonly argumentation in a multi-agent systems is 
-modelled as a dialogue game. In such a dialogue game the agents represent the 
-players and the game rules prescribes how the dialogue should occur 
-\citep{walton1995}. There are rules about which arguments agent can put forward 
-when they are allowed to do so. Most forms of dialogue games also have rules 
+\citep{vaneemeren2014}. Commonly argumentation in a multi-agent systems is
+modelled as a dialogue game. In such a dialogue game the agents represent the
+players and the game rules prescribes how the dialogue should occur
+\citep{walton1995}. There are rules about which arguments agent can put forward
+when they are allowed to do so. Most forms of dialogue games also have rules
 about when the dialogue is finished and which agent(s) have won if applicable.
 
 % PGP
 Without a central processor it is hard to create a plan that is globally well
-coordinated. Partial global planning has been used in distributed sensor 
-networks to distribute and coordinate tasks among the nodes that make up the 
-network \citep{durfee1991}. The nodes create their individual plans without 
-regard for each other. They will then exchange information on their plans and 
-adapt them to better coordinate their activities. Coordination is not rigid and 
-nodes are free to change their plan when circumstances change 
-without the need to re-coordinate with the other nodes. None of the involved 
+coordinated. Partial global planning has been used in distributed sensor
+networks to distribute and coordinate tasks among the nodes that make up the
+network \citep{durfee1991}. The nodes create their individual plans without
+regard for each other. They will then exchange information on their plans and
+adapt them to better coordinate their activities. Coordination is not rigid and
+nodes are free to change their plan when circumstances change
+without the need to re-coordinate with the other nodes. None of the involved
 nodes ever has a global view, but the end result is a plan that is globally well
-coordinated with each node holding the part of the global plan that is relevant 
+coordinated with each node holding the part of the global plan that is relevant
 to it.
 
 % describe how to combine these three views
 Dialogues can be used in cooperative pathfinding by applying techniques from
-partial global planning. Agents can resolve conflicts by starting a dialogue in 
+partial global planning. Agents can resolve conflicts by starting a dialogue in
 which they share and evaluate different hypothesis to solve the conflict. A
 hypothesis consists of a priority ordering for the agents that are involved in
 the conflict. The hypotheses offered will be discussed and evaluated in the
-dialogue and the agents will select the best proposal as the solution 
-to the conflict. All agents involved in the dialogue adapt the priority 
-ordering and adopt their plan to it. This means that there are many small local 
-changes to an agent's position in the global hierarchy and therefore also in 
-their plans. The end result is a global solution to the cooperative pathfinding 
-problem without any agent having known it explicitly. There is also no single 
+dialogue and the agents will select the best proposal as the solution
+to the conflict. All agents involved in the dialogue adapt the priority
+ordering and adopt their plan to it. This means that there are many small local
+changes to an agent's position in the global hierarchy and therefore also in
+their plans. The end result is a global solution to the cooperative pathfinding
+problem without any agent having known it explicitly. There is also no single
 agent which has been vital to its calculation like in a centralized approach.
 
 The rest of this article is structured as follows. First, a formal description

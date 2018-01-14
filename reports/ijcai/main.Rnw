@@ -42,7 +42,7 @@
 Xeryus Stokkel$^1$,
 Bart Verheij$^1$,
 \\
-$^1$ Artificial Intelligence and Cognitive Engineering, University 
+$^1$ Artificial Intelligence and Cognitive Engineering, University
 of Groningen \\
 brontitall@dds.nl,
 bart.verheij@rug.nl

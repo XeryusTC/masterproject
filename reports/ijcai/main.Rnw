@@ -13,7 +13,6 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[english]{babel}
 \usepackage{tabularx}
 \usepackage{amsmath}
 \usepackage{xfrac}
@@ -50,10 +49,10 @@ bart.verheij@rug.nl
 \title{Argumentation Dialogues for Decentralised Cooperative Pathfinding}
 
 <<preprocess,echo=F,message=F,cache=F>>=
-require(knitr)
-require(xtable)
-require(plyr)
-require(tikzDevice)
+library(knitr)
+library(xtable)
+library(plyr)
+library(tikzDevice)
 
 # settings
 options("xtable.caption.placement" = "top")

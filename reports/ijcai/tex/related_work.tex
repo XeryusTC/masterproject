@@ -217,20 +217,3 @@ knowledge base that is specific to the dialogue. The extended model lists ten
 criteria for when a dialogue can be closed.
 
 \subsection{Multi-agent coordination}
-Argumentation can be used to allow coordination between agents by letting them
-deliberate in a dialogue. Cooperative pathfinding is a particular instance of a
-coordination problem. \cite{pollock1995} has constructed an agent which is able
-to discard and create new plans. This can also be done in a multi-agent system
-through Partial Global Planning (PGP)
-\citep[pp.~202--204]{durfee1991,decker1992,woodridge2009}. The agents
-coordinate their actions without any one of them formulating a global plan.
-Instead agents only coordinate with each other when they are required to do so.
-Agents adapt their plans to each other in these situations. Agents are free to
-adapt their plan without having to re-coordinate with each other. This means
-that agents make small incremental changes to their own plan which leads to a
-set of globally well coordinated plans between all agents. During this process
-each agent only knows the parts of the global plan that it is affected by.
-Generalized PGP \citep{decker1992} extends this with real-time planning,
-negotiation, and coordination relationships between goals. This allows the
-framework to be used in settings other than the multi-sensor network that PGP
-was originally developed for.

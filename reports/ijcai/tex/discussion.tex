@@ -1,4 +1,26 @@
 \section{Discussion}\label{sec:discussion}
+\begin{table*}[h]
+    \centering
+    \caption{Comparison of several cooperative pathfinding algorithms.}
+    \label{tbl:planning-overview}
+    \begin{tabular}{ll|l|l|l|l|l|l}
+        & & Category & Complete & Priority & Comm. & Online & Eval. \\
+        \hline
+        OD+ID & \citep{standley2010,standley2011} & Centralized & Yes & No &
+        All &
+        No & No \\
+        ICTS & \citep{sharon2013} & Centralized & Yes & No & All & No & No\\
+        IADPP & \citep{cap2012} & Decoupled & No & Yes & All & No & No \\
+        WHCA* & \citep{silver2005} & Decoupled & No & Yes & Window & Yes & No \\
+        DMRCP & \citep{wei2016} & Decentralized & No & No & 2 nodes & Yes & No
+        \\
+        DiMPP & \citep{chouhan2017} & Decentralized & Yes & Yes & Ring & No & 
+        No
+        \\ \hline
+        PCA* & & Decentralized & No & Yes & All & No & No \\
+        DPCA* & & Decentralized & No & Yes & All & No & Yes
+    \end{tabular}
+\end{table*}
 % TODO: scalability
 % TODO: more compartmentalized than decoupled methods
 % TODO: discuss WHCA* vs Continual Planning vs WDPCA*

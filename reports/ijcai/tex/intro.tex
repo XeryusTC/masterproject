@@ -11,10 +11,11 @@ addresd in the studo of what is called cooperative pathfinding. It finds its
 application in robotics, aviation, road traffic management, crowd simulations,
 and video games \citep{standley2011}.
 
-In the cooperative pathfinding problem each agent can make one of $b+1$ moves 
+An agent in the cooperative pathfinding problem can make one of $b+1$ moves 
 during each discrete time step. It can move to any of $b$ neighbouring nodes on 
-a graph or it can \emph{wait} in its current position. The most straightforward 
-solution to the problem is toke the Cartesian products of all these state 
+the graph or it can \emph{wait} in its current position. The most 
+straightforward 
+solution to the problem is search the Cartesian products of all these state 
 spaces. This is computationally inefficient \citep{hopcroft1984,sharon2013} as 
 the branching factor of the new state space is $(b+1)^k$ where $k$ is the 
 number of agents in the problem. Centralized algorithms try to control the 
@@ -25,58 +26,59 @@ assigning each agent an action individually instead of taking the Cartesian
 product of their state spaces. This reduces the branching factor to $(b+1)$ but 
 the depth of the solution in the search tree grows with a linear factor $k$. 
 This makes the search more tractable with conventional search algorithms like 
-A*. Additionally they split the problem into independent sub-problems. 
+A*. Additionally the problem is split into independent sub-problems.
 \cite{standley2010} found that the runtime is dominated by finding a solution 
-for the largest subgroup. The algorithm is both complete and optimal, it will 
+for the largest subgroup. The algorithm is both complete and optimal; it will 
 always find a solution to the problem if it exists and it will find the lowest 
 cost solution to do so. Another centralized method is the Increasing Cost Tree 
-Search (ICTS) \citep{sharon2013} searches combinations of increasingly longer 
-paths for all agents for a solution. ICTS is faster than OD+ID in situations 
-when the number of agents relative to the number of nodes is high.
+Search (ICTS) \citep{sharon2013} which searches combinations of increasingly 
+longer paths for all agents. ICTS is faster than OD+ID in situations when the 
+number of agents relative to the number of nodes is high.
 
 Another common approach to the cooperative pathfinding problem is to decouple 
 the agents from each other. This means that each agent individually finds it 
-optimal path. This generally forgoes completeness for the sake of speed. 
+optimal path. This approach forgoes completeness for the sake of speed. 
 Usually this is done by imposing a hierarchy on the agents. Agents need to 
-consider agents with a higher priority as moving obstacles. This is why these 
-hierarchies are often known as priority orders. Each agent has a unique 
-position in the order. Finding a priority ordering is a combinatorial problem 
-but dependencies between optimal paths can be used to decrease the search space 
+consider agents with a higher priority as moving obstacles. Each agent has a 
+unique rank in the priority order. Finding the best priority ordering is a 
+combinatorial problem . Dependencies between the optimal paths of agents can be 
+used to decrease the search space 
 \citep{bennewitz2002}. Often finding the priority scheme is done on a central 
-processor. It is possible to make the calculation of the paths for agents 
-decentralized. One method which does so is Interruptible Asynchronous 
-Decentralized Path Planning (IADPP) \citep{cap2012}. Agents start planning at 
+processor but the calculation of the paths for agents can be decentral. One 
+method which does so is Interruptible Asynchronous Decentralized Path Planning 
+(IADPP) \citep{cap2012}. When agents have been assigned a priority they can 
+start planning at 
 the same time. When an agent is finished it will send its path to all lower 
-priority agents. If the paths of the agents conflict then the lower priority 
-agent will restart planning but it will take the path of the higher priority 
+priority agents. When an agent receives a conflicting path then it will restart 
+planning while taking the path of the higher priority 
 agent into account. Windowed Hierarchical Cooperative A* (WHCA*) 
 \citep{silver2005} is an algorithm that has been successful in the gaming 
 industry. It is an online algorithm which interleaves planning and execution. 
 It does this by forcing agents to plan cooperatively in a time window. Actions 
 that occur outside of that time window do not have to take other agents into 
-account. After executing half of the cooperatively planned actions the agents 
-will make a new plan. This allows the priority order to vary over the course of 
+account. During execution agents will regularly make a new plan. This allows 
+the priority order to vary over the course of 
 execution. It also allows agents to continue cooperating after they have 
 reached their goal.
 
-It is also possible to attack the cooperative pathfinding problem without the 
-use of a central processor. A method called DMRCP \citep{wei2016} restricts the 
+It is also possible to tackle the cooperative pathfinding problem without the 
+use of a central processor. A method called Decentralized Multi-Robot 
+Cooperative Pathfinding (DMRCP) \citep{wei2016} restricts the 
 range of communication between agents to a two graph node radius. Within this 
-range agents use various coordination strategies to avoid conflicts and 
-congestions. Because of the limited communication range there is an increased 
-risk of deadlocks which require special strategies to be resolved. Although 
+range agents use various coordination strategies to avoid conflicts. Because of 
+the limited communication range there is an increased risk of congestions and 
+deadlocks which require special strategies to be resolved. Although 
 completeness is not discussed the algorithm is based on decoupled methods which 
 are generally not complete. DMRCP requires less time to find a solution than 
-OD+ID. Another method that doesn't use a central processor is Distributed 
-Multi-agent Path Planning (DiMPP) \citep{chouhan2017}. This is a distributed 
-algorithm of which the authors claim that it is complete. Instead of evaluating 
+OD+ID. Another algorithm that doesn't use a central processor is Distributed 
+Multi-agent Path Planning (DiMPP) \citep{chouhan2017}. The authors claim that 
+this distributed algorithm is complete. Instead of evaluating 
 $k!$ possible priority schemes the algorithm evaluates at most $k$ orders. Each 
 priority order has a different agent with the highest priority, but the agents 
 always occur in the same order. Agents work on a plan in the order that they 
 occur in the priority scheme. If they cannot find a path to their destination 
 then they will drop that plan. Once a complete plan has been found all agents 
-can start executing it. Proof for the completeness of DiMPP is given in 
-\cite[subsection 5.1]{chouhan2017}
+can start executing it.
 
 % Argumentation
 Methods of decentralised multi-agent coordination have been developed by the 
@@ -85,38 +87,34 @@ computational argumentation. Formal models of argumentation have been used in
 Artificial Intelligence in expert systems, multi-agent systems and law
 \citep{vaneemeren2014}. A pillar of argumentation is that of non-monotonic 
 logic. A logic is non-monotonic when a conclusion that follows from a set of 
-premises does not necessarily hold any more when additional premises are 
-added \citep{modgil2013,vaneemeren2014}. \cite{pollock1995} has constructed an 
-agent called OSCAR which is 
-able to create plans and stop pursuing them once it deems them to be 
-unachievable. Commonly argumentation in a multi-agent systems is
-modelled as a dialogue game. In such a dialogue game the agents represent the
-players and the game rules prescribes how the dialogue should occur
-\citep{walton1995}. There are rules about which arguments agent can put forward
-when they are allowed to do so. Most forms of dialogue games also have rules
-about when the dialogue is finished and which agent(s) have won if applicable.
+premises does not necessarily hold when additional premises are 
+added to the set \citep{modgil2013,vaneemeren2014}. \cite{pollock1995} has 
+constructed an agent called OSCAR which is able to pursue goals and it will 
+stop doing so once it has deemed that they are unachievable. 
 
 Argumentation in multi-agent systems is often done through dialogues. These are 
 games in which the agents are players and the moves that they can make are 
 certain utterances. The rules of the game can determine how to start 
-and end the dialogue, which agent gets to speak when, and what the outcome is 
-and which agents have won the dialogue if applicable. \cite{walton1995} 
-proposed a typology of the main dialogues that humans partake in. Deliberation 
-dialogues allow agents to settle on a common course of action. One model of 
-deliberation dialogues is known as the MHP model \cite{mcburney2007}. It 
+and end the dialogue, which agent gets to speak when, which utterances agents 
+can make, and what the outcome is and which agent(s) have won the dialogue if 
+applicable. \cite{walton1995} proposed a typology of the six main dialogues 
+that humans partake in. Deliberation dialogues allow agents to settle on a 
+common course of action. One theory of deliberation dialogue has been developed 
+by \cite{mcburney2007}, we will refer to it as the MHP model. It 
 consists of eight stages in which the agents will collect the preferences, 
 goals and other constraints that need to be considered. Agents propose plans, 
 make recommendations, evaluate plans, and eventually pick the most appropriate 
 plan. Agents need to unanimously accept a plan to come to a successful 
 solution, but the MHP model also allows for a voting mechanism. Several 
 shortcomings of the MHP model have been addressed by \cite{walton2014}. It 
-introduces new end conditions and improves the way that additional information 
-can be integrated. The \textsc{TeamLog} model \cite{dunin-keplicz2011} 
+introduces new end-conditions and improves the way that additional information 
+can be integrated. The \textsc{TeamLog} model \citep{dunin-keplicz2011} 
 simplifies the MHP model by condensing the six stages where argumentation takes 
 place into two stages. These are the proposal stage where agents can introduce 
 plans and the evaluation stage in which agents evaluate and vote on proposals. 
-The \textsc{TeamLog} model still allows the same richness in dialogue as the 
-MHP model.
+The model is meant to be used in autonomous agents while the MHP model also 
+tries to model human deliberation dialogues.
+\textsc{TeamLog} still has the same richness in dialogue as the MHP model.
 
 % PGP
 Without a central processor it is hard to create a plan that is globally well

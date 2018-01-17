@@ -14,20 +14,20 @@ variation on A* \citep{hart1968} which allows teams of agents to cooperate.
 This variant does not allow agents to expand nodes if it would mean that the
 action will conflict with the path of an agent with higher priority.
 
-\begin{table}
-    \centering
-    \caption{Comparison of proposed cooperative pathfinding algorithms. The
-        columns have the same meaning as those in
-        \autoref{tbl:planning-overview}. Both algorithms are decentralized and
-        not complete. The valuations column indicates whether agents vote on
-        their preferred solution.}
-    \label{tbl:proposed}
-    \begin{tabular}{l|l|l|l}
-        & Comm. & Online & Valuations \\ \hline
-        PCA*   & All & No & No \\
-        DPCA*  & All & No & Yes \\
-    \end{tabular}
-\end{table}
+%\begin{table}
+%    \centering
+%    \caption{Comparison of proposed cooperative pathfinding algorithms. The
+%        columns have the same meaning as those in
+%        \autoref{tbl:planning-overview}. Both algorithms are decentralized and
+%        not complete. The valuations column indicates whether agents vote on
+%        their preferred solution.}
+%    \label{tbl:proposed}
+%    \begin{tabular}{l|l|l|l}
+%        & Comm. & Online & Valuations \\ \hline
+%        PCA*   & All & No & No \\
+%        DPCA*  & All & No & Yes \\
+%    \end{tabular}
+%\end{table}
 
 \subsection{Partial Cooperative A* (PCA*)}
 The algorithm follows the approach of decoupled methods. During the first step

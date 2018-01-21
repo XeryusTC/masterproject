@@ -113,7 +113,7 @@ legend("bottomleft",
        cex=.8)
 @
 
-<<quality,echo=F,cache=T,cache.beater=solved,results='asis'>>=
+<<quality,eval=F,echo=F,cache=T,cache.beater=solved,results='asis'>>=
 quality.table = t(rbind(paste(round(solved$time * 100, 1), "%"),
                         round(lengths$length, 2)))
 colnames(quality.table) = c('Instances solved', 'Length')
@@ -134,6 +134,7 @@ plot(c(),
      xlim=c(5,40),
      ylim=c(100,360),
      frame.plot=F,
+     xaxs="i", yaxs="i",
      xlab='Agents in problem instance',
      ylab='Sum of path lengths',
      yaxs="i",
@@ -155,15 +156,10 @@ legend("topleft",
 the time limit for varying number of agents in an instance. It shows a
 similar picture as \autoref{fig:perfgraph} where OD+ID and PCA* solved only few
 instances while DPCA* and DPCA*+ are able to solve problems that include more
-agents. \autoref{tbl:quality} paints a similar picture with regards to the
-number of instances solved. DPCA* and DPCA*+ are able to solve double the
-amount of instances as OD+ID and PCA*. DiMPP falls in the middle of these two
-groups in both comparisons. In general DPCA* and DPCA*+ find longer paths than
-OD+ID but they are also able to solve instances with more agents for which the
-sum path length is longer by virtue of there being more agents with paths. A
-better comparison is given in \autoref{fig:lengths}. This shows that PCA* finds
-the shortest paths followed by OD+ID. DPCA* and DPCA*+ find longer paths while
-DiMPP causes the largest detours.
+agents. DiMPP falls in the between of these two groups. \autoref{fig:lengths} 
+shows how long the paths found by each algorithm are. In general DPCA* and 
+DPCA*+ find longer paths than OD+ID. DiMPP causes the largest detours of all 
+tested algorithms. PCA* finds the shortest paths of all algorithms.
 
 <<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))

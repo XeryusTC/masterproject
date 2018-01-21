@@ -6,21 +6,23 @@
     \begin{tabular}{ll|l|l|l|l|l|l}
         & & Category & Complete & Priority & Comm. & Online & Eval. \\
         \hline
-        OD+ID & \citep{standley2010,standley2011} & Centralized & Yes & No &
+        OD+ID & \cite{standley2010,standley2011} & Centralized & Yes & No &
         All &
         No & No \\
-        ICTS & \citep{sharon2013} & Centralized & Yes & No & All & No & No\\
-        IADPP & \citep{cap2012} & Decoupled & No & Yes & All & No & No \\
-        WHCA* & \citep{silver2005} & Decoupled & No & Yes & Window & Yes & No \\
-        DMRCP & \citep{wei2016} & Decentralized & No & No & 2 nodes & Yes & No
+        ICTS & \cite{sharon2013} & Centralized & Yes & No & All & No & No\\
+        IADPP & \cite{cap2012} & Decoupled & No & Yes & All & No & No \\
+        WHCA* & \cite{silver2005} & Decoupled & No & Yes & Window & Yes & No \\
+        DMRCP & \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes & No
         \\
-        DiMPP & \citep{chouhan2017} & Decentralized & Yes & Yes & Ring & No & 
+        DiMPP & \cite{chouhan2017} & Decentralized & Yes & Yes & Ring & No & 
         No
         \\ \hline
         PCA* & & Decentralized & No & Yes & All & No & No \\
         DPCA* & & Decentralized & No & Yes & All & No & Yes
     \end{tabular}
 \end{table*}
+
+
 % TODO: scalability
 % TODO: more compartmentalized than decoupled methods
 % TODO: discuss WHCA* vs Continual Planning vs WDPCA*
@@ -46,298 +48,38 @@
 %solution to the conflict does not outweigh the speed of starting several
 %dialogues which come to a conclusion quickly.
 
-We have seen that only PCA* takes more time to solve problem instances and
-solves fewer instances than OD+ID and DiMPP. All other versions of the proposed
-algorithm can solve more
-instances and are generally faster than the two reference algorithms. This
-comes with the caveat that DPCA* and especially WDPCA* find solutions in which
-the paths are often longer than those found with the state-of-the-art
-algorithms. It is expected that the proposed algorithms are faster than OD+ID
-since the latter is a centralized algorithm while the proposed algorithms are
-all decentralized. Centralized methods are generally slower than decentralized
-algorithms because they consider a state space which combines the state spaces
-of all agents. Decentralized methods only use the state space of a single agent
-to create a plan for that agent. This results in a reduction in the complexity
-of the problem \citep{bennewitz2002,sharon2013}.
+Of all the evaluated algorithms PCA* was the slowest and was able to solve the 
+least amount of problem instances. This is not surprising because the algorithm 
+will evaluate different permutations of partial priority orderings. This is 
+computationally inefficient. Because PCA* requires more time than OD+ID for 
+most instances it seems to be a poor approach to the cooperative pathfinding 
+problem. On the other hand  DPCA* and DPCA*+ are able to solve problem 
+instances the fastest of all tested algorithms. They have also been able to 
+solve more problem instances than any of the other algorithms. This contrast 
+between PCA* on one hand and DPCA* and DPCA*+ on the other shows the 
+effectiveness of deliberation dialogues in this setting.
 
-Although centralized methods are slower than decentralized methods they do often
-find a solution in which each agent's path is as short as possible. They are
-also able to find a solution to the problem if one exists. Often there is a
-need for a lot of computation time to find a solution. The experimental setup
-does not allow for all the calculation that is required by centralized methods.
-Instead the experiments are focused on finding a solution in as
-little time as possible. We consider being able to find a solution in
-a reasonable time to be more important than being able to find a solution when
-given hours or even days to calculate a solution. In a real-time applications
-like video games or groups of autonomous robots it is more important to find a
-solution in reasonable time than it is to find the most optimal solution
-\citep{botea2013}.
-Because WDPCA* is fully decentralized it is able to find a solution in a
-reasonable amount of time while sacrificing the quality of the solution. This
-means that WDPCA* is more suitable for real-time applications because it is
-able to resolve a problem instance in a low amount of time. It is also able to
-find a solution to problems with a large amount of agents because of this speed.
+There is little difference between DPCA* and DPCA*+ in \autoref{fig:perfgraph}. 
+From \autoref{fig:solved} we can see that DPCA* is able to solve more problem 
+instances of the two while \autoref{fig:lengths} shows that it finds slightly 
+longer paths than DPCA*+. All of this suggest that the algorithms perform on an 
+equal level. To investigate this we looked at the average number of agents that 
+participate in dialogues as shown in \autoref{fig:conflict-sizes}. From that 
+figure we see that just two agents participate in the vast majority of 
+dialogues. There are only a few dialogues that involve three or four agents.
+Dialogues with more than three agents require some extra complexity in the 
+arguments and evaluations that agents can make. This extra complexity uses more 
+computational resources while it is rarely needed. The only benefit that the 
+added complexity of DPCA*+ has is that it finds solutions with shorter paths.
 
-%window version being better
-WDPCA* is able to solve more problem instances than DPCA* without a window, see
-\autoref{tbl:quality}. How many more instances can be solved depends on the
-size of the window. As a trade-off the amount of actions required for agents to
-reach their destination increases. This effect get stronger when the window
-size gets smaller. When $w=2$ most of the instances were solved, however the
-sum of the path lengths was also the highest. That the speed of WDPCA*-2 is
-high is not surprising. With a small window the algorithm is reduced to be
-reactive. There is barely any global planning any more because agents don't
-look far ahead when trying to find their way to the destination. Agents mainly
-solve conflicts that will happen during their next action or some conflicts
-that happen one time step later. Agents will also determine whether they have
-conflicts after each action. This shows that it is a valid strategy to create
-many small plans with low computational effort instead of a complete global
-plan. Cooperating in too small a window does have a negative effect on the
-quality of the solution.
-
-Part of the lower quality of a solution when $w$ is small is because the
-algorithm becomes more reactive. Agents will move towards their goal and notice
-that they have a conflict with another agent. It may be that the best solution
-to the conflict is that an agent has to backtrack and move to the position it
-just came from.
-Sometimes agents also move out of the way of another agent and move to a grid
-cell that it has visited earlier on its way to its goal. Sometimes it is
-possible to avoid these loops by increasing the size of the window. Agents can
-then look further ahead and coordinate their actions earlier to prevent
-backtracking. This shows that there is a clear trade-off between finding a
-solution in a low amount of time and finding a good solution with few loops. In
-some applications it may be undesirable to have loops because an observer might
-see it as unintelligent behaviour. For these applications it is better to use a
-large $w$.
-
-% Discuss why loops occur:
-%When
-%$w=2$ then agents may make one or two moves to only discover that they now have
-%a conflict. Sometimes the solution to a conflict is to backtrack and agents
-%will revisit nodes that they have been to earlier
-
-% Discuss why \autoref{fig:dialogues} trails off towards the end:
-%This is likely to be because the algorithms are only able to find a solution
-%to problems with few conflicts. More complex problems with many agents would
-%require more dialogues but these can't be completed within the 2000ms time
-%limit. We can see that the point where the growth in the number of  dialogues
-%required to solve an instance starts to increase coincides with
-%\autoref{fig:solved}. The start of the steep cliff for each respective
-%algorithm in \autoref{fig:solved} is around the same number of agents as where
-%the growth in the number of dialogues starts to decrease.
-In several figures there is a clear initial trend which trails off when the
-number of agents in the problem instance becomes larger. The number of
-dialogues per number of agents in \autoref{fig:dialogues} is an example of
-this. There is an initial exponential trend which flattens out in the last last
-quarter of each plot. The plots for WDPCA* break the exponential trend starting
-from between 25 agents and 33 agents per instance. The point where the growth
-in the number of dialogues required to solve a problem decreases coincide with
-the point in \autoref{fig:solved} where each algorithm has a cliff in the
-fraction of instances that have been solved. This suggests that the effect of
-the number of dialogues required to find a solution is caused by the algorithm
-not being able to find a
-solution to complex problem instances within the 2000ms time limit. Complex
-problems are those that require many dialogues to find a priority scheme that
-allows all agents to find a path to their destination. This in turn suggests
-that WDPCA* successfully finding a solution to a problem instance depends on the
-number of dialogues required to find that solution.
-%This effect is likely caused by the algorithms only being able to find a
-%solution to problem instances with a large number of agents that have a simple
-%solution. More complex problems with many agents would require more dialogues
-%but this requires more than 2000ms to complete all dialogues.
-
-There is an interaction between which algorithm is used and whether previously
-found paths were stored in a cache and reused. From \autoref{fig:cache} it
-becomes clear that WDPCA* with a smaller window also means that the effect is
-smaller. With a small window there are fewer conflicts so agents will not have
-to participate in dialogues very often. This means that they will not consult
-the cache as often and therefore there is less of a speed-boost. On top of that
-the paths are also shorter and easier to calculate. Retrieving a short path
-which consists only of a limited amount of actions from the cache is not much
-faster than calculating the path outright.
-
-WDPCA* is based on the A* algorithm \citep{hart1968} but this can be changed to
-any pathfinding algorithm. Dialogues result in a priority ordering for agents,
-which in turn determines which agents should be considered moving obstacles by
-other agents. This is independent from which path planning algorithm is used.
-There are only constraints on where an agent can move to. As long as an
-algorithm
-is able to handle moving obstacles or can be modified to handle moving
-obstacles then it can be used instead of A* in WDPCA*. This means that our
-algorithm can be adapted to work with other discrete space algorithms, or even
-continuous space algorithms like RRT* \citep{lavalle1998,lavalle2001}.
-
-The world defined in \autoref{sec:problem} is an abstracted version of reality
-which only allows for very basic arguments and evaluations to be made during a
-dialogue. A real world situation like rail traffic management is more complex
-and should allow for richer dialogues. In such systems agents should be able to
-make domain specific arguments. For example, in a public transport rail system
-planner agents could make arguments based on how passenger friendly a proposal
-is. A proposal that delays a train from reaching a station in time so that
-passengers can transfer to other stations is less passenger friendly than a
-proposal which doesn't have this effect.
-
-% weights dependent on agents
-The proposals of priority orderings are evaluated by the agents to find the
-best priority scheme. To do this they weigh different effects of the proposal.
-Currently these weights are static. The weights that were found using simulated
-annealing are a one-size-fits-all solution. The optimal weights that are found
-by simulated annealing are dependent on the lower and upper bound of the number
-of agents that can be in a problem instance. This suggests that the optimal
-value of the weights depends on the number of agents in the problem. Future
-work may look into using weights that depend on the number of agents in the
-problem. WDPCA* could use a set of weights based on the number of agents in the
-current window. Instead of basing the weights on the number of agents the
-number of conflicts that an agent has can determine their value. This may make
-the agents respond appropriately to the complexity of a problem instance.
-Instead of using a one-size-fits-all solution the agents will adapt their
-heuristics to the problem instance.
-
-% Discuss why smaller windows have more dialogues:
-%This is to be expected because agents do not start a dialogue for every
-%conflict on the most optimal path, but only for those conflicts that occur
-%within $w$ time steps. After they solve these conflicts they execute
-%$\sfrac{w}{2}$ steps of the plan and move the centre of the window to their
-%new
-%position. Next they start resolving any conflicts that occur within the
-%updated
-%window. This means that when agents have a conflict that lies between
-%$\sfrac{w}{2}$ and $w$ time steps then they are likely to have a dialogue
-%about
-%it several times. So when $w$ is small there are more dialogues because agents
-%need to coordinate more often.
-
-Cooperative pathfinding is a specific instance of a coordination problem. It is
-possible to generalise the findings here to other resource sharing problems.
-Instead of agents making moves in a grid world the agents would claim the use
-of a resource for some amount of time. Two agents have conflicting claims when
-they try to claim the same resource at the same or overlapping times. They can
-resolve this conflict in claims by starting a deliberation dialogue and make
-arguments about why an agent should be allowed to access the resource before
-the other. They could also make proposals about how to resolve the conflict in
-claims and agents should be able to argue for or against its adaptation. A
-voting system similar to the priority scheme evaluation used by WDPCA* could
-also be employed.
-
-% Dialogues are pragmatic
-% TODO: make this a coherent story
-The model of deliberation dialogues as proposed by McBurney, Hitchcock and
-Parsons (MHP model) \citep{mcburney2007} is quite complex. Walton et al.
-\citep{walton2014} have expanded on this so that the human deliberation
-dialogues can be modelled more accurately while addressing some of the
-shortcomings of the MHP model. Although this model explains how human dialogues
-work it is too complex to be used in WDPCA*. Instead we use the simpler
-\textsc{TeamLog} model \citep{dunin-keplicz2011}. Both models have a
-opening part, a closing part, and a argumentation part where all
-deliberation takes place. In the MHP model the argumentation part consists of
-four stages while \textsc{TeamLog} only has two stages. These two stages are
-sufficient to be able to solve the conflicts that occur in the cooperative
-pathfinding problem. WDPCA* uses a more pragmatic approach to deliberation
-dialogues than both models do. The dialogues only consist of making proposals
-and evaluating them, there isn't much room for discussion. This is partially
-because the proposals only consist of a priority ordering. The simplicity of
-the problem formulation does not allow for much more richness in the dialogue.
-
-\begin{figure}[t]
-    \centering
-    \def\svgscale{.7}
-    \input{images/repair.pdf_tex}
-    \caption{An example of why it is preferred to make an entire new plan than
-    it is to alter an existing plan.}
-    \label{fig:repair}
-\end{figure}
-
-Another cause of the simplicity is that agents will find a completely new plan
-after adapting a priority ordering instead of altering their current plan. This
-is done so that agents will always use the most optimal path. If agents were to
-repair their plans locally they may end up with suboptimal paths. For example
-see \autoref{fig:repair}, agent $a_1$ has to move one step \emph{west} while
-$a_2$ has found a route which consists of two moves \emph{east} followed by one
-step \emph{south west} and \emph{south}. Given the priority scheme $a_1 > a_2$
-it is better for $a_2$ to formulate a new plan instead of solving the conflict
-by plan repair. Formulating a new plan would result in the path $\{
-\emph{south}, \emph{south east}, \emph{east}, \emph{east} \}$. Repairing the
-plan by moving out of $a_1$'s way and following the original plan may result in
-the path \{ \emph{south}, \emph{north east}, \emph{east}, \emph{south east},
-\emph{east} \}. The repaired plan is one step longer than the new plan. It also
-seems less intelligent because the agent moves in the north east direction
-while its goal is to the south and to the east of its position. Plan repair
-will never be able to find a path which is shorter than creating a new plan. It
-is also more likely that an agent exhibits less intelligent behaviour when
-using plan repair.
-
-Richness in dialogues also depends on the domain. Our problem formulation is
-very abstract and generic. The only argument that agents can make against a
-priority proposal is that there is no valid path to their destination.
-Applications like traffic management can impose additional constraints on the
-problem. In air and rail traffic management agents have to keep to a schedule.
-Agents can make about keeping to their schedule. In multi robot systems the
-agents may need to recharge and they should be able to make arguments about why
-they need to have a high priority so that they can reach a charging station
-without too much delay. Applications may have constraints like these which do
-not fit well in an evaluation function, but they are well expressed in a logic.
-This also gives a greater explanatory power than what WDPCA* has with just its
-evaluation function and its limited argumentative capability.
-
-%Deliberation dialogue models are complex. \citep{mcburney2007} has 8 stages,
-%most of which aren't used here. Instead \citep{dunin-keplicz2011} is used for
-%simplicity. It is verbose enough for this purpose but \citep{mcburney2007} may
-%be more appropriate for more complex applications (think planning trains),
-%\citep{walton2014} may be appropriate then too. \citep{mcburney2007,walton2014}
-%are both meant to model human deliberation dialogues, not necessarily meant for
-%calculation/communication time optimal. Agents sharing their paths may be
-%considered information sharing step of dialogue.
-
-%The propose and evaluate stages have been compounded. Some approaches only
-%allow one proposal to be made and evaluate that, while the next proposal to be
-%entered has to wait for the next proposal stage. We allow agents to make
-%proposals at the same time and all entered proposals will be evaluated in
-%sequence during the same round. Use more complex dialogues (arguments) and
-%judgement aggregation to achieve final result instead of voting.
-
-%Problem formulation is generic enough to apply to traffic management etc
-
-\section{Conclusion}
-In this thesis we have combined ideas from partial global planning, continual
-planning and argumentation and applied them to cooperative pathfinding.
-A new novel algorithm called WDPCA* was developed starting from the decoupled
-model for cooperative pathfinding. Pairs of agents solve conflicts in their
-paths by finding determining a priority order. One agent will have to give
-priority to the other and consider it to be a moving obstacle. Partial global
-planning is used to allow agents to incrementally build their private priority
-order. Doing so means that the agents will coordinate their paths such that
-there are no conflicts between them. Resolving conflicts is done in a
-deliberation dialogue. During such a dialogue agents will discuss possible
-priority orders that lead to a solution to the conflict. If there is more than
-one possibility they will vote on which priority scheme they prefer. The
-resulting priority scheme is adapted by both agents that participate in a
-dialogue.
-
-Generally agents will resolve all their conflicts before they start to execute
-their plan. This has several limitations: all computation is done before
-execution, and finding a solution may require agents to alternate giving and
-having priority. The most important limitation is that agents will stop
-cooperating once they reach their goal. This may mean that they block the paths
-of early agents and do not cooperate with agents that need to pass them. To
-address these limitation a window is applied to the search. This limits the
-range in which conflict resolution takes place. It also ensures that agents
-will continue to cooperate after they have reached their destination by forcing
-them to keep planning even though they have reached their goal.
-
-We have shown that WDPCA* is able to solve problem instances faster than the
-commonly used algorithm WHCA* and the state-of-the-art algorithm DiMPP. It is
-also able to solve problem instances with a large number of agents where both
-of the reference algorithms were not able to solve these instances. As a
-trade-off the paths found by WDPCA* are often longer and may contain loops
-where agents visit the same grid cell multiple times. Employing a large window
-results in fewer of these low quality paths while it does not sacrifice much of
-the speed gain that a small window has.
-
-The agents solve conflicts by through a deliberation dialogue. This makes it
-possible to retrieve arguments why agents have picked a certain priority
-ordering. These arguments explain why the solution to the cooperative
-pathfinding problem was picked. Because WDPCA* uses arguments it is possible to
-integrate domain specific knowledge into the algorithm. The method we proposed
-here is less abstract than conventional cooperative pathfinding algorithms
-which only calculate a solution without giving arguments why that solution is
-the most appropriate.
+A comparison of the features of various cooperative pathfinding methods from 
+the literature and those presented here is given in 
+\autoref{tbl:planning-overview}. Algorithms can categorized by how  they 
+calculate a set of paths. They can be centralized, decoupled or decentralized. 
+Whether an algorithm is guaranteed to find a solution if one exists is 
+indicated by the complete column. Some algorithms impose a hierarchy on the 
+agents, this is indicated by the priority column. The communication column 
+indicates restrictions on which agents are allowed to communicate with each 
+other. An algorithm is online when it interleaves calculating a plan with the 
+execution of it. Finally the evaluation column means that agents can vote on a 
+plan.

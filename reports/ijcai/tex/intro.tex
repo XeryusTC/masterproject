@@ -1,6 +1,6 @@
 \section{Introduction}\label{sec:intro}
 Path planning for a single agent is considered a solved problem
-\citep{sharon2013}. When multiple agents have to find their way through a
+\cite{sharon2013}. When multiple agents have to find their way through a
 shared
 space then the problem becomes more complicated. The agents have to find paths
 around obstacles while they also need to ensure that they do not collide with
@@ -9,19 +9,19 @@ that congestions or even deadlocks may occur. To avoid these undesirable
 situations there is a need for coordination between the agents. This problem is
 addresd in the studo of what is called cooperative pathfinding. It finds its
 application in robotics, aviation, road traffic management, crowd simulations,
-and video games \citep{standley2011}.
+and video games \cite{standley2011}.
 
 An agent in the cooperative pathfinding problem can make one of $b+1$ moves 
 during each discrete time step. It can move to any of $b$ neighbouring nodes on 
 the graph or it can \emph{wait} in its current position. The most 
 straightforward 
 solution to the problem is search the Cartesian products of all these state 
-spaces. This is computationally inefficient \citep{hopcroft1984,sharon2013} as 
+spaces. This is computationally inefficient \cite{hopcroft1984,sharon2013} as 
 the branching factor of the new state space is $(b+1)^k$ where $k$ is the 
 number of agents in the problem. Centralized algorithms try to control the 
 state space explosion by efficiently calculating paths for all agents on a 
 single processor. Operator Decomposition and Independence Detection (OD+ID) 
-\citep{standley2010,standley2011} control the state space explosion by 
+\cite{standley2010,standley2011} control the state space explosion by 
 assigning each agent an action individually instead of taking the Cartesian 
 product of their state spaces. This reduces the branching factor to $(b+1)$ but 
 the depth of the solution in the search tree grows with a linear factor $k$. 
@@ -31,7 +31,7 @@ A*. Additionally the problem is split into independent sub-problems.
 for the largest subgroup. The algorithm is both complete and optimal; it will 
 always find a solution to the problem if it exists and it will find the lowest 
 cost solution to do so. Another centralized method is the Increasing Cost Tree 
-Search (ICTS) \citep{sharon2013} which searches combinations of increasingly 
+Search (ICTS) \cite{sharon2013} which searches combinations of increasingly 
 longer paths for all agents. ICTS is faster than OD+ID in situations when the 
 number of agents relative to the number of nodes is high.
 
@@ -43,16 +43,16 @@ consider agents with a higher priority as moving obstacles. Each agent has a
 unique rank in the priority order. Finding the best priority ordering is a 
 combinatorial problem . Dependencies between the optimal paths of agents can be 
 used to decrease the search space 
-\citep{bennewitz2002}. Often finding the priority scheme is done on a central 
+\cite{bennewitz2002}. Often finding the priority scheme is done on a central 
 processor but the calculation of the paths for agents can be decentral. One 
 method which does so is Interruptible Asynchronous Decentralized Path Planning 
-(IADPP) \citep{cap2012}. When agents have been assigned a priority they can 
+(IADPP) \cite{cap2012}. When agents have been assigned a priority they can 
 start planning at 
 the same time. When an agent is finished it will send its path to all lower 
 priority agents. When an agent receives a conflicting path then it will restart 
 planning while taking the path of the higher priority 
 agent into account. Windowed Hierarchical Cooperative A* (WHCA*) 
-\citep{silver2005} is an algorithm that has been successful in the gaming 
+\cite{silver2005} is an algorithm that has been successful in the gaming 
 industry. It is an online algorithm which interleaves planning and execution. 
 It does this by forcing agents to plan cooperatively in a time window. Actions 
 that occur outside of that time window do not have to take other agents into 
@@ -63,7 +63,7 @@ reached their goal.
 
 It is also possible to tackle the cooperative pathfinding problem without the 
 use of a central processor. A method called Decentralized Multi-Robot 
-Cooperative Pathfinding (DMRCP) \citep{wei2016} restricts the 
+Cooperative Pathfinding (DMRCP) \cite{wei2016} restricts the 
 range of communication between agents to a two graph node radius. Within this 
 range agents use various coordination strategies to avoid conflicts. Because of 
 the limited communication range there is an increased risk of congestions and 
@@ -71,7 +71,7 @@ deadlocks which require special strategies to be resolved. Although
 completeness is not discussed the algorithm is based on decoupled methods which 
 are generally not complete. DMRCP requires less time to find a solution than 
 OD+ID. Another algorithm that doesn't use a central processor is Distributed 
-Multi-agent Path Planning (DiMPP) \citep{chouhan2017}. The authors claim that 
+Multi-agent Path Planning (DiMPP) \cite{chouhan2017}. The authors claim that 
 this distributed algorithm is complete. Instead of evaluating 
 $k!$ possible priority schemes the algorithm evaluates at most $k$ orders. Each 
 priority order has a different agent with the highest priority, but the agents 
@@ -85,10 +85,11 @@ Methods of decentralised multi-agent coordination have been developed by the
 field of
 computational argumentation. Formal models of argumentation have been used in
 Artificial Intelligence in expert systems, multi-agent systems and law
-\citep{vaneemeren2014}. A pillar of argumentation is that of non-monotonic 
+\cite{vaneemeren2014}. A pillar of argumentation is that of non-monotonic 
 logic. A logic is non-monotonic when a conclusion that follows from a set of 
 premises does not necessarily hold when additional premises are 
-added to the set \citep{modgil2013,vaneemeren2014}. \cite{pollock1995} has 
+added to the set \cite{modgil2013,vaneemeren2014}. 
+Pollock~\shortcite{pollock1995} has 
 constructed an agent called OSCAR which is able to pursue goals and it will 
 stop doing so once it has deemed that they are unachievable. 
 
@@ -97,18 +98,20 @@ games in which the agents are players and the moves that they can make are
 certain utterances. The rules of the game can determine how to start 
 and end the dialogue, which agent gets to speak when, which utterances agents 
 can make, and what the outcome is and which agent(s) have won the dialogue if 
-applicable. \cite{walton1995} proposed a typology of the six main dialogues 
+applicable. Walton~\shortcite{walton1995} proposed a typology of the six main 
+dialogues 
 that humans partake in. Deliberation dialogues allow agents to settle on a 
-common course of action. One theory of deliberation dialogue has been developed 
-by \cite{mcburney2007}, we will refer to it as the MHP model. It 
+common course of action. One theory of deliberation dialogue has been 
+influential, we will refer to it as the MHP model \cite{mcburney2007}. It 
 consists of eight stages in which the agents will collect the preferences, 
 goals and other constraints that need to be considered. Agents propose plans, 
 make recommendations, evaluate plans, and eventually pick the most appropriate 
 plan. Agents need to unanimously accept a plan to come to a successful 
 solution, but the MHP model also allows for a voting mechanism. Several 
-shortcomings of the MHP model have been addressed by \cite{walton2014}. It 
+shortcomings of the MHP model have been addressed by 
+Walton~\shortcite{walton2014}. It 
 introduces new end-conditions and improves the way that additional information 
-can be integrated. The \textsc{TeamLog} model \citep{dunin-keplicz2011} 
+can be integrated. The \textsc{TeamLog} model \cite{dunin-keplicz2011} 
 simplifies the MHP model by condensing the six stages where argumentation takes 
 place into two stages. These are the proposal stage where agents can introduce 
 plans and the evaluation stage in which agents evaluate and vote on proposals. 
@@ -120,7 +123,7 @@ tries to model human deliberation dialogues.
 Without a central processor it is hard to create a plan that is globally well
 coordinated. Partial global planning (PGP) has been used in distributed sensor
 networks to distribute and coordinate tasks among the nodes that make up the
-network \citep[pp.~202--204]{durfee1991,woodridge2009}. The nodes create their 
+network \cite[pp.~202--204]{durfee1991,woodridge2009}. The nodes create their 
 individual plans without
 regard for each other. They will then exchange information on their plans and
 adapt them to better coordinate their activities. They do this by incrementally 

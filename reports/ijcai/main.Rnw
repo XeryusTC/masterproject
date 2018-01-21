@@ -21,7 +21,6 @@
 \usepackage{graphicx}
 \usepackage{calc}
 \usepackage{subcaption}
-\usepackage[square]{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage[all]{hypcap}
 

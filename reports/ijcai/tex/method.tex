@@ -3,14 +3,14 @@ Decoupled algorithms are able to solve cooperative pathfinding problems while
 requiring only minimal computational resources. The agents calculate their path
 individually so this is inherently distributed. Calculating a hierarchy needs
 to be done centrally so all dependencies between agents can be taken into
-account \citep{latombe1991,bennewitz2002}. This means that there is a single
+account \cite{latombe1991,bennewitz2002}. This means that there is a single
 centralized bottleneck in an otherwise distributed system. In this article we
 aim to overcome this bottleneck and make the calculation of the priority
 ordering distributed as well. Below are the details of two different versions
 of this algorithm. The second version version of the algorithm has some
 improvements over the previous version. A summary of their properties is given
 in \autoref{tbl:proposed}. Each algorithm is build upon Cooperative A*, a
-variation on A* \citep{hart1968} which allows teams of agents to cooperate.
+variation on A* \cite{hart1968} which allows teams of agents to cooperate.
 This variant does not allow agents to expand nodes if it would mean that the
 action will conflict with the path of an agent with higher priority.
 
@@ -70,7 +70,7 @@ never have communicated beyond sharing their optimal path.
 
 Going through all possible permutations and evaluating them on a single
 criterion is not the most clever method of finding a priority ordering
-\citep{bennewitz2002}. To avoid evaluating the entire search space we employ a
+\cite{bennewitz2002}. To avoid evaluating the entire search space we employ a
 deliberation dialogue during the conflict resolution step. This results in an
 algorithm we call DPCA*. The deliberation dialogues consist of four stages as
 summarised in \autoref{tbl:stages}. The stages are based on those used in

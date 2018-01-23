@@ -1,19 +1,17 @@
 \begin{abstract}
-When multiple mobile agents have reach their destination in a shared
-workspace they run the risk of causing congestions and deadlocks or even
-collisions. To avoid this they need to coordinate at some level.
-Cooperative pathfinding is the field that studies algorithms that find
-solutions to this problem. In this article a family of decentralized algorithms
-is proposed that are inspired by ideas studied in argumentation and
-multi-agent  coordination. From the study of computational argumentation we use
-argumentative deliberation dialogues, in which agents can discuss and resolve
-conflicting courses of actions. From the study of multi-agent coordination we
-use partial global planning, a distributed method to create a
-single plan for a group of agents where no agent has a complete overview of the
-situation. This means that the agents are able to find a solution without the
-need for a central processor. We show that our family of algorithms is able to
-solve cooperative pathfinding problems faster than a complete and optimal
-algorithm. The quality of the solutions found is generally lower. We also show
-that agents resolving conflicts in pairs instead of in larger groups results in
-a more simple algorithm with a small improvement in speed performance.
+Cooperative pathfinding research studies coordination algorithms addressing 
+congestions, deadlocks, and collisions in multi-agent systems. 
+In typical algorithms individual agents have no say in resolving conflicts. We 
+propose algorithms in which agents engage in an argumentative dialogue in case 
+of local conflicts, leading to the transparent and fast construction of global 
+solutions. 
+We combine ideas from computational argumentation and multi-agent coordination. 
+From computational argumentation we use argumentative deliberation dialogues in 
+which agents discuss and resolve conflicting local plans. 
+From the study of multi-agent coordination we use partial global planning, a 
+distributed method to incrementally create a global plan. 
+We show that our algorithms generally solve cooperative pathfinding problems 
+faster than a state of the art complete and optimal algorithm, at the 
+cost of slightly longer path lengths and gaining the explanatory power of 
+argumentation dialogues. 
 \end{abstract}

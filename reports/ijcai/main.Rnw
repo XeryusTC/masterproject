@@ -39,14 +39,14 @@
 
 \author{
 Xeryus Stokkel$^1$,
-Bart Verheij$^1$,
+Bart Verheij$^1$
 \\
 $^1$ Artificial Intelligence and Cognitive Engineering, University
 of Groningen \\
 brontitall@dds.nl,
 bart.verheij@rug.nl
 }
-\title{Argumentation Dialogues for Decentralised Cooperative Pathfinding}
+\title{Argumentation Dialogues for Decentralized Cooperative Pathfinding}
 
 <<preprocess,echo=F,message=F,cache=F>>=
 library(knitr)

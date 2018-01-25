@@ -21,7 +21,7 @@ slightly worse level than DiMPP on all aspects.
 
 Before being able to evaluate DPCA* we have to determine the weights that are
 used during voting. To do this we used simulated annealing
-\citep{kirkpatrick1983} with an initial temperature of 100 which drops to 1 in
+\cite{kirkpatrick1983} with an initial temperature of 100 which drops to 1 in
 unit steps. Each iteration of the simulated annealing process consists of 200
 problem instances which contain between 2 and 50 agents. After each drop of
 temperature we generate a new set of 200 problem instances to prevent

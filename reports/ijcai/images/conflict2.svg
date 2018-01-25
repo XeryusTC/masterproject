@@ -56,15 +56,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="105.98558"
-     inkscape:cy="991.66531"
+     inkscape:cx="109.89992"
+     inkscape:cy="989.13993"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="1600"
-     inkscape:window-height="859"
-     inkscape:window-x="0"
-     inkscape:window-y="41"
+     inkscape:window-width="1200"
+     inkscape:window-height="947"
+     inkscape:window-x="1440"
+     inkscape:window-y="971"
      inkscape:window-maximized="0">
     <inkscape:grid
        type="xygrid"
@@ -102,17 +102,17 @@
        id="path8151"
        inkscape:connector-curvature="0" />
     <circle
-       style="fill:none;stroke:#000000;stroke-width:0.23699999;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:0.26069999;stroke-miterlimit:4;stroke-dasharray:none"
        id="path8153"
        cx="22.5"
        cy="24.5"
-       r="3.5" />
+       r="3.8499999" />
     <circle
-       style="fill:none;stroke:#000000;stroke-width:0.23699999;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:0.26069999;stroke-miterlimit:4;stroke-dasharray:none"
        id="path8155"
        cx="37.5"
        cy="24.5"
-       r="3.5" />
+       r="3.8499999" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.237;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none"
        d="M 26.999999,23 H 33"
@@ -126,23 +126,23 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.52777767px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="20"
+       x="19"
        y="25.470833"
        id="text8217"><tspan
          sodipodi:role="line"
          id="tspan8215"
-         x="20"
+         x="19"
          y="25.470833"
          style="stroke-width:0.26458332px">$a_1$</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.52777767px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="35"
+       x="34"
        y="25.470833"
        id="text8221"><tspan
          sodipodi:role="line"
          id="tspan8219"
-         x="35"
+         x="34"
          y="25.470833"
          style="stroke-width:0.26458332px">$a_2$</tspan></text>
   </g>

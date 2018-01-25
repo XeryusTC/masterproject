@@ -36,7 +36,7 @@
   }%
   \providecommand\rotatebox[2]{#2}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{114.05764396bp}%
+    \setlength{\unitlength}{85.71118648bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -50,7 +50,7 @@
   \makeatother%
   \begin{picture}(1,1)%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{conflict3.pdf}}%
-    \put(0.25147252,0.66226771){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
-    \put(0.62426371,0.66226771){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
+    \put(0.13620729,0.71593299){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
+    \put(0.63228822,0.71593299){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
   \end{picture}%
 \endgroup%

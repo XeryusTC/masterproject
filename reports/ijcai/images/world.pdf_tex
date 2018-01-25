@@ -36,7 +36,7 @@
   }%
   \providecommand\rotatebox[2]{#2}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{369.92126063bp}%
+    \setlength{\unitlength}{341.57480315bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -50,25 +50,25 @@
   \makeatother%
   \begin{picture}(1,1)%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{world.pdf}}%
-    \put(0.6532567,0.3429148){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
-    \put(0.76819923,0.3429148){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
-    \put(0.6532567,0.22797227){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_4$}}}%
-    \put(0.76819923,0.22797227){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_3$}}}%
-    \put(0.6532567,0.28544061){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_4$}}}%
-    \put(0.76819923,0.28544061){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_1$}}}%
-    \put(0.76819923,0.17049808){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_2$}}}%
-    \put(0.6532567,0.17049808){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_3$}}}%
-    \put(0.07854406,0.77586207){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_5$}}}%
-    \put(0.19348659,0.66475394){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_5$}}}%
-    \put(0.19348659,0.43103454){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_6$}}}%
-    \put(0.42337165,0.66091954){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_7$}}}%
-    \put(0.53831412,0.66091954){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_8$}}}%
-    \put(0.42337165,0.54981141){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_8$}}}%
-    \put(0.53831412,0.54981141){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_7$}}}%
-    \put(0.76819923,0.77969647){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_6$}}}%
+    \put(0.65767635,0.32987868){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
+    \put(0.78215768,0.32987868){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
+    \put(0.65767635,0.20539736){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_4$}}}%
+    \put(0.78215768,0.20539736){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_3$}}}%
+    \put(0.65767635,0.26763485){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_4$}}}%
+    \put(0.78215768,0.26763485){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_1$}}}%
+    \put(0.78215768,0.14315353){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_2$}}}%
+    \put(0.65767635,0.14315353){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_3$}}}%
+    \put(0.03526971,0.79875519){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_5$}}}%
+    \put(0.15975104,0.67842647){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_5$}}}%
+    \put(0.15975104,0.42531127){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_6$}}}%
+    \put(0.40871369,0.67427386){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_7$}}}%
+    \put(0.53319496,0.67427386){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_8$}}}%
+    \put(0.40871369,0.55394514){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_8$}}}%
+    \put(0.53319496,0.55394514){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_7$}}}%
+    \put(0.78215768,0.80290779){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_6$}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{world.pdf}}%
-    \put(0.30842912,0.894639){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_9$}}}%
+    \put(0.28423237,0.92738912){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_9$}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{world.pdf}}%
-    \put(0.42337165,0.09004124){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_9$}}}%
+    \put(0.40871369,0.05601976){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_9$}}}%
   \end{picture}%
 \endgroup%

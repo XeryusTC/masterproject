@@ -6,16 +6,16 @@ space then the problem becomes more complicated. The agents have to find paths
 around obstacles while they also need to ensure that they do not collide with
 each other. Even when agents can prevent collisions then it is still possible
 that congestions or even deadlocks may occur. To avoid these undesirable
-situations there is a need for coordination between the agents. This problem is
-addresd in the studo of what is called cooperative pathfinding. It finds its
-application in robotics, aviation, road traffic management, crowd simulations,
-and video games \cite{standley2011}.
+situations there is a need for coordination between the agents. Cooperative 
+pathfinding is the study of algorithms that find solutions to this problem.
+It finds its application in robotics, aviation, road traffic management, crowd 
+simulations, and video games \cite{standley2011}.
 
 \begin{figure}[t]
     \centering
     \def\svgscale{.5}
     \input{images/world.pdf_tex}
-    \caption{A small space shared by some agents. Obstacles are black, agents
+    \caption{An environment shared by some agents. Obstacles are black, agents
         are circles inscribed with the agent's number ($a_i$). The destination
         for agent $a_i$ is given by $g_i$.}
     \label{fig:world}
@@ -77,8 +77,8 @@ defined as the sum of the costs of the paths of the agents. The most
 appropriate solution to the problem is a solution for which the cost is minimal.
 
 The paths of two agents are not in conflict iff at no time step the agents
-occupy the same cell, agents move along the same edge (swap positions), or
-agents move along crossing edges. Obstacle cells can be considered as
+occupy the same cell, the agents move along the same edge (swap positions), or
+the agents move along crossing edges. Obstacle cells can be considered as
 stationary agents. Examples of each of these conflicts are given in
 \autoref{fig:conflicts}. A single action can result in an agent having multiple
 conflicts at the same time. If \autoref{fig:conflict-position} had an agent

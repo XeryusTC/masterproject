@@ -1,128 +1,72 @@
 \section{Related Work}\label{sec:related}
-An agent in the cooperative pathfinding problem can make one of $b+1$ moves 
-during each discrete time step. It can move to any of $b$ neighbouring nodes on 
-the graph or it can \emph{wait} in its current position. The most 
-straightforward 
-solution to the problem is search the Cartesian products of all these state 
-spaces. This is computationally inefficient \cite{hopcroft1984,sharon2013} as 
-the branching factor of the new state space is $(b+1)^k$ where $k$ is the 
-number of agents in the problem. Centralized algorithms try to control the 
-state space explosion by efficiently calculating paths for all agents on a 
-single processor. Operator Decomposition and Independence Detection (OD+ID) 
-\cite{standley2010,standley2011} control the state space explosion by 
-individually assigning actions to agents instead of assigning all agents an 
-action at the same time. This reduces the branching factor to $(b+1)$ but 
-the depth of the solution in the search tree grows with a linear factor $k$. 
-This makes the search more tractable with conventional search algorithms like 
-A*. Additionally the problem is split into independent sub-problems.
-Standley~\shortcite{standley2010} found that the runtime is dominated by 
-finding a solution 
-for the largest subgroup. The algorithm is both complete and optimal; it will 
-always find a solution to the problem if it exists and it will find the lowest 
-cost solution to do so. Another centralized method is the Increasing Cost Tree 
+A straightforward but computationally inefficient solution to the problem is to 
+search the Cartesian products of the state spaces of the individual 
+agents~\cite{hopcroft1984}. Alternative algorithms for cooperative pathfinding 
+are typically either \emph{centralized} or \emph{decoupled}~\cite{latombe1991}.
+\emph{Centralized} algorithms try to control the state space explosion by 
+efficiently calculating paths for each agent individually in on a single 
+processor. One example is Operator Decomposition and Independence Detection 
+(OD+ID)~\cite{standley2010,standley2011} which assign actions to agents 
+individually instead of search the Cartesian product of their state spaces. 
+This algorithm is both complete and 
+optimal: it will always find a solution to the problem if one exists, and this 
+solution will be of minimal cost.
+Another centralized method is the Increasing Cost Tree 
 Search (ICTS) \cite{sharon2013} which searches combinations of increasingly 
 longer paths for all agents. ICTS is faster than OD+ID in situations when the 
 number of agents relative to the number of nodes is high.
+In \emph{decoupled} algorithms each agent individually finds an optimal path 
+for itself. Conflicts can for instance be resolved by imposing a priority 
+ordering on the agents, where agents wwith a higher priority are considered 
+moving obstacles~\cite{bennewitz2002}.
 
-Another common approach to the cooperative pathfinding problem is to decouple 
-the agents from each other. This means that each agent individually finds its
-optimal path. This approach forgoes completeness for the sake of speed. 
-Usually this is done by imposing a hierarchy on the agents. Agents need to 
-consider agents with a higher priority as moving obstacles. Each agent has a 
-unique rank in the priority order. Finding the best priority ordering is a 
-combinatorial problem. Dependencies between the optimal paths of agents can be
-used to decrease the search space 
-\cite{bennewitz2002}. Often finding the priority scheme is done on a central 
-processor but the agents can calculate their path on their own processor. One 
-method which does so is Interruptible Asynchronous Decentralized Path Planning 
-(IADPP) \cite{cap2012}. When agents have been assigned a priority they can 
-start planning at 
-the same time. After an agent is finished it will send its path to all lower 
-priority agents. If an agent receives a conflicting path then it will restart 
-planning while taking the path of the higher priority 
-agent into account. Windowed Hierarchical Cooperative A* (WHCA*) 
-\cite{silver2005} is an algorithm that has been successful in the gaming 
-industry. It is an online algorithm which interleaves planning and execution. 
-It does this by forcing agents to plan cooperatively in a time window. Actions 
-that occur outside of that time window do not have to take other agents into 
-account. During execution agents will make a new plan at regular intervals. 
-This allows the priority order to vary over the course of 
-execution. It also allows agents to continue cooperating after they have 
-reached their goal.
-
-It is also possible to tackle the cooperative pathfinding problem without the 
-use of a central processor. A method called Decentralized Multi-Robot 
-Cooperative Pathfinding (DMRCP) \cite{wei2016} restricts the 
-range of communication between agents to a two graph node radius. Within this 
-range agents use various coordination strategies to avoid conflicts. Because of 
-the limited communication range there is an increased risk of congestions and 
-deadlocks which require special strategies to be resolved. Although 
-completeness is not discussed the algorithm is based on decoupled methods which 
-are generally not complete. DMRCP requires less time to find a solution than 
-OD+ID. Another algorithm that doesn't use a central processor is Distributed 
-Multi-agent Path Planning (DiMPP) \cite{chouhan2017}. The authors claim that 
-this distributed algorithm is complete. Instead of evaluating 
-$k!$ possible priority schemes the algorithm evaluates at most $k$ orders. Each 
-priority order has a different agent with the highest priority, but the agents 
-always occur in the same order. Agents work on a plan in the order that they 
-occur in the priority scheme. If they cannot find a path to their destination 
-then they will drop that plan. Once a complete plan has been found all agents 
-can start executing it.
+Often finding the priority scheme is done on a central 
+processor but the agents can calculate their path on their own processor. This 
+approach is taken by Interruptible Asynchronous Decentralized Path Planning 
+(IADPP)~\cite{cap2012}.
+In these examples planning and execution are separated. Online algorithms 
+interleave planning and execution. Windowed Hierarchical Cooperative A* 
+(WHCA*)~\cite{silver2005} employs a moving time window which limits the 
+conflicts an agent takes into account while planning and replanning. This 
+algorithm has been successful in the gaming industry.
+Algorithms that do not use a central processor include Decentralized 
+Multi-Robot Cooperative Pathfinding (DMRCP)~\cite{wei2016} and Distributed 
+Multi-agent Path Planning (DiMPP) \cite{chouhan2017}.
 
 % Argumentation
-Methods of multi-agent coordination have been developed by the field of
-computational argumentation. Formal models of argumentation have been used in
-Artificial Intelligence in expert systems, multi-agent systems and law
-\cite{vaneemeren2014}. A pillar of argumentation is that of non-monotonic 
-logic. A logic is non-monotonic when a conclusion that follows from a set of 
-premises does not necessarily hold when additional premises are 
-added to the set \cite{modgil2013,vaneemeren2014}. 
-Pollock~\shortcite{pollock1995} has constructed an agent called OSCAR which is 
-able to pursue goals and it will stop doing so once it has deemed that they are 
-unachievable. It is able to do this by arguing with itself about its 
-observations, beliefs, desires, and intentions.
+In the present paper we propose decentralized algorithms for cooperative 
+pathfinding in which agents engage in a problem solving dialogue when they 
+encounter a conflict. In this way, agents gradually adapt their individual 
+plans to arrive at a globally coherent solution. We use ideas developed in 
+computational argumentation~\cite{modgil2013} and in multi-agent 
+coordination~\cite[pp.~202--204]{woodridge2009}.
 
-Argumentation in multi-agent systems is often done through dialogues. These are 
-game theoretic constructs in which the agents are players and the moves that 
-they can make are 
-certain utterances. The rules of the game can determine how to start 
-and end the dialogue, which agent gets to speak when, which utterances agents 
-can make, what the outcome is, and which agent(s) have won if applicable. 
-Walton and Krabbe~\shortcite{walton1995} proposed a typology of the six main 
-dialogues 
-that humans partake in. Deliberation dialogues allow agents to settle on a 
-common course of action. One theory of deliberation dialogue has been 
-influential, we will refer to it as the MHP model \cite{mcburney2007}. It 
-consists of eight stages in which the agents will collect the preferences, 
-goals and other constraints that need to be considered. Agents propose plans, 
-make recommendations, evaluate plans, and eventually pick the most appropriate 
-plan. Agents need to unanimously accept a plan to come to a successful 
-solution but the MHP model also allows for a voting mechanism. Several 
-shortcomings of the MHP model have been addressed by 
-Walton~\emph{et al.}~\shortcite{walton2014}. It 
-introduces new end-conditions and improves the way that additional information 
-can be integrated. The \textsc{TeamLog} model \cite{dunin-keplicz2011} 
-simplifies the MHP model by condensing the six stages where argumentation takes 
-place into two stages. These are the proposal stage where agents can introduce 
-plans and the evaluation stage in which agents evaluate and vote on proposals. 
-This model is meant to be used in autonomous agents while the MHP model also 
-tries to model human deliberation dialogues.
-\textsc{TeamLog} still has the same richness in dialogue as the MHP model.
+Computational argumentation has developed from the non-monotonic logics studied 
+in Artificial Intelligence~\cite{dung1995} and has been applied in expert 
+systems, multi-agent systems and law~\cite{vaneemeren2014}. Early work in 
+computational argumentation studied individual planning~\cite{pollock1995} and 
+more recently also multi-agent planning has been 
+addressed~\cite{ferrando2012,pardo2011}. Our agents engage in a deliberation 
+dialogue aimed at finding a plan of action. Deliberation dialogues are one of 
+the argumentative dialogue types distinguished by Walton and 
+Krabbe~\shortcite{walton1995} and have been studied by 
+\cite{mcburney2007,walton2014,dunin-keplicz2011}.
 
 % PGP
-Without a central processor it is hard to create a plan that is globally well
-coordinated. Partial global planning (PGP) has been used in distributed sensor
-networks to distribute and coordinate tasks among the nodes that make up the
-network \cite[pp.~202--204]{durfee1991,woodridge2009}. The nodes create their 
-individual plans without
+Multi-agent coordination is needed when the actions of agents can interact. 
+WWooldridge~\shortcite[pp.~202--204]{wooldridge2009} distinguishes several 
+approaches to address multi-agent coordination, including Partial Global 
+Planning (PGP)~\cite{durfee1991}. Nodes create their individual plans without 
 regard for each other. They will then exchange information on their plans and
 adapt them to better coordinate their activities. They do this by incrementally 
-adapting their plans to those of other agents. Coordination is not rigid and
-nodes are free to change their plan when circumstances change without the need 
-to re-coordinate with the other nodes. None of the involved nodes ever has a 
-global view, but the end result is a plan that is globally well
-coordinated with each node holding the part of the global plan that is relevant
-to it. Generalized PGP \cite{decker1992} extends this with real-time planning, 
+adapting their plans to those of other agents.
+%Coordination is not rigid and
+%nodes are free to change their plan when circumstances change without the need 
+%to re-coordinate with the other nodes. None of the involved nodes ever has a 
+%global view, but the end result is a plan that is globally well
+%coordinated with each node holding the part of the global plan that is relevant
+%to it.
+Generalized PGP \cite{decker1992} extends this with real-time planning, 
 negotiation and coordination relationships between goals. This allows the 
 framework to be used in other multi-agent coordination tasks.
 

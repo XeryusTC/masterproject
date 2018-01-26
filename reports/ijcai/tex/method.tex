@@ -1,18 +1,22 @@
 \section{Family of algorithms}\label{sec:method}
-Decoupled algorithms are able to solve cooperative pathfinding problems while
-requiring only minimal computational resources. The agents calculate their path
-individually so this is inherently distributed. Calculating a hierarchy needs
-to be done centrally so all dependencies between agents can be taken into
-account \cite{latombe1991,bennewitz2002}. This means that there is a single
-centralized bottleneck in an otherwise distributed system. In this article we
-aim to overcome this bottleneck and make the calculation of the priority
-ordering distributed as well. Below are the details of two different versions
-of this algorithm. The second version version of the algorithm has some
-improvements over the previous version. A summary of their properties is given
-in \autoref{tbl:proposed}. Each algorithm is build upon Cooperative A*, a
-variation on A* \cite{hart1968} which allows teams of agents to cooperate.
-This variant does not allow agents to expand nodes if it would mean that the
-action will conflict with the path of an agent with higher priority.
+We now discuss the algorithms proposed in this paper connecting to work in 
+computational argumentation and multi-agent coordination. Each algorithm is 
+build upon Cooperative A*~\cite{silver2005}---itself a variation of A* 
+\cite{hart1968}---that allows teams of agents to cooperate.
+%Decoupled algorithms are able to solve cooperative pathfinding problems while
+%requiring only minimal computational resources. The agents calculate their path
+%individually so this is inherently distributed. Calculating a hierarchy needs
+%to be done centrally so all dependencies between agents can be taken into
+%account \cite{latombe1991,bennewitz2002}. This means that there is a single
+%centralized bottleneck in an otherwise distributed system. In this article we
+%aim to overcome this bottleneck and make the calculation of the priority
+%ordering distributed as well. Below are the details of two different versions
+%of this algorithm. The second version version of the algorithm has some
+%improvements over the previous version. A summary of their properties is given
+%in \autoref{tbl:proposed}. Each algorithm is build upon Cooperative A*, a
+%variation on A* \cite{hart1968} which allows teams of agents to cooperate.
+%This variant does not allow agents to expand nodes if it would mean that the
+%action will conflict with the path of an agent with higher priority.
 
 %\begin{table}
 %    \centering

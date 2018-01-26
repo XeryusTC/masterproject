@@ -2,22 +2,23 @@
 Path planning for a single agent is considered a solved problem
 \cite{sharon2013}. When multiple agents have to find their way through a
 shared
-space then the problem becomes more complicated. The agents have to find paths
+space (\autoref{fig:world}), then a level of complexity is added to the problem 
+of path planning for single agents. The agents have to find paths
 around obstacles while they also need to ensure that they do not collide with
 each other. Even when agents can prevent collisions then it is still possible
-that congestions or even deadlocks may occur. To avoid these undesirable
-situations there is a need for coordination between the agents. Cooperative 
-pathfinding is the study of algorithms that find solutions to this problem.
-It finds its application in robotics, aviation, road traffic management, crowd 
-simulations, and video games \cite{standley2011}.
+that congestions or even deadlocks may occur. Some form of coordination between 
+agents is needed to avoid such undesirable situations. This problem has been 
+referred to as cooperative pathfinding, or multi-agent pathfinding. It is 
+encountered in robotics, aviation, road traffic management, crowd simulations, 
+and video games \cite{standley2011}.
 
 \begin{figure}[t]
     \centering
     \def\svgscale{.5}
     \input{images/world.pdf_tex}
-    \caption{An environment shared by some agents. Obstacles are black, agents
-        are circles inscribed with the agent's number ($a_i$). The destination
-        for agent $a_i$ is given by $g_i$.}
+    \caption{An environment shared by multiple agents. Obstacles are black,
+        agents are circles inscribed with the agent's number ($a_i$). The 
+        destination for agent $a_i$ is given by $g_i$.}
     \label{fig:world}
 \end{figure}
 
@@ -52,7 +53,7 @@ simulations, and video games \cite{standley2011}.
     \label{fig:conflicts}
 \end{figure}
 
-The problem of multi-agent pathfinding can be defined as follows. A shared
+The problem of cooperative pathfinding can be defined as follows. A shared
 space is divided into discrete cells such that it forms an 8-connected grid.
 Some of the cells in this grid are static obstacles while the other cells are
 open. A set of $k$ agents $\{a_1, \ldots, a_k\}$ occupy cells within the grid,
@@ -62,7 +63,8 @@ position without colliding with any of the other agents. A path consists of a
 series of actions. An action can either be to move to one of the eight
 neighbouring cells or \emph{wait} at the current location. Each time step an
 agent must do exactly one of these actions. Each action has unit cost, with the
-exception of waiting in the goal position. The cost function is then
+exception of waiting in the goal position which has zero cost. The cost 
+function is then
 \[
 \text{\textsc{cost}(P,Q)} =
 \begin{cases}
@@ -70,11 +72,11 @@ exception of waiting in the goal position. The cost function is then
 1 & \text{otherwise}
 \end{cases}
 \]
-where $P$ is the node where the agent is located, $Q$ is the node where the
-agent moves to, and $G$ is the agent's goal node. A single agent's path has a
+where $P$ is the node where the agent's location node, $Q$ the node where the
+agent moves to, and $G$ the agent's goal node. A single agent's path has a
 cost that is the sum of the costs of all its actions. The cost of a solution is
-defined as the sum of the costs of the paths of the agents. The most
-appropriate solution to the problem is a solution for which the cost is minimal.
+defined as the sum of the costs of the paths of the agents. An optimal solution 
+has minimal cost.
 
 The paths of two agents are not in conflict iff at no time step the agents
 occupy the same cell, the agents move along the same edge (swap positions), or
@@ -94,13 +96,9 @@ $a_8$ cannot move to their destinations in a single time step because that
 would mean that they move along crossing edges at the same time.
 
 The rest of this article is structured as follows.
-%First, a formal description of the cooperative pathfinding problem is given in 
-%\autoref{sec:problem}.
-First we describe previous research in cooperative pathfinding, computational 
-argumentation and multi-agent coordination is described in 
-\autoref{sec:related}.
-A family of methods to find
-conflict-free paths is proposed in \autoref{sec:method}. The method is
-evaluated and compared to other algorithms in \autoref{sec:results}. Final
-remarks on the proposed method and its implications are discussed in
+We briefly discuss previous research in cooperative pathfinding, computational 
+argumentation and multi-agent coordination in \autoref{sec:related}. Our famoly 
+of algorithms combining ideas from these three fields is proposed in 
+\autoref{sec:method}. This is followed by an evaluation and comparison to other 
+algorithms in \autoref{sec:results}. The results are discussed in 
 \autoref{sec:discussion}.

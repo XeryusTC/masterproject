@@ -31,17 +31,7 @@
     \label{fig:conflicts}
 \end{figure}
 
-\begin{figure}[t]
-    \centering
-    \def\svgscale{.5}
-    \input{images/world.pdf_tex}
-    \caption{A small space shared by some agents. Obstacles are black, agents
-        are circles inscribed with the agent's number ($a_i$). The destination
-        for agent $a_i$ is given by $g_i$.}
-    \label{fig:world}
-\end{figure}
-
-The problem of multi-agent pathfinding can be defined as follows. A shared
+The problem of cooperative pathfinding can be defined as follows. A shared
 space is divided into discrete cells such that it forms an 8-connected grid.
 Some of the cells in this grid are static obstacles while the other cells are
 open. A set of $k$ agents $\{a_1, \ldots, a_k\}$ occupy cells within the grid,
@@ -51,23 +41,24 @@ position without colliding with any of the other agents. A path consists of a
 series of actions. An action can either be to move to one of the eight
 neighbouring cells or \emph{wait} at the current location. Each time step an
 agent must do exactly one of these actions. Each action has unit cost, with the
-exception of waiting in the goal position. The cost function is then
+exception of waiting in the goal position which has zero cost. The cost 
+function is then
 \[
 \text{\textsc{cost}(P,Q)} =
 \begin{cases}
-    0 & \text{if } P = Q = G \\
-    1 & \text{otherwise}
+0 & \text{if } P = Q = G \\
+1 & \text{otherwise}
 \end{cases}
 \]
-where $P$ is the node where the agent is located, $Q$ is the node where the
-agent moves to, and $G$ is the agent's goal node. A single agent's path has a
+where $P$ is the node where the agent's location node, $Q$ the node where the
+agent moves to, and $G$ the agent's goal node. A single agent's path has a
 cost that is the sum of the costs of all its actions. The cost of a solution is
-defined as the sum of the costs of the paths of the agents. The most
-appropriate solution to the problem is a solution for which the cost is minimal.
+defined as the sum of the costs of the paths of the agents. An optimal solution 
+has minimal cost.
 
 The paths of two agents are not in conflict iff at no time step the agents
-occupy the same cell, agents move along the same edge (swap positions), or
-agents move along crossing edges. Obstacle cells can be considered as
+occupy the same cell, the agents move along the same edge (swap positions), or
+the agents move along crossing edges. Obstacle cells can be considered as
 stationary agents. Examples of each of these conflicts are given in
 \autoref{fig:conflicts}. A single action can result in an agent having multiple
 conflicts at the same time. If \autoref{fig:conflict-position} had an agent

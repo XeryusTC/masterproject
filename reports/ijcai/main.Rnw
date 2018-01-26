@@ -178,8 +178,8 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 
 \input{tex/abstract}
 \input{tex/intro}
-%\input{tex/problem}
-\input{tex/related_work}
+\input{tex/problem}
+%\input{tex/related_work}
 \input{tex/method}
 <<resuls-file,child='results.Rnw'>>=
 @

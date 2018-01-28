@@ -73,7 +73,7 @@ arguments and evaluations that agents can make. This extra complexity uses more
 computational resources while it is rarely needed. The only benefit that the 
 added complexity of DPCA*+ has is that it finds solutions with shorter paths.
 
-A comparison of the features of various cooperative pathfinding methods from 
+A comparison of the features of various cooperative pathfinding algorithms from 
 the literature and those presented here is given in 
 \autoref{tbl:planning-overview}. Algorithms can categorized by how  they 
 calculate a set of paths. They can be centralized, decoupled or decentralized. 
@@ -85,13 +85,59 @@ other. An algorithm is online when it interleaves calculating a plan with the
 execution of it. Finally the evaluation column means that agents can vote on a 
 plan.
 
+During a dialogue agents can put forward arguments for or against partial 
+priority orders. They also evaluate and vote on each proposal based on several 
+criteria. This gives the agents some power over the decision of which solution 
+is picked for a problem instance. An outside observer can also use the 
+arguments and evaluations to extract the reasons why a group of agents have 
+picked a particular solution. This is in contrast to conventional algorithms 
+which find a solution to an abstract search. There is no indication about if 
+the solution is desirable at all.
+
+The four stages of DPCA* and DPCA*+ deliberation dialogues are based on the 
+four stages of \textsc{TeamLog} \cite{dunin-keplicz2011}. Some of the stages of 
+McBurney \emph{et al.} \shortcite{mcburney2007} are not necessary to find 
+priority orders for the agents, most of its verbosity is encoded in 
+\textsc{TeamLog}. By using the decoupled method we separated finding paths from 
+the argumentative process. The ordering proposals influence which possible 
+paths are valid but they do not directly alter a path. It is possible to use 
+\textsf{DeLP-MAPOP} to integrate planning and the deliberation process more 
+closely. In this case the agents can discuss individual actions in a plan and 
+propose alternate courses of action. This would result in an algorithm that 
+would be similar to a distributed version of OD+ID. It would also mean that the 
+paths are more tightly coupled than they are in our proposal. As a result 
+agents would be less flexible to change their plan to resolve other conflicts.
+
+Partial global planning ensures that all of our proposed algorithms 
+incrementally build towards a global well coordinated plan from the optimal 
+plans of individual agents. Because we incrementally construct a global plan we 
+can start deliberation dialogues for each local conflict. Here partial global 
+planning bridges the gap between conventional decoupled approaches and 
+computational argumentation. The norm in cooperative pathfinding is to 
+calculate a global priority ordering. Partial global planning allows us to 
+create partial priority ordering that imply a global priority ordering.
+
 The family of algorithms we presented have been applied to an abstract setting 
-which only allows for basic arguments and evaluations to made during a 
+that only allows for basic arguments and evaluations to made during a 
 dialogue. Potential applications like traffic management are more complex and 
-can allow domain specific arguments. For example, in a public transport system 
-the agents could make arguments based on how passenger friendly a proposal is.
+can allow domain specific arguments. For example, in an air traffic control 
+system the agents could make an argument for a high priority if their fuel 
+levels are low.
 In such a case it is also possible to determine why a certain solution was 
 arrived at. Currently that is mainly possible by inspecting the evaluations 
 made during dialogues. When the arguments made during a dialogue play a larger 
 role in finding the eventual solution then these arguments can be used to 
 extract reasons for why the solution is the most appropriate.
+
+\section{Conclusion}
+We have combined ideas from cooperative pathfinding, computational 
+argumentation and multi-agent planning to propose three algorithms that can 
+find conflict free paths for groups of mobile agents. Agents engage in 
+dialogues to resolve conflicts in their optimal plans. The local views of 
+agents are incrementally combined to form a global well-coordinated plan.
+In contrast to other cooperative pathfinding algorithms it is possible for 
+agents to motivate why they arrived at a particular solution.
+Our algorithms are faster and can solve instances with more agents than a 
+centralized state of the art algorithm and a recent decentralized algorithm.
+We also found that agents resolving conflicts in pairs is slightly faster than 
+solving them in larger groups.

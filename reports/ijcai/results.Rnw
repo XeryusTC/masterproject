@@ -132,7 +132,7 @@ op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(),
      type='n',
      xlim=c(5,40),
-     ylim=c(100,360),
+     ylim=c(100,350),
      frame.plot=F,
      xaxs="i", yaxs="i",
      xlab='Agents in problem instance',
@@ -166,7 +166,7 @@ op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
     xlim=c(0,40),
-    ylim=c(0,35),
+    ylim=c(0,30),
     xlab='Number of agents',
     ylab='Dialogues',
     frame.plot = F,
@@ -223,3 +223,40 @@ three agents involved, and only $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ with
 four agents involved. DPCA*+ often does not have to solve more complex
 dialogues than DPCA* but it does use a more complex strategy and thus it is
 slightly slower.
+
+%<<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
+%op <- par(mar = c(3.8, 3.8, 1, 1))
+%plot(c(), c(),
+%     type='l',
+%     log='y',
+%     col='red',
+%     xlim=c(1,len.cache),
+%     ylim=c(5, 2000),
+%     xlab='Instance',
+%     ylab='Time (ms)',
+%     frame.plot=F, yaxs="i"
+%)
+%lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3)
+%lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=1)
+%
+%legend("bottomright",
+%       legend=cannonical.names.cache[1],
+%       col=color.set.cache[1],
+%       pch=16,
+%       bty="n", cex=.8)
+%@
+%
+%The agents make use of a path cache to reduce the amount computation to 
+%resolve 
+%conflicts. If the cache is in use then there should be a noticeable decrease 
+%in 
+%the time it takes to solve problems. To measure the effect of caching on 
+%solving cooperative pathfinding problems we conducted a separate experiment of 
+%1000 problem instances. All other parameters were the same as in previous 
+%experiments. DPCA* solved each instance with the path cache enabled and 
+%disabled. The result of this experiment is shown in \autoref{fig:cache}. We do 
+%not show the results for DPCA*+ because they are identical to those of DPCA*. 
+%The figure shows that after the initial 100 problem instances the path cache 
+%does decrease the time required to find a solution. DPCA* is also able to 
+%solve 
+%more problem instances when the path cache is enabled.

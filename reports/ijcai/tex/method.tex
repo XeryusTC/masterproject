@@ -83,11 +83,12 @@ Detection.
 
 Going through all possible permutations and evaluating them on a single
 criterion is not the most clever method of finding a priority ordering
-\cite{bennewitz2002}. To avoid evaluating the entire search space we employ a
-deliberation dialogue during the conflict resolution step. This results in an
+\cite{bennewitz2002}. To avoid evaluating the entire search space we can employ 
+a deliberation dialogue during conflict resolution. This results in an
 algorithm we call DPCA*. The deliberation dialogues consist of four stages as
-summarised in \autoref{tbl:stages}. The stages are based on those used in
-\textsc{TeamLog}. Each conflict has its own dedicated dialogue which starts in
+summarised in \autoref{tbl:stages}. The stages are based on those used in the
+\textsc{TeamLog} model \cite{dunin-keplicz2011}. Each conflict has its own 
+dedicated dialogue which starts at
 the opening stage. Only agents that are involved in the conflict participate in
 the dialogue. During the opening stage agents can notify each other of earlier
 occurring conflicts. If this is the case then the dialogue is put on hold.
@@ -97,13 +98,14 @@ During the proposal stage agents can make priority order proposals. In our
 implementation agents always propose that they get priority over the other
 agents. After all agents have made a proposal or declined to make a proposal
 the dialogue moves to the evaluation stage. During this stage the agents cast
-votes on the proposals made during the previous stage. To be able to cast a
+votes on the proposals made during the previous proposal stage. To be able to 
+cast a
 vote on a proposal the agents temporarily adopt the proposal and make a new
 plan which adheres to its constraints. After updating their plan an agent can
 evaluate and weigh two effects of the proposal. The first effect is the
 difference in path length between their original (conflicting) path and the new
 path. The second effect is the difference of the total of number of conflicts
-in the two paths. These two effects are weighted and the result is cast as a
+in these two paths. These two effects are weighted and the result is cast as a
 vote. Agents can also request an additional proposal stage to occur after the
 evaluation stage. When an agent is unable to find a path to its destination
 under a certain priority ordering then it can also notify the agents of this,

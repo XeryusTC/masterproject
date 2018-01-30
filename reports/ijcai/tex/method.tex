@@ -1,10 +1,9 @@
 \section{Family of algorithms}\label{sec:method}
 We now discuss the algorithms proposed in this paper connecting to work in 
-computational argumentation and multi-agent coordination. Each algorithm uses 
-Cooperative A*~\cite{silver2005} as its basis. This is a variation of A* 
-\cite{hart1968} that allows teams of agents to cooperate by disallowing them to 
-expand nodes if this would conflict with the path of an agent of higher 
-priority.
+computational argumentation and multi-agent coordination. Each algorithm is 
+based on a variant of A*~\cite{hart1968} called Cooperative 
+A*~\cite{silver2005}, it disallows expanding nodes if it 
+would cause a conflict with the path of a higher priority agent.
 %Decoupled algorithms are able to solve cooperative pathfinding problems while
 %requiring only minimal computational resources. The agents calculate their path
 %individually so this is inherently distributed. Calculating a hierarchy needs
@@ -36,7 +35,29 @@ priority.
 %\end{table}
 
 \subsection{Partial Cooperative A* (PCA*)}
-The algorithm follows the approach of decoupled methods. Initially the agents 
+
+\begin{algorithm}[t]
+	\caption{Partial Cooperative A*}
+	\label{alg:pca}
+	\begin{algorithmic}
+		\State $path \gets \Call{FindPath}{\emptyset, \emptyset}$
+		\State $permanent \gets \emptyset$
+		\While{\Call{HasConflict}{}}
+			\State $c \gets $ \Call{EarliestConflict}{}
+			\State $orders \gets$ \Call{PriorityOrders}{$c$}
+			\State $cost \gets \emptyset$
+			\ForAll{$order \in orders$}
+				\State $path \gets \Call{FindPath}{permanent, order}$
+				\State $cost(order) \gets$ \Call{Cost}{$path$}
+			\EndFor
+			\State $permanent \gets permanent \cup \{ \argmin{cost} \}$
+			\State $path \gets \Call{FindPath}{permanent, \emptyset}$
+		\EndWhile
+	\end{algorithmic}
+\end{algorithm}
+
+PCA* follows the approach of decoupled methods combined with partial 
+global planning, it is outlined in \autoref{alg:pca}. Initially the agents 
 calculate their optimal paths and share them with each other. This allows
 each agent to determine where they have conflicts. Next the
 agents will resolve each conflict in order of their occurrence and update their 
@@ -53,13 +74,13 @@ there is no partial priority order that resolves the conflict then PCA* has
 failed to find a solution.
 
 Conventional decoupled algorithms calculate a permutation of the full priority 
-scheme $a_1 > a_2 > \ldots > a_k$ that is assigned to all agents. The partial 
+ordering $a_1 > a_2 > \ldots > a_k$ that is assigned to all agents. The partial 
 priority orderings used by PCA* only include agents that are involved in a 
 single conflict. Because of this an agent only has to keep track of which 
-agents it has to yield to, it does not need to be concerned with the 
+agents it has to yield to, it does not need to concern itself with the 
 relative order of other agents. A global priority order is implied by the 
-combination of the local views of the agents. Some agents however may not have 
-been involved in any conflict and are not part of any partial priority order. 
+combination of the local views of the agents. Some agents may not be involved 
+in any conflict and are not part of any partial priority order. 
 They will also not be present in the implied global priority order. Similarly 
 it is possible that disjoint subsets of partial priority orders exist when the 
 agents in one subset never had to resolve a conflict with the agents in the 
@@ -68,6 +89,19 @@ optimal paths, the result of which is that there is implied Independence
 Detection.
 
 \subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
+
+\begin{algorithm}[t]
+	\caption{Dialogue during DPCA* / DPCA*+}
+	\label{alg:dpca}
+	\begin{algorithmic}
+		\State $path \gets \Call{FindPath}{(\emptyset, \emptyset)}$
+		\State $permanent \gets \emptyset$
+		\While{\Call{HasConflict}{}}
+			\State $c \gets \Call{EarliestConflict}{}$
+		\EndWhile
+	\end{algorithmic}
+\end{algorithm}
+
 \begin{table}
     \centering
     \caption{Stages of a conflict resolution dialogue.}
@@ -82,85 +116,92 @@ Detection.
 \end{table}
 
 Going through all possible permutations and evaluating them on a single
-criterion is not the most clever method of finding a priority ordering
+criterion is not the most optimal method of finding a priority ordering
 \cite{bennewitz2002}. A path can be considered an argument for the usage of a 
-resource, namely being in a position at a certain time, then a conflict means 
-that two of these arguments are attacking each other. A priority order $a_1 > 
-a_2$ is then an argument which supports the path argument of $a_1$ by attacking 
-that of $a_2$. To find the most appropriate priority order the agents can 
-engage in a conflict resolving deliberation dialogue. The algorithm this 
-results in is called DPCA*. Each deliberation dialogue consists of four stages 
+resource, namely being in a series of position at certain times, then a 
+conflict means that two or more of these arguments are attacking each other. A 
+priority order $a_1 > a_2$ is then an argument which supports the path argument 
+of $a_1$ by attacking that of $a_2$. To find the most appropriate priority 
+order the agents can engage in a conflict resolving deliberation dialogue. The 
+algorithms this results in are called DPCA* and DPCA*+. Each deliberation 
+dialogue consists of four stages 
 as summarized in \autoref{tbl:stages}, these stages are based on those of 
-\textsc{TeamLog}~\cite{dunin-keplicz2011}. Each conflict is resolved in a 
+\textsc{TeamLog}. Each conflict is resolved in a 
 dedicated dialogue which starts in the opening stage. Only agents that are 
 involved in the conflict participate in the dialogue. During the opening stage 
-agents can put the dialogue on hold if they have an earlier occurring conflict. 
-If this is not the case for any of the agents then the dialogue moves to the 
-proposal stage.
-
+agents can put the dialogue on hold if they are involved an earlier occurring 
+conflict. If this is not the case for any of the agents then the dialogue moves 
+to the proposal stage.
 During the proposal stage agents can make partial priority order proposals. In 
 our implementation agents always propose that they get priority over the other 
-agents. It is valid that agents are of equal rank in a proposal, so the 
+agents. It is valid for a proposal to assign agents an equal rank if that is 
+the lowest rank, so the 
 proposal $a_1 > a_2 = a_3$ is valid. Each proposal supports the path of the 
-highest ranked agent by attacking those path arguments that attack it. The 
-proposals made also attack each other. After all agents have made a proposal or 
-have declined to make a proposal then the dialogue moves to the evaluation 
-stage. To pick the most appropriate priority order proposal that resolves the 
-conflict the agents can cast votes on them. These votes can be based on several 
+highest ranked agent by attacking the path arguments of lower ranked agents. 
+The proposals made also attack each other.
+
+After all agents have made a 
+proposal or have declined to make one then the dialogue moves to the evaluation 
+stage. Here the agents vote on the priority order proposals to indicate their 
+preference for a solution. These votes can be based on several weighted
 criteria, in our case these are the increase in path length caused by 
-adopting the proposal and the difference in the number of conflict that an 
-agents had. Both of these factors are weighted. To determine these factors each 
+adopting the proposal and the difference in the number of conflicts that the
+agent is involved in. To determine these factors each 
 agent temporarily adapts the proposed priority order. The agent with the 
 highest priority uses its original path while the agents of lower priority 
-calculate new paths that satisfy the constraints set by the proposal. After all 
+calculate new paths that satisfy the constraints set by the proposal and 
+previous permanently adapted proposals. After all 
 agents have updated their path they evaluate it and cast a vote on the 
-proposal to indicate their preference. This process is repeated for all 
-unevaluated proposals. The proposal that received the lowest sum of votes is 
+proposal to indicate their preference. If an agent is not able to find a path 
+then it can also make an argument that directly attacks the proposal, in this 
+case the proposal is not a valid solution. This process is repeated for all 
+proposals made during the previous proposal stage. The proposal that received 
+the lowest sum of votes is 
 the most preferred by the group of agents, this proposal defeats all other 
 proposals. During the evaluation agents can also claim that they want to refine 
-a priority order if some agents are of equal rank. This happens when the 
-proposal doesn't solve the conflict for those equally ranked agents. If an 
+a priority order that assigns some agents an equal rank. This happens when the 
+equally ranked agent still have a conflict when adapting the proposal. They 
+also weigh this in their vote, effectively penalizing proposals that do not 
+solve the conflict for all involved agents. If an 
 agent makes this claim then additional proposal round follows in which agents 
 can refine any of the priority proposals that assign equal rank to two or more 
-agents.
+agents. This in turn is followed by another evaluation stage.
 
 If none of the agents have requested an additional proposal round then the 
 dialogue can move to the closing stage. Agents now permanently adapt the 
-priority order which was the most preferred. All agents but that with the 
-highest priority order make a new plan and communicate it to all other agents. 
-After the updated plans have been shared all agents, including those not 
-involved in the dialogue, check if any conflicts were indirectly solved or 
-whether any new conflicts occur. The entire process of resolving dialogues 
+priority order which was the most preferred. The agents update their plan to 
+satisfy the constraints set by the accepted partial priority order and 
+previously adapted priority orders. These new 
+plans are communicated to all other agents so that they can find any new 
+occurring conflicts, and cancel dialogues for conflicts that have been 
+indirectly solved. The entire process of resolving dialogues 
 continues until there are no more conflicts.
 
 Conflicts that involve more than two agents can be solved in two different
 ways. The most simple is to let agents solve conflicts in pairs, this is known
-as Dialogue-based Partial Cooperative A* (DPCA*). In a conflict which involves
-three agents then there will also be three dialogues, it is possible however
-that the first two dialogues that find a solution which solves the entire
-conflict making the third dialogue obsolete. If more than two agents have a
-conflict at the same time about the same position then it is also possible to
-hold one dialogue with all of them as participants, this is known as
-Dialogue-based Partial Cooperative A* Plus (DPCA*+). A dialogue with multiple
-agents requires that the dialogue supports proposals with a partial priority
-ordering. These are proposals in which not every agent that participates in the
-conflict has a position in the ordering, they are assumed to share the lowest
-priority. The dialogue also includes the ability to request an additional round
-of making proposals and evaluating them. During the proposal stage agents can
-then expand on a partial proposal by assigning more agents with an explicit
-position in the ordering. This makes DPCA*+ more complex than DPCA*, but it
-also requires fewer dialogues to find a solution and therefore it may be faster
-than DPCA*.
+as Dialogue-based Partial Cooperative A* (DPCA*). A conflict which involves
+three agents requires three dialogues, however it is possible that the 
+completion of two of these dialogues makes the third obsolete. Instead of three 
+separate dialogues it is also possible to have a single dialogue with all 
+agents involved in the conflict participating, this is known as
+Dialogue-based Partial Cooperative A* Plus (DPCA*+). The dialogue process 
+described above is that of DPCA*+. DPCA* consists of one proposal and 
+evaluation stage because only two priority orders are valid when there 
+are just two agents participating in a dialogue.
+This makes DPCA*+ more complex than DPCA*, but it also requires fewer dialogues 
+to find a solution and therefore it may be faster than DPCA*.
 
 Each time that agents evaluate a proposal they have to compute paths that
-satisfy the constraints imposed by the priority ordering. Often they have to
-recompute the same paths. To reduce the amount of duplicate computation the
-agents can cache the paths that they have calculated. Before calculating a path
-the agents consult their path cache if there is a path which satisfies the
-constraints set by the permanent and temporary priority ordering. In the case
+satisfy the constraints imposed by the priority ordering, often recomputing
+the same paths. To reduce the amount of duplicate computation the
+agents store the paths that they have calculated. Before calculating a path
+the agents consult their path store for a path path which satisfies the
+constraints imposed by the temporary and permanent priority orderings. In the 
+case
 that there is such a path and it does not cause any conflicts with higher
 priority agents then it is used. If this is not the case then the agent
-calculate a new path. An agent can use a cached path even if it causes
+calculates a new path which does satisfy the constraints. An agent can use a 
+cached path even if it causes
 conflicts with lower priority agents or agents with which it has not
 established a priority ordering with.
 

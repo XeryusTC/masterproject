@@ -19,6 +19,8 @@
 \usepackage{color}
 %\usepackage{flafter}
 \usepackage{graphicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 \usepackage{calc}
 \usepackage{subcaption}
 \usepackage[hidelinks]{hyperref}
@@ -30,10 +32,12 @@
 \renewcommand*{\sectionautorefname}{Section}
 \renewcommand*{\subsectionautorefname}{Subsection}
 \renewcommand*{\subsubsectionautorefname}{Subsubsection}
+\newcommand{\algorithmautorefname}{Algorithm}
 
 \DeclareMathOperator{\pos}{pos}
 \DeclareMathOperator{\eval}{eval}
 \DeclareMathOperator{\vote}{vote}
+\DeclareMathOperator{\argmin}{arg\,min}
 
 \newcommand{\agentsupb}{40 }
 
@@ -184,7 +188,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 @
 \input{tex/discussion}
 
-
+\clearpage
 \bibliographystyle{named}
 \bibliography{literature}
 

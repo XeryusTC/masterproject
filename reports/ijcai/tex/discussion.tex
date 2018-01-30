@@ -3,25 +3,34 @@
     \centering
     \caption{Comparison of several cooperative pathfinding algorithms.}
     \label{tbl:planning-overview}
-    \begin{tabular}{ll|l|l|l|l|l|l}
-        & & Category & Complete & Priority & Comm. & Online & Eval. \\
+    \begin{tabular}{ll|l|l|l|l|l}
+        & & Category & Complete & Priority & Comm. & Eval. \\
         \hline
         OD+ID & \cite{standley2010,standley2011} & Centralized & Yes & No &
-        All &
-        No & No \\
-        ICTS & \cite{sharon2013} & Centralized & Yes & No & All & No & No\\
-        IADPP & \cite{cap2012} & Decoupled & No & Yes & All & No & No \\
-        WHCA* & \cite{silver2005} & Decoupled & No & Yes & Window & Yes & No \\
-        DMRCP & \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes & No
+        All & No \\
+        ICTS & \cite{sharon2013} & Centralized & Yes & No & All & No\\
+        IADPP & \cite{cap2012} & Decoupled & No & Yes & All & No \\
+        WHCA* & \cite{silver2005} & Decoupled & No & Yes & Window & No \\
+        DMRCP & \cite{wei2016} & Decentralized & No & No & 2 nodes & No
         \\
-        DiMPP & \cite{chouhan2017} & Decentralized & Yes & Yes & Ring & No & 
-        No
+        DiMPP & \cite{chouhan2017} & Decentralized & Yes & Yes & Ring & No
         \\ \hline
-        PCA* & & Decentralized & No & Yes & All & No & No \\
-        DPCA* & & Decentralized & No & Yes & All & No & Yes \\
-        DPCA*+ & & Decentralized & No & Yes & All & No & Yes
+        PCA* & & Decentralized & No & Yes & All & No \\
+        \multicolumn{2}{l|}{DPCA* / DPCA*+} & Decentralized & No & Yes & All & 
+        Yes \\
     \end{tabular}
 \end{table*}
+
+A comparison of the features of various cooperative pathfinding algorithms from 
+the literature and those presented here is given in 
+\autoref{tbl:planning-overview}. Algorithms are \emph{categorized} by how  they 
+calculate a set of paths. They can be centralized, decoupled or decentralized. 
+Whether an algorithm is guaranteed to find a solution if one exists is 
+indicated by the \emph{complete} column. Some algorithms impose a hierarchy on 
+the agents, this is indicated by the \emph{priority} column. The 
+\emph{communication} column indicates restrictions on which agents are allowed 
+to communicate with each other. Finally the \emph{evaluation} column means that 
+agents can vote on a plan.
 
 
 % TODO: scalability
@@ -30,75 +39,43 @@
 % TODO: talk about agents changing destinations and how WDCPA* helps.
 % TODO: extracting reasons for why solution was settled on
 % TODO: going back to previous conflicts
-% TODO: WDPCA* sacrifices global plan for speed.
-% TODO: $w=8$ is early faster because of less replanning
 
-% DPCA*+ and PCA are simular, later is simpler
-%With DPCA* agents resolve conflicts in pairs only while DPCA*+ can have larger
-%groups of agents resolve a conflict. This only happens when multiple agents try
-%to make conflicting moves at the same time. Allowing larger groups in a
-%dialogue means that it gets more complex, this is reflected in the fact that
-%PPCPF+ is slower overall and on individual problem instances. Larger groups of
-%agents solving conflicts is not necessarily faster than pairs of agents solving
-%conflicts. Several small pairwise dialogues can be very effective because the
-%pair $a_1$ and $a_2$ resolving their conflict means that $a_2$ gets rerouted,
-%this means that $a_2$'s conflict with $a_3$ is also resolved. This means that
-%$a_1$ and $a_3$ only need to come to a solution. In the case that all three
-%agents would find a solution in a single dialogue they will have to evaluate
-%multiple proposals. The added complexity of three agents trying to find a
-%solution to the conflict does not outweigh the speed of starting several
-%dialogues which come to a conclusion quickly.
-
-Of all the evaluated algorithms PCA* was the slowest and was able to solve the 
-least amount of problem instances. This is not surprising because the algorithm 
-will evaluate different permutations of partial priority orderings. This is 
-computationally inefficient. Because PCA* requires more time than OD+ID for 
-most instances it seems to be a poor approach to the cooperative pathfinding 
-problem. On the other hand  DPCA* and DPCA*+ are able to solve problem 
-instances the fastest of all tested algorithms. They have also been able to 
-solve more problem instances than any of the other algorithms. This contrast 
-between PCA* on one hand and DPCA* and DPCA*+ on the other shows the 
-effectiveness of deliberation dialogues in this setting.
+The performance graph in \autoref{fig:perfgraph} shows that PCA* took the most 
+time and solved the fewest problem instances. PCA* requires more time that 
+OD+ID for most instances. This is because the algorithm 
+evaluates all permutations of partial priority orders and selects one that has
+minimal cost, there is no consideration for the side-effects of the partial 
+priority order. This led to the development of DPCA* and DPCA*+. These two 
+algorithms are the fastest among those that were evaluated. This contrast 
+between PCA* and DPCA* / DPCA*+ shows the effectiveness of deliberation 
+dialogues in this setting.
 
 There is little difference between DPCA* and DPCA*+ in \autoref{fig:perfgraph}. 
 From \autoref{fig:solved} we can see that DPCA* is able to solve more problem 
-instances of the two while \autoref{fig:lengths} shows that it finds slightly 
-longer paths than DPCA*+. All of this suggest that the algorithms perform on an 
-equal level. To investigate this we looked at the average number of agents that 
-participate in dialogues as shown in \autoref{fig:conflict-sizes}. From that 
-figure we see that just two agents participate in the vast majority of 
-dialogues. There are only a few dialogues that involve three or four agents.
-Dialogues with more than three agents require some extra complexity in the 
+instances while \autoref{fig:lengths} shows that it finds slightly longer paths 
+than DPCA*+. We looked at the average number of agents that participate in 
+dialogues as shown in \autoref{fig:conflict-sizes}. From that figure we see the 
+vast majority of dialogues involve two agents, only a few involve three or four 
+agents. Dialogues with more than three agents require extra complexity in the 
 arguments and evaluations that agents can make. This extra complexity uses more 
-computational resources while it is rarely needed. The only benefit that the 
-added complexity of DPCA*+ has is that it finds solutions with shorter paths.
+computational resources while it is rarely needed. The benefit that the added 
+complexity of DPCA*+ has is that it finds solutions with shorter paths.
 
-A comparison of the features of various cooperative pathfinding algorithms from 
-the literature and those presented here is given in 
-\autoref{tbl:planning-overview}. Algorithms can categorized by how  they 
-calculate a set of paths. They can be centralized, decoupled or decentralized. 
-Whether an algorithm is guaranteed to find a solution if one exists is 
-indicated by the complete column. Some algorithms impose a hierarchy on the 
-agents, this is indicated by the priority column. The communication column 
-indicates restrictions on which agents are allowed to communicate with each 
-other. An algorithm is online when it interleaves calculating a plan with the 
-execution of it. Finally the evaluation column means that agents can vote on a 
-plan.
-
-During a dialogue agents can put forward arguments for or against partial 
+During a DPCA* DPCA*+ dialogue agents can put forward arguments for or against 
+partial 
 priority orders. They also evaluate and vote on each proposal based on several 
-criteria. This gives the agents some power over the decision of which solution 
-is picked for a problem instance. An outside observer can also use the 
-arguments and evaluations to extract the reasons why a group of agents have 
-picked a particular solution. This is in contrast to conventional algorithms 
-which find a solution to an abstract search. There is no indication about if 
-the solution is desirable at all.
+criteria. This gives the agents some power over which solution 
+is picked for a problem instance. The arguments and evaluations can be used by 
+an outside observer to explain why a group of agents have picked a particular 
+solution. Conventional algorithms find an abstract solution based on minimal 
+cost. 
 
 The four stages of DPCA* and DPCA*+ deliberation dialogues are based on the 
-four stages of \textsc{TeamLog} \cite{dunin-keplicz2011}. Some of the stages of 
-McBurney \emph{et al.} \shortcite{mcburney2007} are not necessary to find 
+four stages of \textsc{TeamLog}~\cite{dunin-keplicz2011}. Some of the stages of 
+McBurney \emph{et al.}~\shortcite{mcburney2007} are not necessary to find 
 priority orders for the agents, most of its verbosity is encoded in 
-\textsc{TeamLog}. By using the decoupled method we separated finding paths from 
+\textsc{TeamLog}. By basing our algorithms on the decoupled method we separated 
+finding paths from 
 the argumentative process. The ordering proposals influence which possible 
 paths are valid but they do not directly alter a path. It is possible to use 
 \textsf{DeLP-MAPOP} to integrate planning and the deliberation process more 

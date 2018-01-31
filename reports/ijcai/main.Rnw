@@ -42,13 +42,13 @@
 \newcommand{\agentsupb}{40 }
 
 \author{
-Xeryus Stokkel$^1$,
-Bart Verheij$^1$
-\\
-$^1$ Artificial Intelligence and Cognitive Engineering, University
-of Groningen \\
-brontitall@dds.nl,
-bart.verheij@rug.nl
+%Xeryus Stokkel$^1$,
+%Bart Verheij$^1$
+%\\
+%$^1$ Artificial Intelligence and Cognitive Engineering, University
+%of Groningen \\
+%brontitall@dds.nl,
+%bart.verheij@rug.nl
 }
 \title{Argumentation Dialogues for Decentralized Cooperative Pathfinding}
 
@@ -67,8 +67,8 @@ options("scipen" = 1)
 # Figure titles
 perfgraph.title = "Comparison of performance of various algorithms on $10 000$
 problem instances."
-cachegraph.title = "Comparison of DPCA* performance with the path cache enabled 
-(solid line) and the cache disabled (dashed line)."
+cachegraph.title = "Improvement in DPCA* performance when the path cache is 
+enabled"
 solved.title = "Proportion of instances that were solved by each algorithm."
 conflicts.title = "Mean number of dialogues that needed to be completed to find
 a solution for instances with $n$ agents."
@@ -92,9 +92,11 @@ algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
                      "WDPCA*-4", "WDPCA*-8", "DiMPP")
 cannonical.names.cache = cannonical.names[3:7]
-color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+color.set = c("red", "blue", "green", "grey60", "magenta", "cyan", "orange",
               "maroon")
 color.set.cache = color.set[3:7]
+linetypes = c(3, 2, 5, 6, 1, 2, 3, 4)
+linewidth = 2
 
 len = length(unique(dat$instance))
 od      = sort(dat[dat$algorithm=='ODID',]$time * 1000)

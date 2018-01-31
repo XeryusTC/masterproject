@@ -38,7 +38,7 @@ In \emph{decoupled} algorithms each agent individually finds an optimal path
 for itself. Conflicts can for instance be resolved by imposing a priority 
 ordering on the agents, where agents with a higher priority are considered 
 moving obstacles~\cite{bennewitz2002}.
-In decoupled approaches agents calculate their path on their own processor, but finding the priority scheme is done on a central 
+In decoupled approaches agents calculate their path on their own processor, but finding the priority ordering is done on a central 
 processor. This 
 approach is taken by Interruptible Asynchronous Decentralized Path Planning 
 (IADPP)~\cite{cap2012}.
@@ -60,7 +60,7 @@ computational argumentation~\cite{rahwanSimari2009} and in multi-agent
 coordination~\cite[pp.~202--204]{wooldridge2009}.
 
 Computational argumentation has developed from the non-monotonic logics studied 
-in Artificial Intelligence and has been applied in expert 
+in Artificial Intelligence~\cite{dung1995} and has been applied in expert 
 systems, multi-agent systems and law~\cite{vanEemerenEtal2014ch11}. Early work in 
 computational argumentation studied individual planning~\cite{pollock1995} and 
 more recently also multi-agent planning has been 
@@ -96,7 +96,7 @@ the conflict. The hypotheses offered are discussed and evaluated in the
 dialogue and the agents select the best proposal as the solution
 to the conflict. All agents involved in the dialogue adapt the priority
 ordering and adopt their plan to it. This means that there are many small local
-changes to an agent's position in the global hierarchy and therefore also in
+changes to an agent's position in the global priority ordering and therefore also in
 their plans. The end result is a global solution to the cooperative pathfinding
 problem decentrally influenced by all agents. The conflict-resolving deliberation dialogues add explanatory power to the solution process.
 

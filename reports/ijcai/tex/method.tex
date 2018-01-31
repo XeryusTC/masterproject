@@ -39,16 +39,16 @@ would cause a conflict with the path of a higher priority agent.
 \begin{algorithm}[t]
 	\caption{Partial Cooperative A*}
 	\label{alg:pca}
-	\begin{algorithmic}
-		\State $path \gets \Call{FindPath}{\emptyset, \emptyset}$
+	\begin{algorithmic}[1]
 		\State $permanent \gets \emptyset$
-		\While{\Call{HasConflict}{}}
-			\State $c \gets $ \Call{EarliestConflict}{}
-			\State $orders \gets$ \Call{PriorityOrders}{$c$}
+		\State $path \gets \Call{FindPath}{permanent, \emptyset}$
+		\While{\Call{HasConflict}}
+			\State $conflict \gets \Call{EarliestConflict}$
+			\State $orders \gets \Call{PriorityOrders}{conflict}$ 
 			\State $cost \gets \emptyset$
 			\ForAll{$order \in orders$}
 				\State $path \gets \Call{FindPath}{permanent, order}$
-				\State $cost(order) \gets$ \Call{Cost}{$path$}
+				\State $cost(order) \gets \Call{Cost}{path}$
 			\EndFor
 			\State $permanent \gets permanent \cup \{ \argmin{cost} \}$
 			\State $path \gets \Call{FindPath}{permanent, \emptyset}$
@@ -58,7 +58,8 @@ would cause a conflict with the path of a higher priority agent.
 
 PCA* follows the approach of decoupled methods combined with partial 
 global planning, it is outlined in \autoref{alg:pca}. Initially the agents 
-calculate their optimal paths and share them with each other. This allows
+calculate their optimal paths and share them with each other, this is done by 
+\textsc{FindPath}. This allows
 each agent to determine where they have conflicts. Next the
 agents will resolve each conflict in order of their occurrence and update their 
 plan accordingly. Agents always start resolving the conflict that occurs the 
@@ -85,35 +86,43 @@ They will also not be present in the implied global priority order. Similarly
 it is possible that disjoint subsets of partial priority orders exist when the 
 agents in one subset never had to resolve a conflict with the agents in the 
 other subset(s). There has never been communication past sharing the initial 
-optimal paths, the result of which is that there is implied Independence 
-Detection.
+optimal paths.
 
 \subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
 
 \begin{algorithm}[t]
 	\caption{Dialogue during DPCA* / DPCA*+}
 	\label{alg:dpca}
-	\begin{algorithmic}
-		\State $path \gets \Call{FindPath}{(\emptyset, \emptyset)}$
-		\State $permanent \gets \emptyset$
-		\While{\Call{HasConflict}{}}
-			\State $c \gets \Call{EarliestConflict}{}$
-		\EndWhile
+	\begin{algorithmic}[1]
+		\Require $topic$: conflict that is to be solved by the dialogue
+		\If{$topic \neq \Call{EarliestConflict}$}
+			\State $\Call{PutDialogueOnHold}$
+		\EndIf
+		\Repeat
+			\State $\Call{Propose}$
+			\ForAll{$proposal \in unevaluatedProposals$}
+				\State $path \gets \Call{FindPath}{permanent, proposal}$
+				\State $vote, expand \gets \Call{Evaluate}{path}$
+				\State $\Call{CastVote}{vote}$
+			\EndFor
+		\Until{$\lnot expand$}
+		\State $permanent \gets permanent \cup {\argmin \sum votes}$
+		\State $path \gets \Call{FindPath}{permanent, \emptyset}$
 	\end{algorithmic}
 \end{algorithm}
 
-\begin{table}
-    \centering
-    \caption{Stages of a conflict resolution dialogue.}
-    \label{tbl:stages}
-    \begin{tabularx}{\columnwidth}{l|X|l}
-        Stage & Purpose & Next stage \\ \hline
-        Opening & Exchange information & Proposal \\
-        Proposal & Make (incomplete) priority proposals & Evaluation \\
-        Evaluation & Vote on suitability of proposals & Proposal, Closing \\
-        Closing & Permanently adapt best proposal & \\
-    \end{tabularx}
-\end{table}
+%\begin{table}
+%    \centering
+%    \caption{Stages of a conflict resolution dialogue.}
+%    \label{tbl:stages}
+%    \begin{tabularx}{\columnwidth}{l|X|l}
+%        Stage & Purpose & Next stage \\ \hline
+%        Opening & Exchange information & Proposal \\
+%        Proposal & Make (incomplete) priority proposals & Evaluation \\
+%        Evaluation & Vote on suitability of proposals & Proposal, Closing \\
+%        Closing & Permanently adapt best proposal & \\
+%    \end{tabularx}
+%\end{table}
 
 Going through all possible permutations and evaluating them on a single
 criterion is not the most optimal method of finding a priority ordering
@@ -122,54 +131,38 @@ resource, namely being in a series of position at certain times, then a
 conflict means that two or more of these arguments are attacking each other. A 
 priority order $a_1 > a_2$ is then an argument which supports the path argument 
 of $a_1$ by attacking that of $a_2$. To find the most appropriate priority 
-order the agents can engage in a conflict resolving deliberation dialogue. The 
-algorithms this results in are called DPCA* and DPCA*+. Each deliberation 
-dialogue consists of four stages 
-as summarized in \autoref{tbl:stages}, these stages are based on those of 
-\textsc{TeamLog}. Each conflict is resolved in a 
-dedicated dialogue which starts in the opening stage. Only agents that are 
-involved in the conflict participate in the dialogue. During the opening stage 
-agents can put the dialogue on hold if they are involved an earlier occurring 
-conflict. If this is not the case for any of the agents then the dialogue moves 
-to the proposal stage.
-During the proposal stage agents can make partial priority order proposals. In 
-our implementation agents always propose that they get priority over the other 
-agents. It is valid for a proposal to assign agents an equal rank if that is 
-the lowest rank, so the 
-proposal $a_1 > a_2 = a_3$ is valid. Each proposal supports the path of the 
-highest ranked agent by attacking the path arguments of lower ranked agents. 
-The proposals made also attack each other.
+order the agents can engage in a conflict resolving deliberation dialogue. This 
+dialogue replaces line~5 to line~12 of \autoref{alg:pca}.
+The algorithms this results in are called DPCA* and DPCA*+. Each deliberation 
+dialogue consists of four stages, these stages are based on those of 
+\textsc{TeamLog}. An outline is given in \autoref{alg:dpca}. The dialogue 
+starts with the opening stage, during which agents can notify each other that 
+they have a conflict at an earlier time. If this is the case then they will put 
+the dialogue on hold, otherwise there is a propose stage. In \autoref{alg:dpca} 
+this stage is encapsulated by \textsc{Propose}. Agents will always propose that 
+they receive the highest priority. It is valid for a proposal to assign agents 
+an equal lowest rank, so the proposal $a_1 > a_2 = a_3$ is valid. Agents are 
+also allowed to decline to make a proposal.
 
-After all agents have made a 
-proposal or have declined to make one then the dialogue moves to the evaluation 
-stage. Here the agents vote on the priority order proposals to indicate their 
-preference for a solution. These votes can be based on several weighted
-criteria, in our case these are the increase in path length caused by 
-adopting the proposal and the difference in the number of conflicts that the
-agent is involved in. To determine these factors each 
-agent temporarily adapts the proposed priority order. The agent with the 
-highest priority uses its original path while the agents of lower priority 
-calculate new paths that satisfy the constraints set by the proposal and 
-previous permanently adapted proposals. After all 
-agents have updated their path they evaluate it and cast a vote on the 
-proposal to indicate their preference. If an agent is not able to find a path 
-then it can also make an argument that directly attacks the proposal, in this 
-case the proposal is not a valid solution. This process is repeated for all 
-proposals made during the previous proposal stage. The proposal that received 
-the lowest sum of votes is 
-the most preferred by the group of agents, this proposal defeats all other 
-proposals. During the evaluation agents can also claim that they want to refine 
-a priority order that assigns some agents an equal rank. This happens when the 
-equally ranked agent still have a conflict when adapting the proposal. They 
-also weigh this in their vote, effectively penalizing proposals that do not 
-solve the conflict for all involved agents. If an 
-agent makes this claim then additional proposal round follows in which agents 
-can refine any of the priority proposals that assign equal rank to two or more 
-agents. This in turn is followed by another evaluation stage.
+The dialogue moves to the evaluation stage after all agents have made a 
+proposal or declined to make one, it is given from line~6 to line~10. During 
+this stage agents will indicate their preference for each proposal. 
+Agents vote on each proposal by evaluating it after temporarily adopting 
+the constraints it imposes on their path. The vote of an individual is 
+calculated using
+\[ v = w_1 \cdot \Delta l + w_2 \cdot \Delta c + w_3 \cdot e \]
+where $\Delta l$ the difference in path length, $\Delta c$ the difference in 
+number of conflicts the agent is involved in, $e$ represent the \emph{expand} 
+flag, and $w_1, w_2, w_3$ are weights for each of these factors. The 
+\emph{expand} flag $e$ is a penalty that is applied when the proposal is 
+adopted the agent still has a conflict with another agent that is involved in 
+the dialogue. An agent sets this flag if it wants to request an additional 
+proposal and evaluation stage, during the proposal stage agents can expand on 
+partial order proposals which assigned agents to an equal rank.
 
 If none of the agents have requested an additional proposal round then the 
 dialogue can move to the closing stage. Agents now permanently adapt the 
-priority order which was the most preferred. The agents update their plan to 
+priority order with the lowest sum of votes. The agents update their plan to 
 satisfy the constraints set by the accepted partial priority order and 
 previously adapted priority orders. These new 
 plans are communicated to all other agents so that they can find any new 

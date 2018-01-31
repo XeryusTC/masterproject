@@ -48,9 +48,9 @@ causes a conflict with the path of a higher priority agent.
 			\State $cost \gets \emptyset$
 			\ForAll{$ordering \in orderings$}
 				\State $path \gets \Call{FindPath}{permanent \cup ordering}$
-				\State $cost(ordering) \gets \Call{Cost}{path}$
+				\State $cost[ordering] \gets \Call{Cost}{path}$
 			\EndFor
-			\State $permanent \gets permanent \cup \{ \argmin{cost} \}$
+			\State $permanent \gets permanent \cup \{ \argmin{cost[~]} \}$
 			\State $path \gets \Call{FindPath}{permanent}$
 		\EndWhile
 	\end{algorithmic}
@@ -62,7 +62,7 @@ calculate their optimal paths and share them with each other (\textsc{FindPath})
 each agent to determine whether they have conflicts (\textsc{HasConflict}). Next the
 agents will resolve each conflict in ordering of their occurrence and update 
 their 
-plan accordingly. Agents always start resolving the conflict that occurs earliest in their path (\textsc{EarliestConflict}). This is because solving a conflict may have the 
+plan accordingly. Conflict resolution starts with a conflict earliest in some path (\textsc{EarliestConflict}). This is because solving a conflict may have the 
 side-effect of solving conflicts that occur at a later time. To resolve a 
 conflict all possible partial priority ordering permutations for the agents 
 involved in the conflict are evaluated (\textsc{PriorityOrderings}). The partial priority ordering that has 
@@ -93,7 +93,7 @@ sharing their initial optimal paths.
 \subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
 
 \begin{algorithm}[t]
-	\caption{Dialogue during DPCA*+}
+	\caption{Adding deliberation dialogue to PCA*+}
 	\label{alg:dpca}
 	\begin{algorithmic}[1]
 

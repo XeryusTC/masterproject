@@ -17,7 +17,7 @@ results. All experiments were implemented in Python 3.6 and ran
 on a single core of an AMD FX-8120 clocked at 3.1GHz. Our main hypothesis is
 that our proposed algorithms are able to solve more problem instances and are
 able to find solutions faster than OD+ID is. We expect that OD+ID finds higher
-quality paths. We expect that our proposed algorithms perform on an equal 
+quality paths. We expect our proposed algorithms perform on an equal 
 or slightly worse level than DiMPP on all aspects.
 
 Before being able to evaluate DPCA* we have to determine the weights that are
@@ -213,7 +213,7 @@ shown in \autoref{fig:dialogues}. It shows that more dialogues are needed when
 the problem instance contains more agents. DPCA* and DPCA*+ need a similar
 amount of dialogues, and they need a large amount more than PCA*.
 One thing that is noticeable is that the number of dialogues required
-rises exponentially when the number of agents increases, but at some point this
+rises when the number of agents increases, but at some point this
 trend trails off. This point lies around 15 agents for PCA* and around 25
 agents for DPCA* and DPCA*+.
 
@@ -243,7 +243,7 @@ legend("topleft",
 @
 
 Results for DPCA* and DPCA*+ are rather close in the above graphs.
-\autoref{fig:conflict-sizes} shows how many agents participate in most DPCA*+
+\autoref{fig:conflict-sizes} shows how many agents participate in DPCA*+
 dialogues. It shows that most dialogues involve just two agents. There are on
 average $\Sexpr{signif(max(sizes.aggr$X3), 3)}$ dialogues per instance with
 three agents involved, and only $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ with
@@ -278,15 +278,14 @@ legend("bottomright",
        bty="n", cex=.8)
 @
 
-The agents make use of a path cache to reduce the amount computation to 
-resolve 
-conflicts. If the cache is in use then there should be a noticeable decrease 
-in 
-the time it takes to solve problems. To measure the effect of caching on 
+There should be a noticeable decrease in the time it takes to solve a problem 
+when the agents use a path cache.
+To measure the effect of caching on 
 solving cooperative pathfinding problems we conducted a separate experiment of 
-1000 problem instances. All other parameters were the same as in previous 
-experiments. DPCA* solved each instance with the path cache enabled and 
-disabled. The result of this experiment is shown in \autoref{fig:cache}. We do 
+1000 problem instances that were solved with the path cache enabled and 
+disabled. All other parameters were the same as in previous 
+experiments. The result of this experiment is shown in \autoref{fig:cache}. We 
+do 
 not show the results for DPCA*+ because they are identical to those of DPCA*. 
 The figure shows that after the initial 80 problem instances the path cache 
 does decrease the time required to find a solution. Using the path cache also 

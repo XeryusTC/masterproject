@@ -1,0 +1,392 @@
+\section{Family of algorithms}\label{sec:method}
+We now discuss the algorithms proposed in this paper connecting to work in 
+computational argumentation and multi-agent coordination. Each algorithm is 
+based on a variant of A*~\cite{hart1968} called Cooperative 
+A*~\cite{silver2005}, which disallows expanding graph nodes if that 
+causes a conflict with the path of a higher priority agent.
+%Decoupled algorithms are able to solve cooperative pathfinding problems while
+%requiring only minimal computational resources. The agents calculate their path
+%individually so this is inherently distributed. Calculating a hierarchy needs
+%to be done centrally so all dependencies between agents can be taken into
+%account \cite{latombe1991,bennewitz2002}. This means that there is a single
+%centralized bottleneck in an otherwise distributed system. In this article we
+%aim to overcome this bottleneck and make the calculation of the priority
+%ordering distributed as well. Below are the details of two different versions
+%of this algorithm. The second version version of the algorithm has some
+%improvements over the previous version. A summary of their properties is given
+%in \autoref{tbl:proposed}. Each algorithm is build upon Cooperative A*, a
+%variation on A* \cite{hart1968} which allows teams of agents to cooperate.
+%This variant does not allow agents to expand nodes if it would mean that the
+%action will conflict with the path of an agent with higher priority.
+
+%\begin{table}
+%    \centering
+%    \caption{Comparison of proposed cooperative pathfinding algorithms. The
+%        columns have the same meaning as those in
+%        \autoref{tbl:planning-overview}. Both algorithms are decentralized and
+%        not complete. The valuations column indicates whether agents vote on
+%        their preferred solution.}
+%    \label{tbl:proposed}
+%    \begin{tabular}{l|l|l|l}
+%        & Comm. & Online & Valuations \\ \hline
+%        PCA*   & All & No & No \\
+%        DPCA*  & All & No & Yes \\
+%    \end{tabular}
+%\end{table}
+
+\subsection{Partial Cooperative A* (PCA*)}
+
+\begin{algorithm}[t]
+	\caption{Partial Cooperative A*}
+	\label{alg:pca}
+	\begin{algorithmic}[1]
+		\State $permanent \gets \emptyset$
+		\State $path \gets \Call{FindPath}{permanent}$
+		\While{\Call{HasConflict}~}
+			\State $conflict \gets \Call{EarliestConflict}$
+			\State $orderings \gets \Call{PriorityOrders}{conflict}$ 
+			\State $cost \gets \emptyset$
+			\ForAll{$ordering \in orderings$}
+				\State $path \gets \Call{FindPath}{permanent \cup ordering}$
+				\State $cost[ordering] \gets \Call{Cost}{path}$
+			\EndFor
+			\State $permanent \gets permanent \cup \{ \argmin{cost[~]} \}$
+			\State $path \gets \Call{FindPath}{permanent}$
+		\EndWhile
+	\end{algorithmic}
+\end{algorithm}
+
+PCA* follows the approach of decoupled methods combined with partial 
+global planning and is outlined in \autoref{alg:pca}. Initially the agents 
+calculate their optimal paths and share them with each other (\textsc{FindPath}). This allows
+each agent to determine whether they have conflicts (\textsc{HasConflict}). Next the
+agents will resolve each conflict in ordering of their occurrence and update 
+their 
+plan accordingly. Conflict resolution starts with a conflict earliest in some path (\textsc{EarliestConflict}). This is because solving a conflict may have the 
+side-effect of solving conflicts that occur at a later time. To resolve a 
+conflict all possible partial priority ordering permutations for the agents 
+involved in the conflict are evaluated (\textsc{PriorityOrderings}). The partial priority ordering that has 
+the 
+lowest increase in solution cost (\textsc{Cost}, defined as the sum of path lengths) is permanently adopted 
+by the agents. The plans of the involved agents are updated accordingly. This 
+process is repeated until all conflicts have been resolved. Resolving the 
+conflict locally leads to the incremental construction of a global plan. If 
+there is no partial priority ordering that resolves the conflict then PCA* has 
+failed to find a solution.
+
+Conventional decoupled algorithms calculate a permutation of the full priority 
+ordering $a_1 > a_2 > \ldots > a_k$ that is assigned to all agents. The partial 
+priority orderings used by PCA* only include agents that are involved in a 
+single conflict. Because of this an agent only has to keep track of which 
+agents it has to yield to, it does not need to concern itself with the 
+relative ordering of other agents. A global priority ordering is implied by the 
+combination of the local views of the agents. Some agents may not be involved 
+in any conflict and are not part of any partial priority ordering, 
+they will also not be present in the implied global priority ordering. 
+Similarly 
+it is possible that disjoint subsets of partial priority orderings exist when 
+the 
+agents in one subset never had to resolve a conflict with the agents in the 
+other subset(s). Those disjoint subsets have never needed to communicate past 
+sharing their initial optimal paths.
+
+\subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
+
+\begin{algorithm}[t]
+	\caption{Adding deliberation dialogue to PCA*+}
+	\label{alg:dpca}
+	\begin{algorithmic}[1]
+
+		%\State $permanent \gets \emptyset$
+		%\State $path \gets \Call{FindPath}{permanent}$
+		%\While{\Call{HasConflict}~}
+			%\State $conflict \gets \Call{EarliestConflict}$
+
+
+		\Require $topic$: conflict that is to be solved by the dialogue
+
+		\Comment{Stage 1: opening~~~~}
+		
+		\If{$topic \neq \Call{EarliestConflict}$}
+			\State $\Call{PutDialogueOnHold}$
+		\EndIf
+		
+		\Comment{Stage 2: proposal~~~}
+		
+		\Repeat
+			\State $\Call{Propose}$
+			
+		\Comment{Stage 3: evaluation}
+		
+			\ForAll{$proposal \in unevaluatedProposals$}
+				\State $path \gets \Call{FindPath}{permanent \cup proposal}$
+				\State $vote, expand \gets \Call{Evaluate}{path}$
+				\State $\Call{CastVote}{vote}$
+			\EndFor
+		\Until{$\lnot expand$}
+
+		\Comment{Stage 4: closing~~~~}
+		
+		\State $permanent \gets permanent \cup {\argmin \sum votes}$
+		\State $path \gets \Call{FindPath}{permanent}$
+
+		%\EndWhile
+
+	\end{algorithmic}
+\end{algorithm}
+
+%\begin{table}
+%    \centering
+%    \caption{Stages of a conflict resolution dialogue.}
+%    \label{tbl:stages}
+%    \begin{tabularx}{\columnwidth}{l|X|l}
+%        Stage & Purpose & Next stage \\ \hline
+%        Opening & Exchange information & Proposal \\
+%        Proposal & Make (incomplete) priority proposals & Evaluation \\
+%        Evaluation & Vote on suitability of proposals & Proposal, Closing \\
+%        Closing & Permanently adapt best proposal & \\
+%    \end{tabularx}
+%\end{table}
+
+Going through all possible permutations and evaluating them on a single
+criterion is not an optimal method of finding a priority ordering. A path can 
+be 
+considered an argument for the usage of resources, namely being in a series of 
+positions at certain times, then a conflict means that two or more of these path 
+arguments are attacking each other. A 
+priority ordering $a_i > a_j$ is then an argument which supports the path 
+argument 
+of $a_i$ by attacking that of $a_j$. To find the most appropriate priority 
+ordering the agents can engage in a conflict resolving deliberation dialogue. 
+This 
+dialogue replaces line~5 to line~12 of \autoref{alg:pca}.
+The algorithms this results in are called DPCA* and DPCA*+. Each deliberation 
+dialogue consists of four stages that we have based on those of 
+\textsc{TeamLog}~\cite{dunin-keplicz2011}. An outline is given in \autoref{alg:dpca}. The dialogue 
+starts with the opening stage, during which agents can notify each other that 
+they have a conflict at an earlier time. If this is the case then they will put 
+the dialogue on hold, otherwise there is a propose stage. In \autoref{alg:dpca} 
+this stage is encapsulated by \textsc{Propose}. Agents will always propose that 
+they receive the highest priority. It is valid for a proposal to assign agents 
+an equal rank if that is the lowest rank, so the proposal $a_i > a_j = a_k$ is 
+valid. Agents are 
+also allowed to decline to make a proposal.
+
+The dialogue enters the evaluation stage after all agents have made a 
+proposal or declined to make one, it is given from line~6 to line~10 in 
+\autoref{alg:dpca}. During this stage agents will indicate their preference for 
+each proposal by casting votes on them. A vote is based on the effects that a 
+proposal has on the paths of the agents. To determine this the agents 
+temporarily adapt a proposal and calculate a new path that adheres to the 
+constraints set by the proposal.
+The vote of an individual agent is calculated using
+\[ v = w_1 \cdot \Delta l + w_2 \cdot \Delta c + w_3 \cdot e \]
+where $\Delta l$ is the difference in path length, $\Delta c$ the difference in 
+number of conflicts the agent is involved in, $e$ represent the \emph{expand} 
+flag, and $w_1, w_2, w_3$ are weights for each of these factors. The 
+\emph{expand} flag is a penalty that is applied when the agent still has a 
+conflict with another agent that is involved in 
+the dialogue. An agent sets this flag if it wants to request an additional 
+proposal and evaluation stage, during the proposal stage agents can expand on 
+partial ordering proposals which assigned agents to an equal rank. An agent can 
+directly attack a proposal if it was not able to find a path after adopting it. 
+When this happens it is not possible to accept the proposal as a valid solution.
+
+If none of the agents have requested an additional proposal round then the 
+dialogue can move to the closing stage. Agents now permanently adapt the 
+priority ordering with the lowest sum of votes. The agents update their plan to 
+satisfy the constraints set by the accepted partial priority ordering and 
+previously adapted priority orderings. These new 
+plans are communicated to all other agents so that they can find any new 
+occurring conflicts, and cancel dialogues for conflicts that have been 
+indirectly solved. The entire process of resolving dialogues 
+continues until there are no more conflicts.
+
+Conflicts that involve more than two agents can be solved using two different
+strategies. The simplest strategy requires agents to solve conflicts in pairs, implemented 
+as Dialogue-based Partial Cooperative A* (DPCA*). A conflict that involves
+three agents is solved in three dialogues, though it can happen that the 
+completion of two dialogues makes the third obsolete. 
+Instead of three 
+separate dialogues it is also possible to hold a single dialogue with all 
+agents involved in the conflict participating. This is the second conflict resolution strategy implemented as Dialogue-based Partial Cooperative A* Plus (DPCA*+). The dialogue process 
+described above is that of DPCA*+. DPCA* consists of one proposal and 
+evaluation stage because only two priority orderings ($a_i > a_j$ and $a_j > 
+a_i$) 
+are valid when there 
+are just two agents participating in a dialogue.
+This makes DPCA*+ more complex than DPCA*, but it also requires fewer dialogues 
+to find a solution and therefore it may be faster than DPCA*.
+
+Each time that agents evaluate a proposal they have to compute paths that
+satisfy the constraints imposed by the priority ordering, often recomputing
+the same paths. To reduce the amount of duplicate computation the
+agents store the paths that they have calculated. Before calculating a path
+the agents consult their path store for a path that satisfies the
+constraints imposed by the temporary and permanent priority orderings. In the 
+case
+that there is such a path and it does not cause any conflicts with higher
+priority agents then it is used. If this is not the case then the agent
+calculates a new path which does satisfy the constraints. An agent can use a 
+cached path even if it causes
+conflicts with lower priority agents or agents with which it has not
+established a priority ordering.
+
+%\begin{figure*}
+%    \centering
+%    \begin{subfigure}[t]{.3\textwidth}
+%        \centering
+%        \def\svgscale{.6}
+%        \input{images/dialogue-example-initial.pdf_tex}
+%        \caption{Initial configuration.}
+%        \label{fig:example-initial}
+%    \end{subfigure}
+%    ~
+%    \begin{subfigure}[t]{.3\textwidth}
+%        \centering
+%        \def\svgscale{.6}
+%        \input{images/dialogue-example-prop1.pdf_tex}
+%        \caption{Configuration after proposal $a_2 > a_1$.}
+%        \label{fig:example-prop1}
+%    \end{subfigure}
+%    ~
+%    \begin{subfigure}[t]{.3\textwidth}
+%        \centering
+%        \def\svgscale{.6}
+%        \input{images/dialogue-example-solution.pdf_tex}
+%        \caption{Configuration after proposal $a_1 > a_2$.}
+%        \label{fig:example-solution}
+%    \end{subfigure}
+%    \caption{Three stages of resolving a conflict. Agents are circles inscribed
+%    by $a_i$, their respective goals are $g_i$. Paths that are followed are
+%    indicated by the arrows. The red dot represent where two paths have
+%    conflicting moves.}
+%    \label{fig:example}
+%\end{figure*}
+%
+%\paragraph{Example of conflict resolution} Consider the cooperative pathfinding
+%problem in \autoref{fig:example-initial}. It shows a $4 \times 4$ grid with
+%three agents in it in their starting positions. The initial optimal paths they
+%found during the first step of the algorithm are shown as arrows.
+%Agent $a_1$ has a path that consists of three \emph{south} moves, $p_{a_{1},1}
+%= \{\text{\emph{south, south, south}}\}$, while both $a_2$ and $a_3$ have paths
+%that consist of three consecutive \emph{east} moves, $p_{a_2,1} = p_{a_3,1} =
+%\{\text{\emph{east, east, east}}\}$. None of the agents has a \emph{wait}
+%action in their path. After finding the initial paths all three agents share
+%their paths with each other, agents $a_1$ and $a_2$ discover that they collide
+%after their first action. This means that they will have to resolve this
+%conflict to prevent the collision.
+%
+%Before discussing the details of how the agents resolve the conflict in this
+%situation some definitions are needed. A proposal where agent $a_i$ has
+%priority over a agent $a_j$ is represented as $a_i > a_j$. Agents can cast
+%votes on proposals, $\vote_{a_n}(a_i > a_j)$ is the vote of $a_n$ on the
+%proposal $a_i > a_j$. To be able to cast votes agents need to evaluate a
+%proposal. An evaluation  is based on two effects which can be weighted
+%differently. The first effect is the difference in path length before and after
+%a proposal has been adopted. The second effect is the change in the number of
+%conflicts that an agent is involved in, this effect is weighted three times
+%heavier than the former effect. Qualitatively this means that $\vote_{a_n}(a_i
+%> a_j) = 1 \cdot \Delta l + 3 \cdot \Delta c$ where $\Delta l$ is the
+%difference in path lengths and $\Delta c$ is the difference in conflicts.
+%Agents only communicate their final vote and not how they arrived at it.
+%
+%Continuing with the example, after the agents have determined that they have a
+%conflict they start a new dialogue. The dialogue starts in its initial stage,
+%the opening. All messages are broadcast to all agents in the conflict dialogue,
+%in this case $a_1$ and $a_2$:
+%\\ \-\qquad $a_1$: no earlier conflicts
+%\\ \-\qquad $a_2$: no earlier conflicts
+%
+%Because both agents don't have any conflicts that occur at an earlier time
+%(this is the first time step) the dialogue can move on to the proposal stage.
+%Both agents make a proposal in which they go first:
+%\\ \-\qquad $a_2$: propose $a_2 > a_1$
+%\\ \-\qquad $a_1$: propose $a_1 > a_2$
+%
+%Both agents have made a proposal to resolve the conflict. The dialogue can
+%move to the evaluation stage. Agent $a_2$'s proposal will be evaluated first
+%because $a_2$ submitted the proposal before $a_1$. In this proposal agent $a_2$
+%has the highest priority so it doesn't need to update its plan and its path
+%remains $p_{a_2,1}$. It updates $a_1$ of the fact that its path hasn't changed
+%and still consists of three consecutive \emph{east} actions:
+%\\ \-\qquad $a_2$: new path $p_{a_2,1} = \{\text{\emph{east, east, east}}\}$
+%
+%Agent $a_1$ does have to yield to $a_2$ so it will have to consider possible
+%conflicts that arise with $p_{a_2,1}$ and plan around them. It finds a new path
+%$p_{a_1,2} = \{\text{\emph{south east, south, south west}}\}$ which is shown in
+%\autoref{fig:example-prop1}. After finding the new path $a_1$ will evaluate its
+%quality so that it can send its vote to $a_2$. Before adopting the proposal the
+%agent had one conflict, this has not changed after making a new plan so $\Delta
+%c = 0$. There is no difference in the length of the paths before and after
+%temporarily adopting the constraints of the proposal, so $\Delta l = $. This
+%means that agent $a_1$ can send the vote to $a_2$. It will also send its new
+%path along with the proposal
+%\\ \-\qquad $a_1$: new path $p_{a_1,2} = \{\text{\emph{south east, south,
+%south west}}\}$
+%\\ \-\qquad $a_1$: $\vote_{a_1}(a_2 > a_1) = 0$
+%
+%Now that $a_2$ knows the new path of agent $a_1$ after adopting to $a_2 > a_1$
+%it can also vote on the proposal. This happens in a similar vain as $a_1$'s
+%evaluation, there is however one fewer conflict for $a_1$ as its path doesn't
+%conflict with that of $a_2$ any more. Achieving this was the goal of the
+%dialogue. The path remained the same so $\Delta l = 0$ and $\Delta c = -1$, the
+%vote of $a_2$ is then $\vote_{a_2} = 1 \cdot \Delta l + 3 \cdot \Delta c = -3$.
+%This vote is then cast:
+%\\ \-\qquad $a_2$: $\vote_{a_2}(a_2 > a_1) = -3$
+%
+%Now that this proposal has been evaluated by both agents they can find the sum
+%score of the proposal which is $\eval(a_2 > a_1) = \eval(a_1, a_2 > a_1) +
+%\eval(a_2, a_2 > a_1) =
+%-3$. Next the agents can evaluate $a_1 > a_2$. When agent $a_1$ goes to
+%evaluate this conflict if finds that it can use the path $p_{a_1,1}$ which is
+%stored in its cache. It can use this because it has a priority scheme similar
+%to the one being evaluated; $a_1$ does not have to yield to any agent. It
+%notifies $a_2$ of this:
+%\\ \-\quad $a_1$: new path $p_{a_1,1} = \{\text{\emph{south, south, south}}\}$
+%
+%Next $a_2$ can evaluate the proposal. First it needs to plan a new path that
+%does not conflict with the path that $a_1$ has just send. It finds the path
+%$p_{a_2,2} = \{\text{\emph{north easth, east, south east}}\}$. The new
+%situation is shown in \autoref{fig:example-solution}. It can
+%immediately evaluate it, the lengths of $p_{a_2,1}$ and $p_{a_2,2}$ are equal
+%and $a_1$ has one fewer conflicts so $\Delta c = -1$.
+%\\ \-\quad $a_2$: new path $p_{a_2,2} = \{\text{\emph{north easth, east, south
+%east}}\}$
+%\\ \-\quad $a_2$: $\eval(a_2, a_1 > a_2) = 1 \cdot (|p_{a_2,2}| - |p_{a_2,1}|)
+%+ 3 \cdot \Delta c = -3$
+%
+%Agent $a_1$ can also send its evaluation to $a_2$:
+%\\ \-\quad $a_1$: $\eval(a_1, a_1 > a_2) = 1 \cdot (|p_{a_1,1}| - |p_{a_1,1}|)
+%+ 3 \cdot \Delta c = -3$
+%
+%Now both agents have evaluated the proposal $a_1 > a_2$ they can find the sum
+%of the evaluations which is $\eval(a_1 > a_2) = \eval(a_1, a_1 > a_2) +
+%\eval(a_2, a_1 > a_2) =
+%-6$. All proposals have been evaluated so the agents can notify each other if
+%they want to make more proposals:
+%\\ \- \quad $a_1$: no more proposals
+%\\ \- \quad $a_2$: no more proposals
+%
+%Neither agent wants to make more priority ordering proposals, this is because
+%there are no more possible priority orderings to make with these two agents.
+%The dialogue can then move to the closing stage. In the closing stage agents
+%will pick the best proposal, in this case that is the proposal with the lowest
+%sum score which is the proposal $a_1 > a_2$. To adapt this proposal agents will
+%need to use the respective paths that they used during the evaluation of the
+%proposal. So $a_1$'s path will be $p_{a_1,1}$ while $a_2$'s path will be
+%$p_{a_2,2}$. They also need to keep track of which agents have a higher
+%priority than themselves. For agent $a_1$ nothing changes, while $a_2$ must now
+%store that $a_1$ has a higher priority than it. All conflicts in
+%\autoref{fig:example} have now been solved and agents are free to execute their
+%paths.
+%
+%To evaluate a proposal an agent needs to weigh different factors of the
+%quality. In this example a weight of 1 for the path length and a weight of 3
+%for the number of solved/introduced conflicts was used. These weights are used
+%for demonstration only and an implementation should have these weights set
+%empirically. The weights can be any real number. When dialogues between groups
+%of three or more agents are possible then a third penalty weight can be added.
+%This penalty weight is included in the evaluation if there are two or more
+%agents that still have a conflict with each other after adapting a priority
+%proposal. It is a penalty for when a proposal only partially solves a conflict.

@@ -19,22 +19,22 @@ position of one agent might be the destination of another. All experiments were
 implemented in Python 3.6 and run on a single core of an AMD FX-8120 clocked at
 3.1GHz.
 
-There are several experiments that are done to compare the proposed algorithms
-to OD+ID and DiMPP. First the weights that determine the evaluation of
-proposals made during dialogues need to be set. The empirically found weights
+Several experiments are done that compare the proposed algorithms
+to OD+ID and DiMPP. Before running these experiments the weights that determine 
+the evaluation of
+proposals during dialogues need to be set. The empirically found weights
 are discussed in \autoref{sec:evalweights}. The main experiments are carried
 out in \autoref{sec:expval}. The main hypothesis for that section is that the
 proposed algorithms are able to solve more problem instances and are able to
 solve them faster than OD+ID. It is expected that OD+ID finds better quality
-solutions. The quality of a solution is primarily quantified as the sum of the
-lengths of the paths that agents have to take to arrive at their destination
-position. The number of loops that occur within an agent's path is used as a
+solutions. The quality of a solution is primarily quantified as the cost of the 
+solution. The number of loops that occur within an agent's path is used as a
 secondary measurement of the quality of a solution. We expect that the proposed
 methods perform on an equal or slightly worse level to DiMPP on all of these
 aspects. The number of agents in a problem instance may also influence the
 ability of the algorithms to find a solution within a reasonable time limit so
 we also measured this. Finally the effect of using a path cache on the time to
-find a solution solution is also recorded. This is not compared to OD+ID or
+find a solution is also recorded. This is not compared to OD+ID or
 DiMPP because these do not support similar techniques.
 
 \subsection{Evaluation weights}\label{sec:evalweights}

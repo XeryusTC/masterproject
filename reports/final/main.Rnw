@@ -9,6 +9,8 @@
 \usepackage{color}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 \usepackage{calc}
 \usepackage{subcaption}
 \usepackage[hidelinks]{hyperref}
@@ -20,10 +22,12 @@
 \renewcommand*{\sectionautorefname}{Section}
 \renewcommand*{\subsectionautorefname}{Subsection}
 \renewcommand*{\subsubsectionautorefname}{Subsubsection}
+\newcommand{\algorithmautorefname}{Algorithm}
 
 \DeclareMathOperator{\pos}{pos}
 \DeclareMathOperator{\eval}{eval}
 \DeclareMathOperator{\vote}{vote}
+\DeclareMathOperator{\argmin}{arg\,min}
 
 \newcommand{\agentsupb}{40 }
 

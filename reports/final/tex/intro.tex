@@ -41,11 +41,41 @@ have no global view of the problem. This means that agents can make decisions
 early on that will lead to congestions or deadlocks later without any agent
 noticing at the time that the decision was made.
 
+Methods of decentralised coordination have been developed by the field of 
+computational argumentation. Formal models of argumentation have been used in 
+Artificial Intelligence in expert systems, multi-agent systems and law
+\cite{vaneemeren2014,rahwan2009}. An important concept in computational 
+argumentation is that of
+defeasible reasoning: the conclusion that can be drawn from a set of premises
+does not need to hold when additional premises are added. This is in contrast
+with classical logic where adding additional premises will never invalidate a
+conclusion. Defeasible reasoning allow arguments to be made for or against a
+conclusion. Arguments can also support or attack each other and thereby
+strengthen or weaken a case for a conclusion.
+
+Commonly computational argumentation in a multi-agent systems is modelled as a 
+dialogue game.
+In such a dialogue game the agents represent the players and the game rules
+prescribes how the dialogue should occur \cite{walton1995}. There are rules
+about what arguments agents can put forward, when they are allowed to do so,
+and there can be rules about which agent gets to speak when. Most forms of
+dialogue games also have rules about when the dialogue is finished and which
+agent(s) have won if applicable. These dialogues can be used to give reasons
+about why a group of agents decided to take a certain course of action. They
+can be used to remove some of the abstractness of cooperative pathfinding
+solutions by showing arguments for a course of action instead of coming up with
+a solution without any method of explaining why it is the best solution.
+
 %Discuss how partial global planning gives local to global view, and
 %allows for cooperation.
-Without a central processor it is hard to create a plan that is globally well
-coordinated. There are methods that do achieve a global plan without any single
-agent being vital to create it.
+Global cooperation between agents without a central processor is a difficult 
+task. There are methods that do achieve a global plan without any single agent 
+being vital to create it.
+%can also be achieved using partial global planning. It is a distributed method 
+%which does not rely on a single agent like centralized methods do.
+%Without a central processor it is hard to create a plan that is globally well
+%coordinated. There are methods that do achieve a global plan without any single
+%agent being vital to create it.
 Partial global planning has been used in distributed sensor networks to
 distribute and coordinate tasks among the nodes that make up the network
 \cite{durfee1991}. The nodes create their individual plans without regard for
@@ -68,29 +98,6 @@ agents  only communicate with other agents when they have to. There is also no
 need to wait for a central processor to tell agents what to do. At the same
 time plans are well coordinated without lacking a global view like the
 decentralized cooperative pathfinding algorithms.
-
-Other methods of decentralised coordination have been developed by the field of
-argumentation. Formal models of argumentation have been used in Artificial
-Intelligence in expert systems, multi-agent systems and law
-\cite{vaneemeren2014}. An important concept in argumentation is that of
-defeasible reasoning: the conclusion that can be drawn from a set of premises
-does not need to hold when additional premises are added. This is in contrast
-with classical logic where adding additional premises will never invalidate a
-conclusion. Defeasible reasoning allow arguments to be made for or against a
-conclusion. Arguments can also support or attack each other and thereby
-strengthen or weaken a case for a conclusion.
-
-Commonly argumentation in a multi-agent systems is modelled as a dialogue game.
-In such a dialogue game the agents represent the players and the game rules
-prescribes how the dialogue should occur \cite{walton1995}. There are rules
-about what arguments agents can put forward, when they are allowed to do so,
-and there can be rules about which agent gets to speak when. Most forms of
-dialogue games also have rules about when the dialogue is finished and which
-agent(s) have won if applicable. These dialogues can be used to give reasons
-about why a group of agents decided to take a certain course of action. They
-can be used to remove some of the abstractness of cooperative pathfinding
-solutions by showing arguments for a course of action instead of coming up with
-a solution without any method of explaining why it is the best solution.
 
 % describe how to combine these three views
 Dialogues can be used in cooperative pathfinding by applying techniques from

@@ -323,7 +323,8 @@ in the fields of legal argumentation (AI \& Law), defeasible reasoning and
 multi-agent systems. One pillar is non-monotonic logic. A logic is
 non-monotonic when a conclusion that follows based on the premises does not
 necessarily hold any more when additional premises are added
-\cite{vaneemeren2014,modgil2013}. A classic example of this is that birds can
+\cite{vaneemeren2014,modgil2013,rahwan2009}. A classic example of this is that 
+birds can
 fly, so when
 you see a bird you assume that it can fly. However when you are told that the
 bird is a penguin and that penguins can't fly then you will no longer conclude
@@ -475,7 +476,19 @@ proposals were discussed, the quality of the arguments in support/attack of a
 proposal, whether agents followed procedural rules, and the accuracy of the
 knowledge base.
 
-\subsection{Coordination}
+Other approaches to distributed deliberation dialogues in cooperative
+multi-agent systems based on \textsf{DeLP} and MAPOP have been proposed 
+\cite{ferrando2012,pardo2011}. In these systems agents make plan proposals and 
+make arguments for or against them. Agents share information that they have 
+about the world and their objectives. During dialogues agents share their plans 
+and they are allowed to argue for or against a plan, this can be on the level 
+of individual actions. The dialogues prescribe a turn order for agents such 
+that during each round of argumentation each agent gets the opportunity to 
+submit plans, threats or arguments. During each round the global plan will 
+become more refined. The agents collectively search for the most appropriate 
+plan with an algorithm analogous to A*.
+
+\subsection{Multi-agent coordination}
 Argumentation can be used to allow coordination between agents by letting them
 deliberate in a dialogue. Cooperative pathfinding is a particular instance of a
 coordination problem. Before we can combine cooperative pathfinding with

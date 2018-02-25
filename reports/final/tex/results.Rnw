@@ -106,18 +106,35 @@ plot(c(),
     ylim=c(5, 2000),
     xlab='Problem instance',
     ylab='Time (ms)',
-    frame.plot=F
+    frame.plot=F,
+    xaxt="n",
+    yaxs="i", yaxt="n"
 )
-lines(seq(length(od)), od, col='red')
-lines(seq(length(naive)), naive, col='blue')
-lines(seq(length(base)),  base,  col='green')
-lines(seq(length(plus)),  plus,  col='grey')
-lines(seq(length(window2)), window2, col='magenta')
-lines(seq(length(window4)), window4, col='cyan')
-lines(seq(length(window8)), window8, col='orange')
-lines(seq(length(dimpp)), dimpp, col='maroon')
-legend("bottomright", legend=cannonical.names, col=color.set, pch=16, bty="n",
-       cex=.8)
+axis(1, at=seq(0, 10000, 1000),
+     labels=c(0, "", 2000, "", 4000, "", 6000, "", 8000, "", 10000))
+axis(2, at=c(1, 10, 100, 1000, 2000), labels=c(1, 10, 100, 2000, ""))
+lines(seq(length(od)), od, col=color.set[1], lwd=linewidth, lty=linetypes[1])
+lines(seq(length(naive)), naive, col=color.set[2], lwd=linewidth, 
+      lty=linetypes[2])
+lines(seq(length(base)),  base,  col=color.set[3], lwd=linewidth, 
+      lty=linetypes[3])
+lines(seq(length(plus)),  plus,  col=color.set[4], lwd=linewidth, 
+      lty=linetypes[4])
+lines(seq(length(window2)), window2, col=color.set[5], lwd=linewidth, 
+      lty=linetypes[5])
+lines(seq(length(window4)), window4, col=color.set[6], lwd=linewidth, 
+      lty=linetypes[6])
+lines(seq(length(window8)), window8, col=color.set[7], lwd=linewidth, 	
+      lty=linetypes[7])
+lines(seq(length(dimpp)), dimpp, col=color.set[8], lwd=linewidth, 	
+      lty=linetypes[8])
+legend("bottomright",
+       legend=cannonical.names,
+       col=color.set,
+       bty="n",
+       cex=.8,
+       lwd=linewidth,
+       lty=linetypes)
 @
 
 % TODO: add reference to performance graph origin
@@ -197,14 +214,23 @@ plot(1,
     xlab='Agents in problem instance',
     ylab='Percentage solved',
     frame.plot = F,
-    yaxs="i", xaxs="i"
+    yaxs="i", yaxt="n",
+    xaxs="i", xaxp=c(0, 40, 8)
 )
+axis(2,
+     at=c(0, .25, .5, .75, 1),
+     labels=c("0\\%", "", "50\\%", "", "100\\%"))
 for(i in 1:length(algorithms)) {
     lines(solved.aggr[solved.aggr[,1]==algorithms[i],]$time,
-        col=color.set[i])
+        col=color.set[i], lty=linetypes[i], lwd=linewidth)
 }
-legend("bottomleft", legend=cannonical.names, col=color.set, pch=16, bty="n",
-       cex=.8)
+legend("bottomleft",
+       legend=cannonical.names,
+       col=color.set,
+       bty="n",
+       cex=.8,
+       lwd=linewidth,
+       lty=linetypes)
 @
 
 \autoref{fig:solved} shows how many instances each algorithm can solve within
@@ -264,43 +290,46 @@ plot(c(),
      frame.plot=F,
      xlab='Agents in problem instance',
      ylab='Sum of path lengths',
-     yaxs="i",
+     yaxs="i", yaxp=c(100, 350, 5),
      xaxs="i"
 )
 for (i in 1:length(algorithms))
 {
-    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color.set[i])
+    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color.set[i],
+          lty=linetypes[i], lwd=linewidth)
 }
 legend("topleft",
        legend=cannonical.names,
        col=color.set,
-       pch=16,
        cex=.8,
-       bty='n')
+       bty='n',
+       lwd=linewidth,
+       lty=linetypes)
 @
 
 <<loops,echo=F,warning=F,cache=T,cache.beater=quality.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=quality.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(), c(),
      xlim=c(0,40),
-     ylim=c(0,0.8),
+     ylim=c(0,0.6),
      frame.plot=F,
      type='n',
      xlab="Number of agents",
      ylab="Number of loops",
-     xaxs="i",
+     xaxs="i", xaxp=c(0, 40, 8),
      yaxs="i"
 )
 for(i in 5:7) {
     lines(quality.aggr[quality.aggr[,2]==algorithms[i],]$loops,
-    col=color.set[i])
+    col=color.set[i], lwd=linewidth, lty=linetypes[i])
 }
 legend("topleft",
        legend=cannonical.names[5:7],
        col=color.set[5:7],
-       pch=16,
        cex=.8,
-       bty='n')
+       bty='n',
+       lwd=linewidth,
+       lty=linetypes[5:7])
 @
 
 The length of the paths alone do not tell the full story of the quality of the
@@ -337,15 +366,21 @@ plot(1,
     xlab='Number of agents',
     ylab='Dialogues',
     frame.plot = F,
-    yaxs="i", xaxs="i"
+    yaxs="i", yaxp=c(0, 70, 7),
+    xaxs="i", xaxp=c(0, 40, 8)
 )
 for(i in 1:length(algorithms))
 {
     lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts,
-      col=color.set[i])
+      col=color.set[i], lwd=linewidth, lty=linetypes[i])
 }
-legend("topleft", legend=cannonical.names[2:7], col=color.set[2:7], pch=16,
-    bty="n", cex=.8)
+legend("topleft",
+       legend=cannonical.names[2:7],
+       col=color.set[2:7],
+       bty="n",
+       cex=.8,
+       lwd=linewidth,
+       lty=linetypes[2:7])
 @
 
 The average number of dialogues that have taken place to find a solution is
@@ -365,25 +400,26 @@ dialogues between 28 and 35 agents.
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='n',
-    xlim=c(1,31),
+    xlim=c(1,40),
     ylim=c(0,15),
     xlab="Number of agents in problem",
     ylab="Number of conflicts",
-    xaxs="i",
-    yaxs="i",
+    xaxs="i", xaxp=c(0, 40, 8),
+    yaxs="i", yaxp=c(0, 15, 3),
     frame.plot = F
 )
 points(sizes.aggr$X2[1:31], col='red', pch=8)
 points(sizes.aggr$X3, col='blue', pch=4)
 points(sizes.aggr$X4, col='green', pch=3)
-lines(smooth.spline(sizes.aggr$X2[1:31], spar=0.35), col="red")
-lines(smooth.spline(sizes.aggr$X3[1:31], spar=0.35), col="blue")
-lines(smooth.spline(sizes.aggr$X4, spar=0.35), col="green")
+lines(smooth.spline(sizes.aggr$X2[1:31], spar=0.35), col="red", lwd=linewidth)
+lines(smooth.spline(sizes.aggr$X3[1:31], spar=0.35), col="blue", lwd=linewidth)
+lines(smooth.spline(sizes.aggr$X4, spar=0.35), col="green", lwd=linewidth)
 legend("topleft",
        legend=c('2 agents', '3 agents', '4 agents'),
        col=c("red", "blue", "green"),
        pch=c(8, 4, 3),
-       bty='n')
+       bty='n',
+       lwd=linewidth)
 @
 
 The similarities in performance of DPCA* and DPCA*+ can be explained by
@@ -412,26 +448,27 @@ plot(c(), c(),
     ylim=c(5, 2000),
     xlab='Instance',
     ylab='Time (ms)',
-    frame.plot=F, yaxs="i"
+    frame.plot=F,
+    xaxp=c(0, 1000, 10),
+    yaxs="i", yaxt="n"
 )
-lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3)
-#lines(seq(length(plus.nocache)), plus.nocache, col=color.set.cache[2], lty=3)
+axis(2, at=c(1, 10, 100, 1000, 2000), labels=c(1, 10, 100, 2000, ""))
+lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3,
+      lwd=linewidth)
 lines(seq(length(window2.nocache)), window2.nocache, col=color.set.cache[3],
-    lty=3)
-#lines(seq(length(window4.nocache)), window4.nocache, col=color.set.cache[4],
-#	lty=3)
+    lty=3, lwd=linewidth)
 lines(seq(length(window8.nocache)), window8.nocache, col=color.set.cache[5],
-    lty=3)
-lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=1)
-#lines(seq(length(plus.cache)), plus.cache, col=color.set.cache[2], lty=1)
-lines(seq(length(window2.cache)), window2.cache, col=color.set.cache[3], lty=1)
-#lines(seq(length(window4.cache)), window4.cache, col=color.set.cache[4], lty=1)
-lines(seq(length(window8.cache)), window8.cache, col=color.set.cache[5], lty=1)
+    lty=3, lwd=linewidth)
+lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=1,
+      lwd=linewidth)
+lines(seq(length(window2.cache)), window2.cache, col=color.set.cache[3], lty=1,
+      lwd=linewidth)
+lines(seq(length(window8.cache)), window8.cache, col=color.set.cache[5], lty=1,
+      lwd=linewidth)
 legend("bottomright",
     legend=cannonical.names.cache[c(1,3,5)],
     col=color.set.cache[c(1,3,5)],
-    pch=16,
-    bty="n", cex=.8)
+    bty="n", cex=.8, lwd=linewidth)
 @
 
 The agents make use of a path cache to reduce the amount of calculation

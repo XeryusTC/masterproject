@@ -75,9 +75,11 @@ algorithms = c("ODID", "Naive", "Base", "Plus", "Window2", "Window4",
 cannonical.names = c("OD+ID", "PCA*", "DPCA*", "DPCA*+", "WDPCA*-2",
                      "WDPCA*-4", "WDPCA*-8", "DiMPP")
 cannonical.names.cache = cannonical.names[3:7]
-color.set = c("red", "blue", "green", "grey", "magenta", "cyan", "orange",
+color.set = c("red", "blue", "green", "grey60", "magenta", "cyan", "orange",
               "maroon")
 color.set.cache = color.set[3:7]
+linetypes = c(3, 2, 5, 6, 1, 2, 3, 4)
+linewidth = 2
 
 len = length(unique(dat$instance))
 od      = sort(dat[dat$algorithm=='ODID',]$time * 1000)

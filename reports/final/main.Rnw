@@ -163,6 +163,10 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \maketitle
 
 \input{tex/abstract}
+\clearpage
+\tableofcontents
+\clearpage
+
 \input{tex/intro}
 \input{tex/problem}
 \input{tex/related_work}

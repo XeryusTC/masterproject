@@ -1,0 +1,17 @@
+Cooperative pathfinding research studies coordination algorithms addressing 
+congestions, deadlocks, and collisions in multi-agent systems.  In typical
+algorithms individual agents have no say in resolving conflicts. We propose
+algorithms in which agents engage in an argumentative dialogue in case of local
+conflicts, leading to the transparent and fast construction of global
+solutions.  We combine ideas from computational argumentation, multi-agent
+coordination and continual planning.  From computational argumentation we use
+argumentative deliberation dialogues in which agents discuss and resolve
+conflicting local plans.  From the study of multi-agent coordination we use
+partial global planning, a distributed method to incrementally create a global
+plan.  Using ideas from continual planning we obtain an online algorithm in
+which planning and execution are interleaved.  We show that our algorithms
+generally solve cooperative pathfinding problems faster than a state of the art
+complete and optimal algorithm, at the cost of slightly longer path lengths and
+gaining the explanatory power of argumentation dialogues. The online version of
+our algorithm is the fastest with the trade-off that it has the lowest quality
+paths.

@@ -11,6 +11,8 @@ reports/*/main.tex
 reports/*/cache/
 reports/*/figure/
 *-tikzDictionary
+*.nav
+*.snm
 
 # # LaTeX
 *.aux

@@ -2,6 +2,10 @@
 % !TeX TXS-program:compile = txs:///knit2pdf
 \documentclass{beamer}
 
+\usetheme{default}
+\usecolortheme{seahorse}
+\beamertemplatenavigationsymbolsempty
+
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
@@ -158,10 +162,49 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 
 \begin{document}
 
-\frame{\maketitle}
+\frame{\titlepage}
 
-\section{Problem Formulation}
-\begin{frame}{Problem Formulation}
+\begin{frame}{Introduction}
+    \begin{columns}[c]
+        \begin{column}{.33\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{images/flightradar}
+            \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{images/autonomous-vehicles-intersection}
+            \end{figure}
+        \end{column}
+        \begin{column}{.33\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{images/highDensityCrowd}
+            \end{figure}
+        \end{column}
+        \begin{column}{.33\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{images/rts}
+            \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{images/Amazon-Warehouse}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Cooperative Pathfinding}
+\begin{frame}{Cooperative Pathfinding}
+\begin{figure}
+    \centering
+    \def\svgscale{.6}
+    \input{../final/images/world.pdf_tex}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Cooperative Pathfinding}
 	\begin{columns}[c]
 		\begin{column}{.4\textwidth}
 			\begin{figure}
@@ -187,54 +230,43 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 	\end{columns}
 \end{frame}
 
-\begin{frame}{Problem formulation}
-	\begin{figure}
-		\centering
-		\def\svgscale{.6}
-		\input{../final/images/world.pdf_tex}
-	\end{figure}
+\begin{frame}
+    Find solution by integrating
+    \begin{itemize}
+        \item Deliberation dialogues
+        \item Partial global planning
+    \end{itemize}
 \end{frame}
 
-%\section{Cooperative Pathfinding}
-%\begin{frame}{Cooperative pathfinding}
-%\begin{table}[b]
-%    \centering
-%    \label{tbl:planning-overview}
-%    \begin{tabular}{l|l|l|l|l|l}
-%        Method & Category & Complete & Priority & Comm. & Online \\
-%        \hline
-%        OD+ID & Centralized & Yes & No & All &
-%        No \\
-%        ICTS & Centralized & Yes & No & All & No \\
-%        ADPP  & Decoupled & No & Yes & All & No \\
-%        WHCA* & Decoupled & No & Yes & Window
-%        & Yes \\
-%        DMRCP & Decentralized & No & No & 2 nodes & Yes \\
-%        DiMPP & Decentralized & Yes & Yes & Ring & No \\
-%        ORCA & Decentralized & No & No & None & Yes \\
-%        %Proposed & Decentralized & No & Partial & All & Before
-%    \end{tabular}
-%\end{table}
-%\end{frame}
-
+\section{Cooperative Pathfinding}
 \begin{frame}{Cooperative pathfinding}
-   \begin{itemize}
-       \item Centralized/decoupled/decentralized
-       \item Completeness
-       \item Priority
-       \item Communication limit
-       \item Online
-   \end{itemize}
+\begin{table}[b]
+    \centering
+    \label{tbl:planning-overview}
+    \begin{tabular}{l|l|l|l|l|l}
+        Method & Category & Complete & Priority & Comm. & Online \\
+        \hline
+        OD+ID & Centralized & Yes & No & All &
+        No \\
+        ICTS & Centralized & Yes & No & All & No \\
+        ADPP  & Decoupled & No & Yes & All & No \\
+        WHCA* & Decoupled & No & Yes & Window
+        & Yes \\
+        DMRCP & Decentralized & No & No & 2 nodes & Yes \\
+        DiMPP & Decentralized & Yes & Yes & Ring & No \\
+        ORCA & Decentralized & No & No & None & Yes \\
+        %Proposed & Decentralized & No & Partial & All & Before
+    \end{tabular}
+\end{table}
 \end{frame}
 
 \begin{frame}{Cooperative pathfinding - OD+ID}
     \begin{itemize}
         \item Operator Decomposition
-        \begin{itemize}
-            \item Linear branching factor
-        \end{itemize}
         \item Independence Detection
     \end{itemize}
+
+    Properties:
     \begin{itemize}
         \item Centralized
         \item Complete
@@ -247,26 +279,35 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
         \item Communicate in a ring
         \item Ring determines priority ordering
     \end{itemize}
+
+    Properties:
     \begin{itemize}
         \item Decentralized
         \item Complete
+        \item Priority order
     \end{itemize}
 \end{frame}
 
 \section{Computational Argumentation}
 \begin{frame}{Deliberation Dialogues}
+    Deliberation dialogues are a method of finding a course of action in an 
+    argumentative multi-agent system.
     \begin{itemize}
-        \item Determine course of action
-        \item Rules
-        \item Stages
+        \item Multiple stages
+        \begin{itemize}
+            \item Opening
+            \item Argumentation
+            \item Closing
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \section{Multi-agent Coordination}
 \begin{frame}{Multi-agent Coordination}
     \begin{itemize}
-        \item Partial Global Planning
-        \item Continual Planning
+        \item Decentralized planning can be achieved using Partial Global 
+        Planning
+        \item Continual Planning interleaves planning and execution
     \end{itemize}
 \end{frame}
 
@@ -339,9 +380,13 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \end{frame}
 
 \begin{frame}{DPCA*}
+    Integrate deliberation dialogues to add transparency and more control to 
+    the process.
+    
     \begin{itemize}
-        \item Use deliberation dialogue
-        \item Evaluate effects of proposal on solution
+        \item Make (partial) priority order proposals
+        \item Arguments about suitability of proposal
+        \item Evaluate effects of proposal
     \end{itemize}
 \end{frame}
 
@@ -411,13 +456,77 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \end{frame}
 
 \begin{frame}{WDPCA*}
+    DPCA* has some issues
     \begin{itemize}
-        \item Continual planning $\to$ online algorithm
-        \item Limit how far into the future agents resolve conflicts
-        \item Spread computation 
-        \item Ensure continued coordination
-        \item Add flexibility to priority order
+        \item Computation is done up front
+        \item Agents stop cooperating after they reach their goal
+        \item Priority order is fixed
     \end{itemize}
+
+    Solve these by
+    \begin{itemize}
+        \item Integrate Continual Planning to obtain an online algorithm
+        \item Limit how far into the future agents resolve conflicts
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{WDPCA* example}
+\begin{columns}[t]
+    \begin{column}{.33\textwidth}
+        \centering
+        \begin{figure}
+            \def\svgscale{.6}
+            \input{../final/images/wdpca-example1.pdf_tex}
+        \end{figure}
+    \end{column}
+    \begin{column}{.33\textwidth}
+        \centering
+        \begin{figure}
+            \def\svgscale{.6}
+            \input{../final/images/wdpca-example2.pdf_tex}
+        \end{figure}
+        \[ a_1 > a_2 \]
+        \[ \vote_{a_1} = -3 \]
+        \[ \vote_{a_2} = 6 \]
+    \end{column}
+    \begin{column}{.33\textwidth}
+        \centering
+        \begin{figure}
+            \def\svgscale{.6}
+            \input{../final/images/wdpca-example3.pdf_tex}
+        \end{figure}
+        \[ a_2 > a_1 \]
+        \[ \vote_{a_1} = 0 \]
+        \[ \vote_{a_2} = -3 \]
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{WDPCA* example}
+\begin{columns}[t]
+\begin{column}{.33\textwidth}
+    \centering
+    \begin{figure}
+        \def\svgscale{.6}
+        \input{../final/images/wdpca-example3.pdf_tex}
+    \end{figure}
+    \[ a_2 > a_1 \]
+\end{column}
+\begin{column}{.33\textwidth}
+    \centering
+    \begin{figure}
+        \def\svgscale{.6}
+        \input{../final/images/wdpca-example4.pdf_tex}
+    \end{figure}
+\end{column}
+\begin{column}{.33\textwidth}
+    \centering
+    \begin{figure}
+        \def\svgscale{.6}
+        \input{../final/images/wdpca-example5.pdf_tex}
+    \end{figure}
+\end{column}
+\end{columns}
 \end{frame}
 
 \section{Results}
@@ -638,6 +747,27 @@ legend("bottomright",
         col=color.set.cache[c(1,3,5)],
         bty="n", cex=.8, lwd=linewidth)
 @
+\end{frame}
+
+\section{Discussion}
+\begin{frame}[plain]{Discussion}
+    \centering
+    \begin{tabular}{l|l|l|l|l|l|l}
+        & Category & Compl. & Prio. & Comm. & Online & Dial. \\
+        \hline
+        OD+ID & Centralized & Yes & No &
+        All & No & No \\
+        ICTS & Centralized & Yes & No & All & No & No \\
+        IADPP & Decoupled & No & Yes & All & No & No \\
+        WHCA* & Decoupled & No & Yes & Window & Yes & No \\
+        DMRCP & Decentralized & No & No & 2 nodes & Yes & No \\
+        DiMPP & Decentralized & Yes & Yes & Ring & No & No \\
+        \hline
+        PCA* & Decentralized & No & Yes & All & No & No \\
+        DPCA* & Decentralized & No & Yes & All & 
+        No & Yes \\
+        WDPCA* & Decentralized & No & Yes & Window & Yes & Yes
+    \end{tabular}
 \end{frame}
 
 \begin{frame}{Discussion}

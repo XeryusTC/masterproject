@@ -230,9 +230,10 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 	\end{columns}
 \end{frame}
 
-\begin{frame}
-    Find solution by integrating
+\begin{frame}{Cooperative Pathfinding}
+    Find solution by combining ideas from
     \begin{itemize}
+        \item Cooperative pathfinding
         \item Deliberation dialogues
         \item Partial global planning
     \end{itemize}
@@ -260,66 +261,69 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \end{table}
 \end{frame}
 
-\begin{frame}{Cooperative pathfinding - OD+ID}
-    \begin{itemize}
-        \item Operator Decomposition
-        \item Independence Detection
-    \end{itemize}
-
-    Properties:
-    \begin{itemize}
-        \item Centralized
-        \item Complete
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{DiMPP}
-    Distributed Multi-agent Path Planning
-    \begin{itemize}
-        \item Communicate in a ring
-        \item Ring determines priority ordering
-    \end{itemize}
-
-    Properties:
-    \begin{itemize}
-        \item Decentralized
-        \item Complete
-        \item Priority order
-    \end{itemize}
-\end{frame}
+%\begin{frame}{Cooperative pathfinding - OD+ID}
+%    \begin{itemize}
+%        \item Operator Decomposition
+%        \item Independence Detection
+%    \end{itemize}
+%
+%    Properties:
+%    \begin{itemize}
+%        \item Centralized
+%        \item Complete
+%    \end{itemize}
+%\end{frame}
+%
+%\begin{frame}{DiMPP}
+%    Distributed Multi-agent Path Planning
+%    \begin{itemize}
+%        \item Communicate in a ring
+%        \item Ring determines priority ordering
+%    \end{itemize}
+%
+%    Properties:
+%    \begin{itemize}
+%        \item Decentralized
+%        \item Complete
+%        \item Priority order
+%    \end{itemize}
+%\end{frame}
 
 \section{Computational Argumentation}
 \begin{frame}{Deliberation Dialogues}
     Deliberation dialogues are a method of finding a course of action in an 
-    argumentative multi-agent system.
+    argumentative multi-agent system. A dialogue has rules about
     \begin{itemize}
-        \item Multiple stages
-        \begin{itemize}
-            \item Opening
-            \item Argumentation
-            \item Closing
-        \end{itemize}
+        \item Which agent gets to speak when
+        \item What can be said
+        \item Outcome
+    \end{itemize}
+
+    A dialogue consists of multiple stages
+    \begin{itemize}
+        \item Opening
+        \item Argumentation
+        \item Closing
     \end{itemize}
 \end{frame}
 
 \section{Multi-agent Coordination}
 \begin{frame}{Multi-agent Coordination}
     \begin{itemize}
-        \item Decentralized planning can be achieved using Partial Global 
-        Planning
+        \item Decentralize planning by using Partial Global Planning
         \item Continual Planning interleaves planning and execution
     \end{itemize}
 \end{frame}
 
 \section{Family of algorithms}
-\begin{frame}{PCA*}
+\begin{frame}{Partial Cooperative A*}
     \begin{itemize}
+        \item Make optimal plans
         \item Find earliest conflict
-        \item Evaluate all possible priority orderings
-        \item Pick priority ordering with smallest increase in total cost
-        \item Partial priority order
-        \item Solving larger conflicts
+        \item Evaluate all possible priority orders
+        \item Pick priority order with smallest increase in total cost
     \end{itemize}
+    Only agents involved in the conflict adapt the priority order
 \end{frame}
 
 \begin{frame}{PCA* example}
@@ -379,15 +383,28 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \end{columns}
 \end{frame}
 
-\begin{frame}{DPCA*}
+\begin{frame}{Dialogue-based PCA*}
     Integrate deliberation dialogues to add transparency and more control to 
     the process.
+    
+    \begin{table}
+        \centering
+        \begin{tabular}{l|l|l}
+            Stage & Goal & Next stage \\ \hline
+            Opening & Exchange information & Proposal \\
+            Proposal & Make priority proposals & Evaluation \\
+            Evaluation & Vote on suitability of proposals & Proposal, Closing \\
+            Closing & Permanently adapt best proposal & \\
+        \end{tabular}
+    \end{table}
     
     \begin{itemize}
         \item Make (partial) priority order proposals
         \item Arguments about suitability of proposal
         \item Evaluate effects of proposal
     \end{itemize}
+
+    How to solve conflicts between more than two agents?
 \end{frame}
 
 \begin{frame}{DPCA* example}
@@ -407,7 +424,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
         \end{figure}
         \[ a_1 > a_2 \]
         \[ \vote_{a_1} = -3 \]
-        \[ \vote_{a_2} = 6 \]
+        \[ \vote_{a_2} = 3 \]
     \end{column}
     \begin{column}{.33\textwidth}
         \centering
@@ -455,10 +472,10 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 \end{columns}
 \end{frame}
 
-\begin{frame}{WDPCA*}
+\begin{frame}{Windowed DPCA*}
     DPCA* has some issues
     \begin{itemize}
-        \item Computation is done up front
+        \item All computation is done up front
         \item Agents stop cooperating after they reach their goal
         \item Priority order is fixed
     \end{itemize}
@@ -466,7 +483,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
     Solve these by
     \begin{itemize}
         \item Integrate Continual Planning to obtain an online algorithm
-        \item Limit how far into the future agents resolve conflicts
+        \item Limit how far into the future agents solve conflicts
     \end{itemize}
 \end{frame}
 
@@ -487,7 +504,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
         \end{figure}
         \[ a_1 > a_2 \]
         \[ \vote_{a_1} = -3 \]
-        \[ \vote_{a_2} = 6 \]
+        \[ \vote_{a_2} = 3 \]
     \end{column}
     \begin{column}{.33\textwidth}
         \centering
@@ -574,60 +591,16 @@ legend("bottomright",
 \end{frame}
 
 \begin{frame}{Results - Instances solved}
-<<solved,echo=F,cache=T,cache.beater=solved.aggr,dev='tikz',fig.width=5,fig.height=2.5,fig.align='center',fig.pos='t'>>=
-op <- par(mar = c(4, 3.8, 1, 1))
-    plot(1,
-    type='l',
-    xlim=c(0,40),
-    ylim=c(0,1),
-    xlab='Agents in problem instance',
-    ylab='Percentage solved',
-    frame.plot = F,
-    yaxs="i", yaxt="n",
-    xaxs="i", xaxp=c(0, 40, 8)
+<<quality,echo=F,cache=T,cache.beater=solved,results='asis'>>=
+require(xtable)
+quality.table = t(rbind(paste(round(solved$time * 100, 1), "%"),
+                    round(lengths$length, 2)))
+colnames(quality.table) = c('Instances solved', 'Cost')
+rownames(quality.table) = cannonical.names
+xtable(quality.table,
+        align='l|r|r',
+        digits=2
 )
-axis(2,
-    at=c(0, .25, .5, .75, 1),
-    labels=c("0\\%", "", "50\\%", "", "100\\%"))
-for(i in 1:length(algorithms)) {
-    lines(solved.aggr[solved.aggr[,1]==algorithms[i],]$time,
-        col=color.set[i], lty=linetypes[i], lwd=linewidth)
-}
-legend("bottomleft",
-        legend=cannonical.names,
-        col=color.set,
-        bty="n",
-        cex=.8,
-        lwd=linewidth,
-        lty=linetypes)
-@
-\end{frame}
-
-\begin{frame}{Results - Solution cost}
-<<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='tikz',fig.width=5,fig.height=2.5,fig.align='center',fig.pos='t'>>=
-op <- par(mar = c(3.8, 3.8, 1, 1))
-plot(c(),
-    type='n',
-    xlim=c(5,40),
-    ylim=c(100,360),
-    frame.plot=F,
-    xlab='Agents in problem instance',
-    ylab='Sum of path lengths',
-    yaxs="i", yaxp=c(100, 350, 5),
-    xaxs="i"
-)
-for (i in 1:length(algorithms))
-{
-    lines(dat.lengths[dat.lengths[,2]==algorithms[i],]$length, col=color.set[i],
-        lty=linetypes[i], lwd=linewidth)
-}
-legend("topleft",
-        legend=cannonical.names,
-        col=color.set,
-        cex=.8,
-        bty='n',
-        lwd=linewidth,
-        lty=linetypes)
 @
 \end{frame}
 
@@ -644,45 +617,18 @@ plot(1,
     yaxs="i", yaxp=c(0, 70, 7),
     xaxs="i", xaxp=c(0, 40, 8)
 )
-for(i in 1:length(algorithms))
+for(i in 3:length(algorithms))
 {
     lines(conflicts.aggr[conflicts.aggr[,1]==algorithms[i],]$solved.conflicts,
         col=color.set[i], lwd=linewidth, lty=linetypes[i])
 }
 legend("topleft",
-        legend=cannonical.names[2:7],
-        col=color.set[2:7],
+        legend=cannonical.names[3:7],
+        col=color.set[3:7],
         bty="n",
         cex=.8,
         lwd=linewidth,
-        lty=linetypes[2:7])
-@
-\end{frame}
-
-\begin{frame}{Results - Loops in paths}
-<<loops,echo=F,warning=F,cache=T,cache.beater=quality.aggr,dev='tikz',fig.width=5,fig.height=2.5,fig.align='center',fig.pos='t'>>=
-op <- par(mar = c(3.8, 3.8, 1, 1))
-plot(c(), c(),
-    xlim=c(0,40),
-    ylim=c(0,0.6),
-    frame.plot=F,
-    type='n',
-    xlab="Number of agents",
-    ylab="Number of loops",
-    xaxs="i", xaxp=c(0, 40, 8),
-    yaxs="i"
-)
-for(i in 5:7) {
-    lines(quality.aggr[quality.aggr[,2]==algorithms[i],]$loops,
-          col=color.set[i], lwd=linewidth, lty=linetypes[i])
-}
-legend("topleft",
-        legend=cannonical.names[5:7],
-        col=color.set[5:7],
-        cex=.8,
-        bty='n',
-        lwd=linewidth,
-        lty=linetypes[5:7])
+        lty=linetypes[3:7])
 @
 \end{frame}
 
@@ -714,38 +660,30 @@ legend("topleft",
 @
 \end{frame}
 
-\begin{frame}{Results - Cache}
-<<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=2.5,fig.align='center',fig.pos='t'>>=
+\begin{frame}{Results - Solution quality}
+<<loops,echo=F,warning=F,cache=T,cache.beater=quality.aggr,dev='tikz',fig.width=5,fig.height=2.5,fig.align='center',fig.pos='t'>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(), c(),
-    type='l',
-    log='y',
-    col='red',
-    xlim=c(1,len.cache),
-    ylim=c(5, 2000),
-    xlab='Instance',
-    ylab='Time (ms)',
+    xlim=c(0,40),
+    ylim=c(0,0.6),
     frame.plot=F,
-    xaxp=c(0, 1000, 10),
-    yaxs="i", yaxt="n"
+    type='n',
+    xlab="Number of agents",
+    ylab="Number of loops",
+    xaxs="i", xaxp=c(0, 40, 8),
+    yaxs="i"
 )
-axis(2, at=c(1, 10, 100, 1000, 2000), labels=c(1, 10, 100, 2000, ""))
-lines(seq(length(base.nocache)), base.nocache, col=color.set.cache[1], lty=3,
-        lwd=linewidth)
-lines(seq(length(window2.nocache)), window2.nocache, col=color.set.cache[3],
-        lty=3, lwd=linewidth)
-lines(seq(length(window8.nocache)), window8.nocache, col=color.set.cache[5],
-        lty=3, lwd=linewidth)
-lines(seq(length(base.cache)), base.cache, col=color.set.cache[1], lty=1,
-        lwd=linewidth)
-lines(seq(length(window2.cache)), window2.cache, col=color.set.cache[3], lty=1,
-        lwd=linewidth)
-lines(seq(length(window8.cache)), window8.cache, col=color.set.cache[5], lty=1,
-        lwd=linewidth)
-legend("bottomright",
-        legend=cannonical.names.cache[c(1,3,5)],
-        col=color.set.cache[c(1,3,5)],
-        bty="n", cex=.8, lwd=linewidth)
+for(i in 5:7) {
+    lines(quality.aggr[quality.aggr[,2]==algorithms[i],]$loops,
+        col=color.set[i], lwd=linewidth, lty=linetypes[i])
+}
+legend("topleft",
+        legend=cannonical.names[5:7],
+        col=color.set[5:7],
+        cex=.8,
+        bty='n',
+        lwd=linewidth,
+        lty=linetypes[5:7])
 @
 \end{frame}
 
@@ -770,16 +708,17 @@ legend("bottomright",
     \end{tabular}
 \end{frame}
 
+\section{Discussion}
 \begin{frame}{Discussion}
 \begin{itemize}
-    \item DPCA* vs DPCA*+
-    \item Effect of window
-    \item Complexity of deliberation dialogues
+    \item Trade-off between speed, solution cost and quality of solution
     \item Less abstract solutions
+    \item Domain specific dialogues
 \end{itemize}
 \end{frame}
 
-\section{Discussion}
+\begin{frame}{Questions?}
+\end{frame}
 
 %\input{tex/intro}
 %\input{tex/problem}

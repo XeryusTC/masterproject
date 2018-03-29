@@ -22,11 +22,16 @@ neighbouring cells or \emph{wait} at the current location. Each time step an
 agent must do exactly one of these actions. An example initial configuration is
 shown in \autoref{fig:world}.
 
-The goal is to find a series of moves, or paths, one for each agent, such that
-the agents reach their destination in as little time as possible. They have to
-do this without colliding with other agents or running into the static
-obstacles. Each action has unit cost, with the exception of waiting in the goal
-position. The cost function is then
+The goal is to find one path for each agent so that it reaches its destination 
+in as little time as possible. The paths can not enter cells with static 
+obstacles nor should agents collide with each other. Each action in a path has 
+unit cost, with the exception of waiting in the goal position. The cost 
+function is then
+%The goal is to find a series of moves, or paths, one for each agent, such that
+%the agents reach their destination in as little time as possible. They have to
+%do this without colliding with other agents or running into the static
+%obstacles. Each action has unit cost, with the exception of waiting in the goal
+%position. The cost function is then
 \[
 \text{\textsc{cost}(P,Q)} =
 \begin{cases}
@@ -38,9 +43,10 @@ where $P$ is the node where the agent is located, $Q$ is the node where the
 agent moves to, and $G$ is the agent's goal node. A single agent's path has a
 cost that is the sum of the costs of all its actions. The cost of a solution is
 defined as the sum of the costs of the paths of the agents. The most
-appropriate solution to the problem is the solution with the lowest cost.
+appropriate solution to the problem is a solution with minimal cost.
 
-The paths of two agents are not in conflict iff at no time step the agents
+The paths of two agents are not in conflict if and only if at no time step the 
+agents
 occupy the same cell, agents move along the same edge (swap positions), or
 agents move along crossing edges. Obstacle cells can be considered as
 stationary agents. Examples of each of these conflicts are given

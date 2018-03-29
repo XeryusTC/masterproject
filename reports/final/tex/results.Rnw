@@ -30,7 +30,7 @@ solve them faster than OD+ID. It is expected that OD+ID finds better quality
 solutions. The quality of a solution is primarily quantified as the cost of the 
 solution. The number of loops that occur within an agent's path is used as a
 secondary measurement of the quality of a solution. We expect that the proposed
-methods perform on an equal or slightly worse level to DiMPP on all of these
+methods perform on an equal or slightly worse level than DiMPP on all of these
 aspects. The number of agents in a problem instance may also influence the
 ability of the algorithms to find a solution within a reasonable time limit so
 we also measured this. Finally the effect of using a path cache on the time to
@@ -145,7 +145,7 @@ the index of the sorted instance while the $y$-axis shows the time it takes an
 algorithm to solve that instance. This sorting is done for each algorithm
 independently. Because of this it is not necessarily the case that the $n$th
 instance for one algorithm is the same as the $n$th instance for a different
-algorithm. The graph shows several different pieces of information. The
+algorithm. The graph shows several different types of information. The
 first is a comparison of run times for the different algorithms. A lower line
 means that an algorithm was able to solve problem instances quicker. At the
 same time the graph also shows how many instances an algorithm can solve within
@@ -200,7 +200,7 @@ are only small differences in the time required to solve instances between
 different sizes of windows. With regards to run time the choice of window size
 does not have a large effect. There is only a significant difference between
 $w=2$ and $w=8$. This means that the choice of window size barely matters. Just
-using a window to limit communication itself has a larger effect on the
+using a window to limit communication itself has a large effect on the
 performance of DPCA*.
 %The window size has a large effect on the sum of the path lengths of the
 %agents as shown in \autoref{tbl:length}.
@@ -272,7 +272,7 @@ version of the algorithm that solves fewer instances than OD+ID and DiMPP. All
 versions of DPCA* and WDPCA* are able to solve at least double the amount of
 instances as OD+ID. A smaller window means that the algorithm is able to solve
 more problem instances. This comes at a trade-off as a smaller window size also
-results in a larger sum of the path lengths for a solution. This can also be
+results in a larger solution cost. This can also be
 seen in \autoref{fig:lengths} where the sum of the path lengths is plotted as a
 function of the number of agents in a problem. It shows that WDPCA* finds
 longer paths than any other algorithm tested while OD+ID and DPCA* calculate
@@ -334,16 +334,16 @@ legend("topleft",
 
 The length of the paths alone do not tell the full story of the quality of the
 solution. Agents may have a node $N$ in its path multiple times. This can
-either be because an agent has a \emph{wait} action on that node. It can also
+either be because an agent has a \emph{wait} action on that node or it can
 be because there is a loop in an agent's path. In this case the agent visits
 other nodes between two visits of node $N$. To analyse the quality of the paths
 the number of loops in each problem instance was recorded. Only the loops that
 occur before the agent first visits its destination node were counted. After an
 agent reaches its goal node there is still the possibility of loops, however
 these loops mean that the agent has moved off its goal node to allow other
-agents to move through. These loops are expected behaviours that occur when
+agents to pass through. These loops are desired behaviour that occur when
 agents cooperate. We also do not count \emph{wait} actions as loops, so only
-the number of unique times that an agent visits a node are counted.
+the number of unique times that an agent visits a non-goal node are counted.
 
 The mean number of occurring loops for each number of agents is shown in
 \autoref{fig:loops}. Only the results for WDPCA* are shown, no loops were found
@@ -391,9 +391,11 @@ so there is little difference in this aspect of the algorithms as well.
 \autoref{fig:dialogues} also shows that more dialogues take place when a window
 is applied to conflict resolution, and with a decreasing size in window there
 are more dialogues that take place. One thing that is noticeable is that the
-number of dialogues required rises exponentially when the number of agents
-increases, but at some point this trend trails off. This point lies between 25
-and 30 agents depending on the algorithm. There is a peak in the number of
+number of dialogues required increases when the number of agents
+increases. At some point this trend trails off. Depending on the algorithm this 
+is generally when there are between 25 and 30 agents in a problem instance. 
+There is 
+a peak in the number of
 dialogues between 28 and 35 agents.
 
 <<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=

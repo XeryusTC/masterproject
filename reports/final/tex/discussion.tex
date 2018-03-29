@@ -1,4 +1,7 @@
 \section{Discussion}\label{sec:discussion}
+This section will first discuss the experimental results. The implications of 
+our algorithm and its relation to the literature presented in 
+\autoref{sec:related} will be discussed at the end of this section.
 % TODO: scalability
 % TODO: more compartmentalized than decoupled methods
 % TODO: discuss WHCA* vs Continual Planning vs WDPCA*
@@ -23,6 +26,8 @@
 %multiple proposals. The added complexity of three agents trying to find a
 %solution to the conflict does not outweigh the speed of starting several
 %dialogues which come to a conclusion quickly.
+
+\subsection{Results}
 
 We have seen that only PCA* takes more time to solve problem instances and
 solves fewer instances than OD+ID and DiMPP. All other versions of the proposed
@@ -49,14 +54,16 @@ Instead the experiments are focused on finding a solution in as
 little time as possible. We consider being able to find a solution in
 a reasonable time to be more important than being able to find an optimal 
 solution when
-given hours or even days to calculate a solution. In a real-time applications
-like video games or groups of autonomous robots it is more important to find a
-solution in reasonable time than it is to find the most optimal solution
+given hours, days, or even weeks to calculate a solution. In a real-time 
+applications
+like video games or groups of autonomous robots it is more important to find any
+solution in reasonable time than it is to find an optimal solution
 \cite{botea2013}.
 Because WDPCA* is fully decentralized it is able to find a solution in a
 reasonable amount of time while sacrificing the quality of the solution. This
 means that WDPCA* is more suitable for real-time applications because it is
-able to resolve a problem instance in a low amount of time. It is also able to
+able to resolve a problem instance in a minimal amount of time. It is also able 
+to
 find a solution to problems with a large amount of agents because of this speed.
 
 %window version being better
@@ -74,7 +81,7 @@ reactive. There is barely any global planning any more because agents don't
 look far ahead when trying to find their way to the destination. Agents mainly
 solve conflicts that will happen during their next action or the time-step 
 directly after that. Agents will also determine whether they have
-conflicts after time-step. This shows that it is a valid strategy to create
+conflicts after each time-step. This shows that it is a valid strategy to create
 many small plans with low computational effort instead of a complete global
 plan. Cooperating in too small a window does have a negative effect on the
 quality of the solution.
@@ -94,7 +101,7 @@ solution to complex problem instances within the 2000ms time limit. Complex
 problems are those that require many dialogues to find a priority scheme that
 allows all agents to find a path to their destination. This in turn suggests
 that WDPCA* successfully finding a solution to a problem instance depends on the
-number of dialogues required to find that solution.
+number of conflicts in a problem, not the number of agents.
 
 There is an interaction between which algorithm is used and whether previously
 found paths were stored in a cache and reused. From \autoref{fig:cache} it
@@ -106,7 +113,9 @@ the paths are also shorter and easier to calculate. Retrieving a short path
 which consists of two or four actions from the cache is not much faster than 
 calculating the path outright.
 
-\begin{table*}[h]
+\subsection{Related work}
+
+\begin{table*}
     \centering
     \caption{Comparison of several cooperative pathfinding algorithms 
         \cite{standley2010,standley2011,sharon2013,cap2012,silver2005,wei2016,chouhan2017}.
@@ -159,11 +168,12 @@ paths. The cause of the lower quality solution is that when $w$ is small the
 algorithm becomes more reactive. Agents will move towards their goal and notice 
 that they have a conflict for which the best solution is to backtrack. It may 
 also occur that agents will move back to an earlier position in their path 
-because they had to dodge another agent. This kind of behaviour can be 
+because they had to move out of the way of another agent. This kind of 
+behaviour can be 
 prevented by allowing agents to look further ahead so they can coordinate their 
 actions earlier to prevent backtracking. This shows that there is a clear 
-trade-off between finding a solution in a low amount of time and finding a good 
-solution with few loops.
+trade-off between finding a solution in a low amount of time and finding a low 
+cost solution with few loops.
 
 Conventional algorithms find an abstract solution for a pathfinding problem 
 based on minimal cost. DPCA*, DPCA*+ and WDPCA* add transparency to the 
@@ -189,13 +199,13 @@ continuous space algorithms like RRT* \cite{lavalle1998,lavalle2001,cap2013}.
 
 % weights dependent on agents
 The proposals of priority orderings are evaluated by the agents to find the
-best priority scheme. To do this they weigh different effects of the proposal.
+best priority ordering. To do this they weigh different effects of the proposal.
 Currently these weights are static. The weights that were found using simulated
 annealing are a one-size-fits-all solution. The optimal weights that are found
 by simulated annealing are dependent on the lower and upper bound of the number
 of agents that can be in a problem instance. This suggests that the optimal
 value of the weights depends on the number of agents in the problem. Future
-work may look into using weights that depend on the number of agents in the
+work may look into setting weights as a function of the number of agents in the
 problem. WDPCA* could use a set of weights based on the number of agents in the
 current window. Instead of basing the weights on the number of agents the
 number of conflicts that an agent has can determine their value. This may make
@@ -243,14 +253,15 @@ Richness in dialogues also depends on the domain. Our problem formulation is
 very abstract and generic. The only argument that agents can make against a
 priority proposal is that there is no valid path to their destination.
 Applications like traffic management can impose additional constraints on the
-problem. In air and rail traffic management agents have to keep to a schedule.
+problem. In air and rail traffic management agents may have to keep to a 
+schedule.
 Agents can make arguments about keeping to their schedule and weigh the effects 
 of possible delays. In multi robot systems the
 agents may need to recharge and they should be able to make arguments about why
 they need to have a high priority so that they can reach a charging station
 without too much delay. Applications may have constraints like these which do
 not fit well in an evaluation function, but they are well expressed in a logic.
-This also gives an even greater explanatory power than what WDPCA* has with its
+This also gives an even greater explanatory power than that WDPCA* has with its
 evaluation function and its limited argumentative capability.
 
 %\begin{figure}[t]
@@ -281,13 +292,14 @@ evaluation function and its limited argumentative capability.
 %is also more likely that an agent exhibits less intelligent behaviour when
 %using plan repair.
 
-\textsf{DeLP-POP} and \textsf{DeLP-MAPOP}~\cite{pardo2011,ferrando2012} are 
+The argumentative methods \textsf{DeLP-POP} and 
+\textsf{DeLP-MAPOP}~\cite{pardo2011,ferrando2012} are 
 general approaches to multi-agent coordination that allow agents to discuss 
 individual actions in a deliberation dialogue. This makes the method of finding 
 a solution analogous to OD+ID. This is in contrast to our approach in which 
 agents deliberate on the level of priorities and paths (sequences of actions). 
 The benefit of \textsf{DeLP-MAPOP} is that it is distributed, complete and 
-optimal. It can find the optimal solution without relying on a central 
+optimal. It can find an optimal solution without relying on a central 
 processor. However the deliberation process is quite complex and agents will 
 often have to keep track of the same information. It is thus not the case that 
 agents will only know about what influences their paths but also what 
@@ -338,7 +350,7 @@ model for cooperative pathfinding. Pairs of agents solve conflicts in their
 paths by finding determining a priority order. One agent will have to give
 priority to the other and consider it to be a moving obstacle. Partial global
 planning is used to allow agents to incrementally build their private priority
-order. Doing so means that the agents will coordinate their paths such that
+order. Doing so means that the agents will coordinate their paths so that
 there are no conflicts between them. Resolving conflicts is done in a
 deliberation dialogue. During such a dialogue agents will discuss possible
 priority orders that lead to a solution to the conflict. If there is more than
@@ -358,7 +370,7 @@ will continue to cooperate after they have reached their destination by forcing
 them to keep planning even though they have already reached their goal.
 
 We have shown that WDPCA* is able to solve problem instances faster than the
-commonly used algorithm WHCA* and the state-of-the-art algorithm DiMPP. It is
+well established algorithm OD+ID and the recent algorithm DiMPP. It is
 also able to solve problem instances with a large number of agents where both
 of the reference algorithms were not able to solve these instances. As a
 trade-off the paths found by WDPCA* are often longer and may contain loops

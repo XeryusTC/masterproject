@@ -1,5 +1,5 @@
 \section{Introduction}\label{sec:intro}
-Path planning for a single agent has long been considered a solved problem.
+Path planning for a single agent can be considered a solved problem.
 When multiple agents have to find their way through a shared space then the
 problem becomes more complicated. The agents have to find paths around
 obstacles while they also need to ensure that they do not collide with each
@@ -14,7 +14,8 @@ traffic management, crowd simulations, and video games \cite{standley2011}.
 The most straightforward approach to the cooperative pathfinding problem
 is to search the Cartesian product of the state spaces of all agents. This
 approach is computationally inefficient \cite{sharon2013} as the time to find a
-solution is exponential in the number of agents. Another common approach is to
+solution grows exponential in the number of agents. Another common approach is 
+to
 impose a hierarchy on the agents by assigning them a unique priority. Agents
 plan a path to their destination in descending order of priority. When it is an
 agent's turn to plan their path they have to consider agents with a higher
@@ -33,12 +34,13 @@ priority ordering that the agents have to adhere to. After this has been done
 then the calculation of the plans for the agents can be decoupled. This allows
 the agents to make their individual plan on their own processor. During this
 decoupled planning they need to communicate with each other about their paths
-but this does not require a central point of communication. Next to the
+but they do not require a central point of communication. Next to the
 centralized and decoupled methods there are also fully decentralized approaches
 where agents only communicate in a small range. There is no central processor
 that can be a single point of failure. As a trade-off these methods usually
 have no global view of the problem. This means that agents can make decisions
-early on that will lead to congestions or deadlocks later without any agent
+early on that will lead to congestions or deadlocks at a later point in time 
+without any agent
 noticing at the time that the decision was made.
 
 Methods of decentralised coordination have been developed by the field of 
@@ -83,7 +85,7 @@ each other. They will then exchange information on their plans and adapt them
 to better coordinate their activities. Nodes can even take over each others
 tasks to spread the computational load. Coordination is not rigid and nodes have
 some freedom in how they execute their plan if circumstances change without
-the need to re-coordinate with the other nodes. None of the involved nodes ever
+having to re-coordinate with the other nodes. None of the involved nodes ever
 has a global view, but the end result is a plan that is globally coordinated
 with each node holding a part of the global plan.
 
@@ -116,7 +118,7 @@ cooperative pathfinding problem without any agent having known it explicitly.
 There is also no single agent which has been vital to its calculation like in a
 centralized approach.
 
-By combining partial global planning, deliberation dialogues and we can develop
+By combining partial global planning, deliberation dialogues we can develop
 an algorithm that is able to overcome the weaknesses which other cooperative
 pathfinding algorithms have. Using the decoupled method as a starting point we
 use partial global planning to remove the reliance on a central processor to

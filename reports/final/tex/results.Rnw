@@ -188,20 +188,29 @@ smaller window is used.
 An analysis of variance test shows that there is a difference in the time to
 reach a solution for different window sizes $(F(\Sexpr{w.anova[['Df']][1]},
 \Sexpr{w.anova[['Df']][3]}) = \Sexpr{round(w.anova[['F value']][1], 2)},
-p=\Sexpr{signif(w.anova[['Pr(>F)']][1], 3)})$. Individual t-tests show that
-$w=2$ differs from $w=8$ in run time ($t(\Sexpr{floor(t.2vs8$parameter)}) =
-\Sexpr{round(t.2vs8$statistic, 2)}, p=\Sexpr{signif(t.2vs8$p.value, 3)}$).
-There is no difference between $w=4$ and the other window sizes
+p=\Sexpr{signif(w.anova[['Pr(>F)']][1], 3)})$.
+Individual t-tests show that
+$w=2$ differs from both $w=4$ and $w=8$ in run time 
 ($t(\Sexpr{floor(t.2vs4$parameter)})
-= \Sexpr{round(t.2vs4$statistic, 2)}, p=\Sexpr{signif(t.2vs4$p.value, 3)}$ for
-$w=2$ and $t(\Sexpr{floor(t.4vs8$parameter)}) = \Sexpr{round(t.4vs8$statistic,
-2)}, p=\Sexpr{signif(t.4vs8$p.value, 3)}$ for $w=8$). This indicates that there
-are only small differences in the time required to solve instances between
-different sizes of windows. With regards to run time the choice of window size
-does not have a large effect. There is only a significant difference between
-$w=2$ and $w=8$. This means that the choice of window size barely matters. Just
-using a window to limit communication itself has a large effect on the
-performance of DPCA*.
+= \Sexpr{round(t.2vs4$statistic, 2)}, p=\Sexpr{signif(t.2vs4$p.value, 3)}$ and 
+$t(\Sexpr{floor(t.2vs8$parameter)}) =
+\Sexpr{round(t.2vs8$statistic, 2)}, p=\Sexpr{signif(t.2vs8$p.value, 3)}$) 
+respectively.
+There is no difference between $w=4$ and $w=8$
+($t(\Sexpr{floor(t.4vs8$parameter)}) = \Sexpr{round(t.4vs8$statistic,
+2)}, p=\Sexpr{signif(t.4vs8$p.value, 3)}$).
+This confirms that a very limited window show different behaviour from larger 
+windows. Especially the earlier instances in \autoref{fig:perfgraph} may have 
+been of influence on this result. The gain in performance by using WDPCA* over 
+DPCA* seems to be most important overall effect. The individual differences 
+between various window sizes are important when considering other effects.
+%This indicates that there
+%are only small differences in the time required to solve instances between
+%different sizes of windows. With regards to run time the choice of window size
+%does not have a large effect. There is only a significant difference between
+%$w=2$ and $w=8$. This means that the choice of window size barely matters. Just
+%using a window to limit communication itself has a large effect on the
+%performance of DPCA*.
 %The window size has a large effect on the sum of the path lengths of the
 %agents as shown in \autoref{tbl:length}.
 

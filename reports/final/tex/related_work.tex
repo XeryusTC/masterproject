@@ -210,15 +210,27 @@ agents to keep planning and coordinating for the length of the window, even if
 the agent has reached its goal.
 
 % TODO: rewrite this paragraph
-The window of WHCA* limits the size of the reservation table the agents have to
-take into account. This limits the communication range between agents to the
-size of the window. This is in contrast to the other algorithms described above
-which all have an unlimited communication range. This means that those
-algorithms allow (and often require) all agents to communicate with each other
-to find a solution to the problem. Centralised algorithms use a single
-processor to find the solution. This means that all agents indirectly
-communicate with each other through the central processor. Using WHCA* agents
-within a window only need to share a single reservation table.
+%The window of WHCA* limits the size of the reservation table the agents have to
+%take into account. This limits the communication range between agents to the
+%size of the window. This is in contrast to the other algorithms described above
+%which all have an unlimited communication range. This means that those
+%algorithms allow (and often require) all agents to communicate with each other
+%to find a solution to the problem. Centralised algorithms use a single
+%processor to find the solution. This means that all agents indirectly
+%communicate with each other through the central processor. Using WHCA* agents
+%within a window only need to share a single reservation table.
+The window of WHCA* limits the size of the reservation table that the agents 
+use. In turn this limits the communication range of the agents to the size of 
+the window.
+Agents share part of their reservation table with the agents for which their 
+windows overlap.
+%When agents have overlapping windows they share a reservation table 
+%Where the windows of agents overlap 
+The previously discussed algorithms do not include a limit on the communication 
+range. Instead they allow (and often require) all agents to communicate with 
+each other to find a solution. Centralised algorithms use a single processor to 
+find the solution. This means that all agents communicate indirectly with each 
+other through the central processor.
 
 One model of completely decentralized cooperative pathfinding called DMRCP has
 been proposed by \cite{wei2016}. Agents move towards their destination and only

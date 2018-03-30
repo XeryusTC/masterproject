@@ -13,7 +13,8 @@ traffic management, crowd simulations, and video games \cite{standley2011}.
 %Discuss cooperative pathfinding and abstract solutions.
 The most straightforward approach to the cooperative pathfinding problem
 is to search the Cartesian product of the state spaces of all agents. This
-approach is computationally inefficient \cite{sharon2013} as the time to find a
+approach is computationally inefficient \cite{hopcroft1984,sharon2013} as the 
+time to find a
 solution grows exponential in the number of agents. Another common approach is 
 to
 impose a hierarchy on the agents by assigning them a unique priority. Agents
@@ -63,10 +64,11 @@ about what arguments agents can put forward, when they are allowed to do so,
 and there can be rules about which agent gets to speak when. Most forms of
 dialogue games also have rules about when the dialogue is finished and which
 agent(s) have won if applicable. These dialogues can be used to give reasons
-about why a group of agents decided to take a certain course of action. They
-can be used to remove some of the abstractness of cooperative pathfinding
-solutions by showing arguments for a course of action instead of coming up with
-a solution without any method of explaining why it is the best solution.
+about why a group of agents decided to take a certain course of action. So they
+can be used to remove some of the abstractness of cooperative pathfinding 
+algorithms by showing why a solution is preferred over other solutions. 
+Conventional algorithms deliver a solution without indicating why that solution 
+is preferred over others.
 
 %Discuss how partial global planning gives local to global view, and
 %allows for cooperation.

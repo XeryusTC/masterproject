@@ -696,6 +696,17 @@ destination do not have to update their plan. When there would be no window all
 agents would have to recalculate and solve all conflicts again, even if they
 would not need to update their plan, leading to wasted computational resources.
 
+An online algorithm like WDPCA* has the implied effect of forcing agents to 
+abide the consequences of interleaving planning and execution. It is not 
+desirable for agents to backtrack long distances to solve a conflict that 
+occurs late in execution because it would drastically increase the solution 
+cost. Instead agents will have to deal with the consequences when they occur. 
+This fits with the philosophy of partial global planning where a solution is 
+incrementally arrived at. By employing a window agents will set parts of their 
+plan in stone while keeping future actions flexible. This is similar to how 
+partial global planning enforces agreed upon coordination but allows agents 
+flexibility in the details of their plan.
+
 \subsubsection{Example of dialogue-based conflict resolution}
 \begin{figure}
     \centering

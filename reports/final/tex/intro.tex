@@ -1,11 +1,12 @@
 \section{Introduction}\label{sec:intro}
-Path planning for a single agent can be considered a solved problem.
-When multiple agents have to find their way through a shared space then the
-problem becomes more complicated. The agents have to find paths around
-obstacles while they also need to ensure that they do not collide with each
-other. Even when agents can prevent collisions then it is still possible that
+When multiple agents have to find their way through a shared space they have to 
+find paths around obstacles while they also need to ensure that they do not 
+collide with each other. This problem is considerably more complex than finding 
+a path for a single agent \cite{hopcroft1984}. Even when agents can prevent 
+collisions then it is still possible that
 congestions or even deadlocks may occur. Agents need to be able to get to their
-destination as soon as possible so these situations are undesirable. To avoid
+destination as soon as possible so congestions and deadlocks are undesirable. 
+To avoid
 them there is a need for coordination between the agents. Cooperative
 cooperative pathfinding finds its application in robotics, aviation, road
 traffic management, crowd simulations, and video games \cite{standley2011}.
@@ -15,8 +16,8 @@ The most straightforward approach to the cooperative pathfinding problem
 is to search the Cartesian product of the state spaces of all agents. This
 approach is computationally inefficient \cite{hopcroft1984,sharon2013} as the 
 time to find a
-solution grows exponential in the number of agents. Another common approach is 
-to
+solution grows exponential in the number of agents. A common approach to speed 
+up the search is to
 impose a hierarchy on the agents by assigning them a unique priority. Agents
 plan a path to their destination in descending order of priority. When it is an
 agent's turn to plan their path they have to consider agents with a higher
@@ -24,7 +25,7 @@ priority as a moving obstacle. This means that they have to avoid planning any
 movements that conflict with those of higher priority agents. Both of these
 approaches result in abstract solutions; there is often no clear reason why a
 particular solution was the one arrived at. The algorithm has found a set of
-conflict free paths and that set was returned as the working solution without
+conflict free paths that work as a solution but it doesn't give
 any indication about the considerations of why it is a good plan.
 
 These two common approaches to solving the cooperative pathfinding problem both
@@ -35,21 +36,21 @@ priority ordering that the agents have to adhere to. After this has been done
 then the calculation of the plans for the agents can be decoupled. This allows
 the agents to make their individual plan on their own processor. During this
 decoupled planning they need to communicate with each other about their paths
-but they do not require a central point of communication. Next to the
-centralized and decoupled methods there are also fully decentralized approaches
-where agents only communicate in a small range. There is no central processor
+but they do not require a central point of communication to do so. Next to the
+centralized and decoupled methods there are also fully decentralized 
+approaches. With these there is no central processor
 that can be a single point of failure. As a trade-off these methods usually
 have no global view of the problem. This means that agents can make decisions
 early on that will lead to congestions or deadlocks at a later point in time 
 without any agent
 noticing at the time that the decision was made.
 
-Methods of decentralised coordination have been developed by the field of 
+Methods of decentralized coordination have been developed by the field of 
 computational argumentation. Formal models of argumentation have been used in 
 Artificial Intelligence in expert systems, multi-agent systems and law
 \cite{vaneemeren2014,rahwan2009}. An important concept in computational 
-argumentation is that of
-defeasible reasoning: the conclusion that can be drawn from a set of premises
+argumentation is that of defeasible reasoning \cite{dung1995}: the conclusion 
+that can be drawn from a set of premises
 does not need to hold when additional premises are added. This is in contrast
 with classical logic where adding additional premises will never invalidate a
 conclusion. Defeasible reasoning allow arguments to be made for or against a
@@ -88,7 +89,7 @@ to better coordinate their activities. Nodes can even take over each others
 tasks to spread the computational load. Coordination is not rigid and nodes have
 some freedom in how they execute their plan if circumstances change without
 having to re-coordinate with the other nodes. None of the involved nodes ever
-has a global view, but the end result is a plan that is globally coordinated
+has a global view but the end result is a plan that is globally coordinated
 with each node holding a part of the global plan.
 
 This method of constructing a global plan from local views can also be applied
@@ -100,8 +101,8 @@ plan as a response. This is only necessary when new conflicts arise because of
 the alternative path. This allows for a truly decentralised approach where
 agents  only communicate with other agents when they have to. There is also no
 need to wait for a central processor to tell agents what to do. At the same
-time plans are well coordinated without lacking a global view like the
-decentralized cooperative pathfinding algorithms.
+time plans are well coordinated and there is a global view, something that other
+decentralized cooperative pathfinding algorithms lack.
 
 % describe how to combine these three views
 Dialogues can be used in cooperative pathfinding by applying techniques from
@@ -120,10 +121,10 @@ cooperative pathfinding problem without any agent having known it explicitly.
 There is also no single agent which has been vital to its calculation like in a
 centralized approach.
 
-By combining partial global planning, deliberation dialogues we can develop
+By combining deliberation dialogues and partial global planning we can develop
 an algorithm that is able to overcome the weaknesses which other cooperative
 pathfinding algorithms have. Using the decoupled method as a starting point we
-use partial global planning to remove the reliance on a central processor to
+employ partial global planning to remove the reliance on a central processor to
 determine the hierarchy. This also prevents a common pitfall of decentralized
 methods which are not able to coordinate plans on a global level. So we
 essentially achieve a decentralized algorithm that is able to create a global

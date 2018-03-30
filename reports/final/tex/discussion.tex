@@ -1,8 +1,9 @@
 \section{Discussion}\label{sec:discussion}
 This section will first discuss the experimental results on a more general 
-level. The implications of 
+level. Next the implications of 
 our algorithm and its relation to the literature presented in 
-\autoref{sec:related} will be discussed at the end of this section.
+\autoref{sec:related} will be discussed. Finally we make some suggestions for 
+future research.
 % TODO: scalability
 % TODO: more compartmentalized than decoupled methods
 % TODO: discuss WHCA* vs Continual Planning vs WDPCA*
@@ -342,6 +343,48 @@ the other. They could also make proposals about how to resolve the conflict in
 claims and agents should be able to argue for or against its adaptation. A
 voting system similar to the priority scheme evaluation used by WDPCA* could
 also be employed.
+
+\subsection{Future research}
+The family of algorithms we have presented here show some good results. Some 
+improvements to our algorithms can be made. It was suggested that the optimal 
+voting weights may depend on the number of agents present in the problem. From 
+casual observation it seems that there is no single set of weights that gives 
+optimal performance. Exploring whether speed performance and path quality 
+increase when the voting weights depend on the number of agents may be 
+worthwhile. For WDPCA* there may even be a difference between weights dependent 
+on the number of agents in the problem or the number of agents in a window.
+
+Some improvements may be made in which dialogues agents can participate in and 
+which arguments they can put forward. When agent $a_i$ and $a_j$ have 
+coordinated in the past they may want to form an alliance against agent $a_k$ 
+if either of them would have a conflict with $a_k$. By doing so agents that 
+have locally well coordinated plans could force other agents to adjust to their 
+plans. This would avoid the need to readjust plans of multiple agents if one of 
+them would have to adjust. 
+Contrary $a_k$ may also 
+want to weigh in on a dialogue if certain priority ordering proposals would 
+have a negative impact on its plan. In \autoref{fig:example} agent $a_3$ may 
+want to weigh in on initial the conflict resolution dialogue between $a_1$ and 
+$a_2$. This could allow it to determine which proposal would be accepted during 
+that dialogue.
+
+We have looked at path level argumentation but it is also possible for the 
+agents to argue about individual actions similar to \textsf{DeLP-MAPOP}. This 
+would in itself allow for richer dialogues as agents can put arguments forward 
+about why certain actions in its plan are important. It may also allow agents 
+to negotiate about their actions. Currently there is not much room for 
+negotiation but this may change when agents can switch having priority and 
+yielding based on their circumstances. It would also allow the algorithm to be 
+complete. Certain situations require agents to alternate yielding and having 
+priority, something which is almost impossible when a hierarchy is imposed on 
+the agents. Dialogues about individual actions are more likely to result in a 
+complete algorithm.
+
+Finally a better formalisation would allow some properties of our algorithms to 
+be proven. This includes the time and space complexity of the algorithms and 
+whether they are guaranteed to terminate. Currently it is possible to provide 
+an informal proof of termination at best. A more formal definition would also 
+allow other improvements, such as completeness, to be made more easily.
 
 \section{Conclusion}
 In this thesis we have combined ideas from partial global planning, continual

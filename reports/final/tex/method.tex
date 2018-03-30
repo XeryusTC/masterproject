@@ -4,13 +4,13 @@ requiring only minimal computational resources. The agents calculate paths to
 their destination individually so this is inherently distributed. A hierarchy
 is imposed on the agents by assigning them a priority order. This order allows
 agents to avoid conflicts without a central processor making a plan. However a
-central processor is still needed to determine the priority order. This central
+central processor is still needed to determine the priority order. A central
 processor is used to
 find dependencies between agents to determine possible priority orderings that
 can be used to solve the problem \cite{latombe1991,bennewitz2002}. This means
 that decoupled methods are mostly distributed with a single centralized
 bottleneck. All agents will have to halt calculating a solution while the
-priority scheme is determined by the central processor. The central processor
+priority ordering is determined by the central processor. The central processor
 in its turn has to wait for all agents to calculate and communicate their
 optimal paths before it is able to calculate the priority order.
 
@@ -46,9 +46,35 @@ conflict
 with the path of an agent of higher priority. This results in a path which
 leads the agent to its destination and it does not collide with other agents
 during the execution of this plan. Because CA* is based on A* it will find the
-shortest path which does so.
+optimal path which does so.
 
 \subsection{Partial Cooperative A* (PCA*)}
+
+The heart of the algorithm is the conflict resolution step. The most
+straightforward approach to solving conflicts is by going through all possible
+agent orderings. An ordering determines which agent has priority over another
+agent. The ordering $a_1 > a_2$ indicates that $a_1$ can plan freely while
+$a_2$ has to consider $a_1$ as a moving obstacle. Usually decoupled methods use
+a permutation of the priority ordering $a_1 > a_2 > \ldots > a_k$ that all
+agents have to adhere to. Our algorithm Partial Cooperative A* (PCA*) does this 
+for smaller groups of agents, it is outlined in \autoref{alg:pca}. Initially 
+agents find their optimal paths without considering the presence of other 
+agents (line~1 and line~2) and communicate the result with each other (line~3). 
+The function \textsc{FindPath()} finds a path for an agent with the constraints 
+of the priority orderings given as its sole argument. 
+\textsc{CommunicatePath()} 
+sends this path to all other agents so that they can find conflicts. 
+\textsc{HasConflict()} will return true when an agent has conflicts along its 
+path or false otherwise.
+When agents detect that there is a conflict in their individual plans then they 
+will try to find a priority ordering between them that will solve the conflict. 
+Agent will always try to find a solution to the conflict that is closest to 
+their current position first (line~5) given by the function 
+\textsc{EarliestConflict()}. This is because the solution to earlier 
+occurring conflicts may have the side-effect of solving or creating later 
+conflicts. There is no need to waste computational resources on solving a 
+conflict that will be solved by implication when an earlier occurring conflict 
+is solved.
 
 \begin{algorithm}[t]
     \caption{Partial Cooperative A*}
@@ -72,31 +98,18 @@ shortest path which does so.
     \end{algorithmic}
 \end{algorithm}
 
-The heart of the algorithm is the conflict resolution step. The most
-straightforward approach to solving conflicts is by going through all possible
-agent orderings. An ordering determines which agent has priority over another
-agent. The ordering $a_1 > a_2$ indicates that $a_1$ can plan freely while
-$a_2$ has to consider $a_1$ as a moving obstacle. Usually decoupled methods use
-a permutation of the priority ordering $a_1 > a_2 > \ldots > a_k$ that all
-agents have to adhere to. Our algorithm Partial Cooperative A* (PCA*) does this 
-for smaller groups of agents, it is outlined in \autoref{alg:pca}. Initially 
-agents find their optimal paths without considering the presence of other 
-agents (line~1 and line~2) and communicate the result with each other (line~3).
-When agents detect that there is a conflict in their individual plans then they 
-will try to find a priority ordering between them that will solve the conflict. 
-Agent will always try to find a solution to the conflict that is closest to 
-their current position first (line~5). This is because the solution to earlier 
-occurring conflicts may have the side-effect of solving or creating later 
-conflicts. There is no need to waste computational resources on solving a 
-conflict that will be solved by implication when an earlier occurring conflict 
-is solved.
-
-To find the most suitable priority ordering scheme all possible orderings
+To find the most suitable priority ordering all possible orderings
 between the agents that are involved in the conflict are evaluated (line~6--11 
 in \autoref{alg:pca}). A conflict with two agents will result in the orderings 
-$a_1 > a_2$ and $a_2 > a_1$ being evaluated. The agents temporarily adapt the 
+$a_1 > a_2$ and $a_2 > a_1$ being evaluated. The function 
+\textsc{PriorityOrderings()} will give the set of all possible priority 
+orderings 
+permutations for the agents involved in the conflict. The agents temporarily 
+adapt 
+the 
 first ordering and plan new paths with the constraints it introduces (line~9). 
-The agents measure the length of the paths that they found (line~10). They do 
+The agents measure the length of the paths that they found using the 
+\textsc{PathCost()} function (line~10). They do 
 this for each priority ordering that is possible. The priority ordering with 
 minimal increase in sum of path lengths is permanently adapted by the 
 agents (line~12). A new path is calculated and communicated with all other 
@@ -123,7 +136,7 @@ The orderings that are found do not need to be unambiguous, if $a_1$ and $a_3$
 had used the solution $a_3 > a_1$ then $a_1$ would have orderings $a_2 > a_1$
 and $a_3 > a_1$ but $a_2 > a_3$ or $a_3 > a_2$ is not known. This leaves $a_2$ 
 and $a_3$
-free to use any priority scheme in the event that they also have a conflict in
+free to use any priority ordering in the event that they also have a conflict in
 their paths. This also allows for circular priority orderings, something which
 conventional decoupled algorithms do not support \cite{bennewitz2002}. This is 
 possible because the
@@ -165,7 +178,7 @@ calculated and shared
 their optimal paths they find that $a_1$ and $a_2$ have a conflict after their 
 first action. 
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \begin{subfigure}[t]{.3\textwidth}
         \centering
@@ -257,7 +270,7 @@ priority ordering.
 
 \subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
 
-\begin{table}
+\begin{table}[b]
     \centering
     \caption{Stages of a conflict resolution dialogue.}
     \label{tbl:stages}
@@ -284,45 +297,66 @@ consists of several stages that are summarised in \autoref{tbl:stages}. There
 is a separate dialogue for each conflict. The agents work through the
 conflicts in chronological order, they solve conflicts that occur early before
 solving conflicts that occur later. The dialogue replaces lines~6--12 of 
-\autoref{alg:pca}. A more complete outline of the dialogue is given in 
-\autoref{alg:dpca}.
+\autoref{alg:pca}. A more complete outline of the dialogue-based algorithm is 
+given in \autoref{alg:dpca}.
+There are several additional functions in \autoref{alg:dpca} that were not 
+found in \autoref{alg:pca}. The function \textsc{FindConflicts()} returns the 
+set of all conflicts that an agent is involved in. \textsc{PutDialogueOnHold()} 
+will tell the other agents in a conflict to wait until the agent is willing to 
+continue. Finally \textsc{CastVote()} allows agents to vote on a proposal. All 
+of 
+these processes will be discussed in the remainder of this section.
+
 Each dialogue starts with an opening stage, during this stage the agents notify 
 each other if they are taking part
 in any dialogues for conflicts that occur earlier than the current conflict
 being discussed. If there is such a prior dialogue then the current dialogue
-will be put on hold until all earlier dialogues are completed. If the conflict 
+will be put on hold until all earlier dialogues are completed, this achieved by 
+lines~6--9 of \autoref{alg:dpca}. If the conflict 
 of the dialogue is the conflict that occurs the earliest for all involved 
 agents then the dialogue moves on to the proposal stage.
 
 \begin{algorithm}[t]
-    \caption{Adding deliberation dialogue to PCA*}
+    \caption{Dialogue-based Partial Cooperative A* (DPCA*)}
     \label{alg:dpca}
     \begin{algorithmic}[1]
         \Require $topic$: conflict that is to be solved by the dialogue
         
-        \Comment{Stage 1: opening~~~~}
+        \State $Permanent \gets \emptyset$
+        \State $Path \gets FindPath(Permanent)$
+        \State $CommunicatePath(Path)$
         
-        \If{$topic \neq \Call{EarliestConflict}$}
-        \State $\Call{PutDialogueOnHold}$
-        \EndIf
+        \State $Conflicts \gets \Call{FindConflicts}$
+        \ForAll{$conflict \in Conflicts$}
+            \Comment{Stage 1: Opening~~~~}
+%        \If{$topic \neq \Call{EarliestConflict}$}
+%        \State $\Call{PutDialogueOnHold}$
+%        \EndIf
+            \If{$conflict \neq \Call{EarliestConflict}$}
+                \State $\Call{PutDialogueOnHold}{conflict}$
+                \State continue
+             \EndIf
         
-        \Comment{Stage 2: proposal~~~}
+            \Comment{Stage 2: proposal~~~}
+            \Repeat
+                \State $\Call{Propose}$
+                
+            \Comment{Stage 3: evaluation}
+            
+            \ForAll{$proposal \in unevaluatedProposals$}
+            \State $path \gets \Call{FindPath}{permanent \cup proposal}$
+            \State $vote, expand \gets \Call{Evaluate}{path}$
+            \State $\Call{CastVote}{vote}$
+            \EndFor
+            \Until{$\lnot expand$}
         
-        \Repeat
-        \State $\Call{Propose}$
-        
-        \Comment{Stage 3: evaluation}
-        
-        \ForAll{$proposal \in unevaluatedProposals$}
-        \State $path \gets \Call{FindPath}{permanent \cup proposal}$
-        \State $vote, expand \gets \Call{Evaluate}{path}$
-        \State $\Call{CastVote}{vote}$
+            \Comment{Stage 4: closing~~~~}
+            
+            \State $permanent \gets permanent \cup {\argmin \sum votes}$
+            \State $Path \gets \Call{FindPath}{Permanent}$
+            \State $\Call{CommunicatePath}{Path}$
+            \State $Conflicts \gets \Call{FindConflicts}$
         \EndFor
-        \Until{$\lnot expand$}
-        
-        \Comment{Stage 4: closing~~~~}
-        
-        \State $permanent \gets permanent \cup {\argmin \sum votes}$
     \end{algorithmic}
 \end{algorithm}
 
@@ -367,7 +401,7 @@ After all the proposals have been evaluated there is room for agents to claim
 to want to expand on previous proposals. If an agent does so then the dialogue
 goes through another proposal and evaluation stage. If no agent wants to make
 additional proposals the dialogue can be completed in the closing stage. During
-the closing stage each agent will permanently adapt the priority scheme with
+the closing stage each agent will permanently adapt the priority ordering with
 the highest sum of votes. The priority ordering in this proposal is always
 considered when making new proposals and plans during future dialogues. This
 completes the dialogue, the agents can now work on conflicts that still occur.
@@ -403,7 +437,7 @@ through the location of the conflict at $t$. This has the effect of also
 solving the conflict between $a_2$ and $a_3$. Now only $a_1$ and $a_3$ still
 have a conflict at $t$ and they will have to hold a dialogue about which agent
 gets priority over the other. When this dialogue would end with the priority
-scheme $a_1 > a_3$ then the multi-agent conflict at $t$ is solved. It may be
+ordering $a_1 > a_3$ then the multi-agent conflict at $t$ is solved. It may be
 the case that $a_2$ and $a_3$ now have another conflict at a different position
 and/or time that they will have to resolve. For this conflict there will be at
 least two dialogues that need to lead to a conclusion, and at most three
@@ -440,7 +474,7 @@ conflict free set of paths for all agents.
 
 \subsubsection{Example of dialogue-based conflict resolution}
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \begin{subfigure}[t]{.3\textwidth}
         \centering

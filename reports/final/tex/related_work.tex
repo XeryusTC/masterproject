@@ -14,27 +14,8 @@ discussed to help bridge the gap between argumentation and cooperative
 pathfinding. We also discuss work in coordination that can be used to achieve
 greater speed performance.
 
-\begin{table}[b]
-    \centering
-    \caption{Comparison of several cooperative pathfinding algorithms.}
-    \label{tbl:planning-overview}
-    \begin{tabular}{l|l|l|l|l|l}
-        Method & Category & Complete & Priority & Comm. & Online \\
-        \hline
-        OD+ID \cite{standley2010,standley2011} & Centralized & Yes & No & All &
-        No \\
-        ICTS \cite{sharon2013} & Centralized & Yes & No & All & No \\
-        ADPP \cite{cap2012} & Decoupled & No & Yes & All & No \\
-        WHCA* \cite{silver2005} & Decoupled & No & Yes & Window
-        & Yes \\
-		DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
-        DiMPP \cite{chouhan2017} & Decentralized & Yes & Yes & Ring & No \\
-        ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
-        %Proposed & Decentralized & No & Partial & All & Before
-    \end{tabular}
-\end{table}
-
 \subsection{Cooperative pathfinding}
+
 In the grid world of \autoref{fig:world} each agent can take one of $b+1$
 actions, where $b$ is the current number of neighbouring cells without static
 obstacles. There is also a \textit{wait} action
@@ -50,7 +31,7 @@ like A* \cite{sharon2013}.
 
 There are a few common strategies that are used to tackle this problem.
 Centralised methods use one single processor to calculate the paths for all
-agents. They are often complete, they will find a solution to the problem if
+agents. They are often complete: a solution to the problem will be found if
 one exists. This also means that they are slow. An alternative strategy is to
 decouple the agents from each other. Each agent plans its own path and a
 hierarchy is enforced on the agents. Agents with a lower priority need
@@ -62,11 +43,32 @@ conflicts when they occur during plan execution. These decentralized methods
 are often reactive in nature and are not always able to plan far enough into
 the future to avoid deadlocks and congestions.
 
+\begin{table}[t]
+    \centering
+    \caption{Comparison of several cooperative pathfinding algorithms.}
+    \label{tbl:planning-overview}
+    \begin{tabular}{l|l|l|l|l|l}
+        Method & Category & Complete & Priority & Comm. & Online \\
+        \hline
+        OD+ID \cite{standley2010,standley2011} & Centralized & Yes & No & All &
+        No \\
+        ICTS \cite{sharon2013} & Centralized & Yes & No & All & No \\
+        ADPP \cite{cap2012} & Decoupled & No & Yes & All & No \\
+        WHCA* \cite{silver2005} & Decoupled & No & Yes & Window
+        & Yes \\
+        DMRCP \cite{wei2016} & Decentralized & No & No & 2 nodes & Yes \\
+        DiMPP \cite{chouhan2017} & Decentralized & Yes & Yes & Ring & No \\
+        ORCA \cite{vandenberg2011} & Decentralized & No & No & None & Yes \\
+        %Proposed & Decentralized & No & Partial & All & Before
+    \end{tabular}
+\end{table}
+
 An overview of several cooperative pathfinding algorithms is shown in
 \autoref{tbl:planning-overview}. It summarises the properties of the
 algorithms. Each algorithm is discussed in more detail below. Some other
 aspects than the category, completeness and the assignment of priorities are
-also discussed. Among these factors is the communication range which may limit
+also discussed. Among these properties is the communication range which may 
+limit
 which agents are allowed to coordinate with each other. Some of the algorithms
 create a plan before executing it while other algorithms interleave planning
 and execution. The latter category of algorithms allow agents to move even
@@ -110,15 +112,17 @@ time on improving the solution. Because ID is an extension that can be applied
 to any cooperative pathfinding algorithm OD+ID is still complete. Although
 there is implicit priority in which order the agents are assigned actions. This
 has no influence on the ability to find a solution or the quality of the
-solution. Planning is completed before agents start executing it so there is
+solution. The plan is completed before agents start executing it so there is
 no need to update the plan during execution.
 
 Another centralized method is called the Increasing Cost Tree Search (ICTS)
 which is a
 two-fold search method \cite{sharon2013}. It consists of a high-level search on
-an Increasing Cost Tree (ICT) which has a root node which contains the optimal
-path costs for each individual agent. Each child node increases the path cost
-for a different agent. So each level in the tree increases the sum of the path
+an Increasing Cost Tree (ICT) which has a root node that contains the cost of 
+the optimal
+path for each individual agent. Each child node increases the path cost
+for a different agent by one. So each level in the tree increases the sum of 
+the path
 costs by one. This tree is searched using breadth-first search. When a node in
 the ICT is expanded a low-level search is invoked. This low level search
 generates all possible paths for all agents that are equal to the cost in the
@@ -141,9 +145,9 @@ number of nodes is high.
 The above algorithms both fall into the centralized category of algorithms.
 These methods can become very slow because of the state-space explosion.
 Decoupled methods reduce the required calculation time by considering each
-agent separately. They generally use the same three step approach;
+agent separately. They generally use the same three step approach:
 \begin{enumerate}
-    \item Find optimal paths for each agent independently of each other.
+    \item Find optimal paths for each agent independent of each other.
     \item Impose a hierarchy on the agents, often this is done by assigning
     them a unique priority.
     \item Make new plans for all the agents. This time an agent has to consider
@@ -151,12 +155,12 @@ agent separately. They generally use the same three step approach;
     priority are ignored.
 \end{enumerate}
 This often leads to a set of conflict free plans. Finding the optimal priority
-order is a combinatorial problem \cite{bennewitz2002}. A common algorithm of
+ordering is a combinatorial problem \cite{bennewitz2002}. A common algorithm of
 assigning priorities first calculates a dependence graph based on the paths
 found in the first step. Then priorities can be assigned such that agents have
 a priority that is higher than that of agents that may block them. Circular
 dependencies may mean that multiple priority orderings have to be evaluated. The
-total length of the final solution depends highly on the priority ordering
+total costh of the final solution depends highly on the priority ordering
 employed.
 Some of the possible priority orderings may not even lead to a solution. This
 category of algorithms is not complete because it may be the case that none of
@@ -169,7 +173,7 @@ Determining the priority ordering is often centralized since a
 single processor needs to determine all dependencies \cite{bennewitz2002}. One
 method called Asynchronous Decentralized Prioritized Planning (ADPP)
 \cite{cap2012} exploits the inherent parallelism of a multi-robot team during
-the planning stages. The method allows
+the planning stages. The algorithm allows
 agents to make their individual plans. After an agent has found a path it will
 notify all agents with a lower priority of its (new) path. These lower priority
 agents will then update their plans if conflicts arise. They will in turn
@@ -197,17 +201,21 @@ paths. The search by the above algorithm can be limited by using a window. The
 reservation table is only used in the window and the rest of the path is
 planned using the same abstract space as HCA*. This effectively ignores the
 other agent's actions outside of the window. The window is moved at regular
-intervals and the agent's plan is updated when this happens. Because of this
-the agents have no fixed hierarchy. The priority order varies based on the
+intervals and the agent's plan is updated when this happens. When the window 
+moves the priority ordering is recalculated so that
+the agents have no fixed hierarchy. The priority ordering thus varies based on 
+the
 current window. Computation is spread out over the time it takes for agents to
 get to their destination. There is no need to calculate the entire path before
 execution, instead they can be updated regularly during execution. Agents still
 ensure that they take the most optimal path to their destination by consulting
-the abstract space during planning. When agents reach their destination they
-stop cooperating because they have reached their individual goal. This can
-block other agents from reaching their goal. WHCA* solves this by forcing
-agents to keep planning and coordinating for the length of the window, even if
-the agent has reached its goal.
+the abstract space during planning. Usually with decoupled algorithms agents 
+will stop cooperating when they their destination because they have reached 
+their individual goal. This can
+block other agents from reaching their respective goals. WHCA* solves this by 
+forcing
+agents to keep planning and coordinating for the length of the window even if
+the agent has already reached its goal.
 
 % TODO: rewrite this paragraph
 %The window of WHCA* limits the size of the reservation table the agents have to
@@ -222,12 +230,14 @@ the agent has reached its goal.
 The window of WHCA* limits the size of the reservation table that the agents 
 use. In turn this limits the communication range of the agents to the size of 
 the window.
-Agents share part of their reservation table with the agents for which their 
-windows overlap.
+Agents share their reservation table with the agents that fall within their 
+window.
 %When agents have overlapping windows they share a reservation table 
 %Where the windows of agents overlap 
-The previously discussed algorithms do not include a limit on the communication 
-range. Instead they allow (and often require) all agents to communicate with 
+The other algorithms discussed do not include a limit on the communication 
+range, so far only WHCA* does. Instead those algorithms allow (and often 
+require) all 
+agents to communicate with 
 each other to find a solution. Centralised algorithms use a single processor to 
 find the solution. This means that all agents communicate indirectly with each 
 other through the central processor.
@@ -255,7 +265,7 @@ when they occur. There is no way to prevent deadlocks from happening.
 
 Another method that doesn't use a central processor is Distributed Multi-agent
 Path Planning (DiMPP) \cite{chouhan2017}. This is a distributed algorithm that
-is complete, it is guaranteed that it will find a solution. To find the
+is complete, it is guaranteed that it will find a solution. To find a
 solution all agents are only allowed to communicate in a unidirectional ring:
 agent $a_i$ receives messages from $a_{i-1}$ and will send messages to
 $a_{i+1}$. Counting is modulo $n$ so agent $a_n$ will send its messages to
@@ -268,7 +278,7 @@ orderings
 \[ \langle a_2, a_3, \ldots, a_k, a_1 \rangle \]
 \[ \vdots \]
 \[ \langle a_k, a_1, \ldots a_{k-2}, a_{k-1} \rangle \]
-Doing so means that the algorithm only has to evaluate $n$ orderings instead of
+The algorithm now only has to evaluate $n$ orderings instead of
 all possible $n!$ permutations. The algorithm finds the priority ordering
 by letting $a_1$ find its optimal path. It will then send its path to $a_2$
 which will find an optimal path that does not conflict with the path of $a_1$.
@@ -313,7 +323,8 @@ that to construct a velocity obstacle (VO) to predict where the agent goes in
 the next $\tau$ seconds. VOs can also be used to describe the static objects in
 the environment. An agent will calculate the collision-avoiding velocities that
 prevent the agents colliding within $\tau$ seconds. Multiple VOs can be
-combined to limit the possible collision-avoiding velocities to prevent
+combined to limit the possible collision-avoiding velocities even further to 
+prevent
 colliding with multiple agents. ORCA assumes that all agents use the same
 method of avoiding collisions. Because agents only observe the positions and
 velocities of nearby agents the algorithm is purely reactive, it requires no 
@@ -323,8 +334,9 @@ directions. It can be used together with a global planning algorithm that will
 determine what the preferred direction for the agent is. ORCA will try to
 match this as closely as possible. Calculating VOs is so computationally
 inexpensive that the algorithm can handle hundreds or even thousands of agents
-in real-time. Most cooperative pathfinding algorithms are not able to calculate
-paths for such large amounts of agents in real-time.
+in real-time. Most other cooperative pathfinding algorithms are not able to 
+calculate
+paths for such large numbers of agents in real-time.
 %ORCA
 %also fits quite well with human behaviour and is used in crowd simulations.
 
@@ -338,7 +350,8 @@ been studied by philosophers, and in recent decades it has also been
 extensively researched in
 the field of Artificial Intelligence as well. In AI it has been studied
 in the fields of legal argumentation (AI \& Law), defeasible reasoning and
-multi-agent systems. One pillar is non-monotonic logic. A logic is
+multi-agent systems. One pillar of argumentation is non-monotonic logic. A 
+logic is
 non-monotonic when a conclusion that follows based on the premises does not
 necessarily hold any more when additional premises are added
 \cite{vaneemeren2014,modgil2013,rahwan2009}. A classic example of this is that 
@@ -347,8 +360,8 @@ fly, so when
 you see a bird you assume that it can fly. However when you are told that the
 bird is a penguin and that penguins can't fly then you will no longer conclude
 that the bird can fly. A argument is defeasible when it can be defeated by
-other arguments, in the previous example the fact that the bird that you see
-can fly is defeasible.
+other arguments, in the previous example the fact that the bird can fly is 
+defeasible.
 
 Pollock distinguishes two different types of defeating arguments
 \cite{pollock1995}. \emph{Rebutting defeaters} attack an argument directly and
@@ -430,7 +443,7 @@ most human dialogues there can (temporarily) be switched between these types.
 
 Dialogues are often analysed in a game-theoretic sense. The utterances
 that agents can make are analogous to the moves in a game. Which utterances are
-appropriate at each moment is then defined by the rules of the game. Most of
+appropriate at each moment is defined by the rules of the game. Most of
 the research into dialogues follows this approach
 \cite{prakken2006,prakken2009}. Most dialogue systems have a two language
 set-up. The first is the topic language which is about what agents are
@@ -539,7 +552,7 @@ goal is to
 let agents cooperate without any one of them formulating a global plan. Instead
 agents will coordinate with other agents only when they need to. This leads to
 the construction of many small local plans which can be communicated to other
-agents as well. This means that eventually there will be a global plan that
+agents as well. The result is that eventually there will be a global plan that
 covers all agents. The agents themselves will only know the part of the global
 plan that is relevant to them. The global plan is implied by these partial
 global plans. Key to
@@ -555,7 +568,8 @@ coordination relationships between goals. This allows the framework to be used
 in settings other than the multi-sensor network that PGP was originally
 developed for.
 
-Continual Planning \cite{brenner2009} aims to achieve coordination in a
+Continual Planning \cite{brenner2008,brenner2009} aims to achieve coordination 
+in a
 multi-agent setting where the environment can be partially observable and is
 highly dynamic. Here plan creation and execution are interleaved so that agents
 are better able to respond to changes in their environment. This is similar to

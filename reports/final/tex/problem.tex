@@ -10,6 +10,7 @@
     \label{fig:world}
 \end{figure}
 
+
 The problem of cooperative pathfinding can be defined as follows. A shared
 space is divided into discrete cells such that it forms an 8-connected grid.
 Some of the cells in this grid are static obstacles while the other cells are
@@ -19,11 +20,12 @@ need to be found, one for each agent, such that each agent gets to its goal
 position without colliding with any of the other agents. A path consists of a
 series of actions. An action can either be to move to one of the eight
 neighbouring cells or \emph{wait} at the current location. Each time step an
-agent must do exactly one of these actions. An example initial configuration is
+agent must do exactly one of these actions. All actions take exactly one time 
+step to execute. An example initial configuration is
 shown in \autoref{fig:world}.
 
 The goal is to find one path for each agent so that it reaches its destination 
-in as little time as possible. The paths can not enter cells with static 
+in as few actions as possible. The agents can not enter cells with static 
 obstacles nor should agents collide with each other. Each action in a path has 
 unit cost, with the exception of waiting in the goal position. The cost 
 function is then
@@ -45,6 +47,37 @@ cost that is the sum of the costs of all its actions. The cost of a solution is
 defined as the sum of the costs of the paths of the agents. The most
 appropriate solution to the problem is a solution with minimal cost.
 
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{.3\textwidth}
+        \centering
+        \def\svgscale{.7}
+        \input{images/conflict1.pdf_tex}
+        \caption{Moving to the same position.}
+        \label{fig:conflict-position}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{.3\textwidth}
+        \centering
+        \def\svgscale{.7}
+        \input{images/conflict2.pdf_tex}
+        \caption{Moving along the same edge.}
+        \label{fig:conflict-same}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{.3\textwidth}
+        \centering
+        \def\svgscale{.7}
+        \input{images/conflict3.pdf_tex}
+        \caption{Moving on crossing edges.}
+        \label{fig:conflict-crossing}
+    \end{subfigure}
+    \caption{Examples of conflicting actions. Agents are circles inscribed with
+        $a_i$. Their movements are indicated by the arrows starting in the cell
+        they occupy, the action ends in the cell that the arrow points to.}
+    \label{fig:conflicts}
+\end{figure}
+
 The paths of two agents are not in conflict if and only if at no time step the 
 agents
 occupy the same cell, agents move along the same edge (swap positions), or
@@ -57,7 +90,8 @@ happen whenever the agents are at most two actions away from each other. A
 single action can result in an agent having multiple conflicts at the same
 time. If \autoref{fig:conflict-position} had an agent $a_3$ in the top right
 cell moving to the bottom middle cell then $a_2$ would have a conflict with
-both $a_1$ and $a_3$ at the same time.
+both $a_1$ and $a_3$ at the same time but $a_1$ would only have a conflict with 
+$a_2$.
 Agents are allowed to move along a diagonal even when the two cells on the
 opposing diagonal are blocked, i.e. $a_5$ in \autoref{fig:world} can move to its
 destination in a single time step. An agent $a_i$ can move to a cell occupied by
@@ -69,34 +103,3 @@ cannot move to their
 destinations in a single time step because that would mean that they move along
 crossing edges at the same time. They can also not swap places because then
 they would be travelling along the same edge.
-
-\begin{figure}[t]
-	\centering
-	\begin{subfigure}[b]{.3\textwidth}
-		\centering
-	    \def\svgscale{.7}
-		\input{images/conflict1.pdf_tex}
-		\caption{Moving to the same position.}
-		\label{fig:conflict-position}
-	\end{subfigure}
-	~
-	\begin{subfigure}[b]{.3\textwidth}
-		\centering
-	    \def\svgscale{.7}
-		\input{images/conflict2.pdf_tex}
-		\caption{Moving along the same edge.}
-		\label{fig:conflict-same}
-	\end{subfigure}
-	~
-	\begin{subfigure}[b]{.3\textwidth}
-		\centering
-  \def\svgscale{.7}
-		\input{images/conflict3.pdf_tex}
-		\caption{Moving on crossing edges.}
-		\label{fig:conflict-crossing}
-	\end{subfigure}
-	\caption{Examples of conflicting actions. Agents are circles inscribed with
-	$a_i$. Their movements are indicated by the arrows starting in the cell
-	they occupy, the action ends in the cell that the arrow points to.}
-	\label{fig:conflicts}
-\end{figure}

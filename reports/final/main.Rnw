@@ -31,8 +31,11 @@
 
 \newcommand{\agentsupb}{40 }
 
-\author{Xeryus Stokkel \\ Supervisor: prof. dr. Bart Verheij}
-\title{Argumentation Dialogues for Cooperative Pathfinding}
+\author{Xeryus Stokkel \\
+    Primary supervisor: prof. dr. Bart Verheij \\
+    Secondary supervisor: prof. dr. Rineke Verbrugge}
+\title{Deliberation Dialogues for Cooperative Pathfinding}
+\date{March 2018}
 
 <<preprocess,echo=F,message=F,cache=F>>=
 require(knitr)

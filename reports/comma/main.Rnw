@@ -2,15 +2,12 @@
 % !TeX TXS-program:compile = txs:///knit2pdf
 \documentclass{IOS-Book-Article}
 
-\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+
 % IJCAI-ECAI style
-%\pdfpagewidth=8.5in
-%\pdfpageheight=11in
-%\usepackage{ijcai18}
 \usepackage{times}
 \usepackage{xcolor}
-%\usepackage{soul}
-\usepackage[small]{caption}
+%\usepackage[small]{caption}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -67,6 +64,7 @@ quality.title="Number of loops in paths."
 lengths.title="Mean sum of path length versus the number of agents in the
 problem instance. The results for 2 to 10 agents have been cut of because the
 path lengths for all algorithms are near identical for those amount of agents."
+join.title="Number of dialogues in a conflict and effect of using a path cache"
 
 file = rev(list.files('../../results', 'benchmark*'))[1]
 dat = read.csv(paste('../../results/', file, sep=""), header=T)
@@ -168,6 +166,7 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 @
 
 \def\hb{\hbox to 10.7 cm{}}
+\pagenumbering{gobble}
 \begin{document}
 
 \pagestyle{headings}
@@ -190,11 +189,12 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 
 \input{tex/abstract}
 \begin{keyword}
-Deliberation dialogues\sep cooperative pathfinding\sep practical reasoning
+Deliberation dialogues\sep cooperative pathfinding\sep multi-agent system\sep 
+practical reasoning\sep partial global planning
 \end{keyword}
 \end{frontmatter}
 \markboth{September 2018\hb}{September 2018\hb}
-\pagestyle{empty}
+%\pagestyle{empty}
 
 \input{tex/intro}
 \input{tex/problem}

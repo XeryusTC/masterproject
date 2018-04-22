@@ -148,7 +148,7 @@ sharing their initial optimal paths.
 %    \end{tabularx}
 %\end{table}
 
-Going through all possible permutations and evaluating them on a single
+Evaluating all possible permutations and on a single
 criterion is not an optimal method of finding a priority ordering. A path can 
 be 
 considered an argument for the usage of resources, namely being in a series of 
@@ -164,8 +164,8 @@ The algorithms this results in are called DPCA* and DPCA*+. Each deliberation
 dialogue consists of four stages that we have based on those of 
 \textsc{TeamLog}~\cite{dunin-keplicz2011}. An outline is given in \autoref{alg:dpca}. The dialogue 
 starts with the opening stage, during which agents can notify each other that 
-they have a conflict at an earlier time. If this is the case then they will put 
-the dialogue on hold, otherwise there is a propose stage. In \autoref{alg:dpca} 
+they have a conflict at an earlier time. In this case the dialogue is put on 
+hold, otherwise there is a propose stage. In \autoref{alg:dpca} 
 this stage is encapsulated by \textsc{Propose}. Agents will always propose that 
 they receive the highest priority. It is valid for a proposal to assign agents 
 an equal rank if that is the lowest rank, so the proposal $a_i > a_j = a_k$ is 

@@ -26,8 +26,10 @@ used during voting. To do this we used simulated annealing
 unit steps. Each iteration of the simulated annealing process consists of 200
 problem instances which contain between 2 and 50 agents. After each drop of
 temperature we generate a new set of 200 problem instances to prevent
-overfitting. The results of annealing are shown 
-in \autoref{tbl:annealing}. The
+overfitting.
+\autoref{tbl:annealing} shows the results of annealing.
+%The results of annealing are shown in \autoref{tbl:annealing}.
+The
 path length weight measures the increase of path length; the conflicts solved
 weight measures how many additional conflicts were solved by a proposal; and
 the partial solution weight is used as a penalty so that proposals which solve
@@ -47,14 +49,14 @@ an instance by assigning minimal explicit priorities are preferred.
     \end{tabularx}
 \end{table}
 
-<<perfgraph,echo=F,warning=F,cache=T,cache.beater=dat,dev='tikz',fig.height=2,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
+<<perfgraph,echo=F,warning=F,cache=T,cache.beater=dat,dev='tikz',fig.height=1.6,fig.width=5,fig.align='center',fig.pos='t',fig.cap=perfgraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(),
     type='l',
     log='y',
     col='red',
     xlim=c(0,10000),
-    ylim=c(1, 2000),
+    ylim=c(10, 2000),
     xlab='Problem instance',
     ylab='Time (ms)',
     frame.plot=F,
@@ -63,7 +65,7 @@ plot(c(),
 )
 axis(1, at=seq(0, 10000, 1000),
      labels=c(0, "", 2000, "", 4000, "", 6000, "", 8000, "", 10000))
-axis(2, at=c(1, 10, 100, 1000, 2000), labels=c(1, 10, 100, 2000, ""))
+axis(2, at=c(10, 100, 1000, 2000), labels=c(10, 100, 2000, ""))
 lines(seq(length(od)),    od,    col=color.set[1], lwd=linewidth,
 	  lty=linetypes[1])
 lines(seq(length(naive)), naive, col=color.set[2], lwd=linewidth,
@@ -84,16 +86,20 @@ legend("bottomright",
 @
 
 To compare the algorithms we give them a set of 10000 problem instances which
-have between 2 and \agentsupb agents. When we record the time required to solve
-each instance and sort them in ascending order we can plot them in a
-\emph{performance graph}~\cite{standley2010} as shown in 
-\autoref{fig:perfgraph}. The $x$-axis
+have between 2 and \agentsupb agents. 
+%The time required to solve each instance is recorded and sorted in ascending 
+%order so that we can plot them in a \emph{performance 
+%graph}~\cite{standley2010} as shown in  \autoref{fig:perfgraph}.
+When we record the time required to solve each instance and sort them in 
+ascending order we can plot them in a \emph{performance 
+graph}~\cite{standley2010} as shown in \autoref{fig:perfgraph}.
+The $x$-axis
 shows the index of the sorted instance. It is not necessarily the case that the
-$n$th instance for one algorithm is the same as the $n$th instance for a
+$n$th instance for one algorithm is the same as that for a
 different algorithm. The $y$-axis shows the time it takes an algorithm to solve
 that instance. A lower line in the performance graph means that the algorithm
 was able to solve instances faster. Instances that were not solved within the
-2000ms time limit are not plotted so the performance graph also indicates how
+2000ms time limit are not plotted, so the graph also indicates how
 many instances were successfully solved by an algorithm. When a plot
 extends further along the $x$-axis it means that the algorithm was able to
 solve more instances. \autoref{fig:perfgraph} shows that PCA* is generally
@@ -106,7 +112,7 @@ ms as shown by a one-sided paired t-test $(t(\Sexpr{base.vs.plus$parameter}) =
 3)})$. Both algorithms perform similar to DiMPP until 2300 instances. After
 that point DiMPP is slower.
 
-<<solved,echo=F,cache=T,cache.beater=solved.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=solved.title>>=
+<<solved,echo=F,cache=T,cache.beater=solved.aggr,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=solved.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(c(),
     type='l',
@@ -125,7 +131,7 @@ for(i in c(1:4,8)) {
     lines(solved.aggr[solved.aggr[,1]==algorithms[i],]$time,
         col=color.set[i], lty=linetypes[i], lwd=linewidth)
 }
-legend("bottomleft",
+legend("bottomright",
        legend=cannonical.names[c(1:4,8)],
        col=color.set[c(1:4,8)],
        bty="n",
@@ -148,7 +154,7 @@ xtable(quality.table[c(1:4,8),],
 )
 @
 
-<<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
+<<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(),
      type='n',
@@ -185,7 +191,7 @@ shows how long the paths found by each algorithm are. In general DPCA* and
 DPCA*+ find longer paths than OD+ID. DiMPP causes the largest detours of all 
 tested algorithms. PCA* finds the shortest paths of all algorithms.
 
-<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
+<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
@@ -212,12 +218,12 @@ The average number of dialogues that have taken place to find a solution is
 shown in \autoref{fig:dialogues}. It shows that more dialogues are needed when
 the problem instance contains more agents. DPCA* and DPCA*+ need a similar
 amount of dialogues, and they need a large amount more than PCA*.
-One thing that is noticeable is that the number of dialogues required
+One thing of note is that the number of dialogues required
 rises when the number of agents increases, but at some point this
 trend trails off. This point lies around 15 agents for PCA* and around 25
 agents for DPCA* and DPCA*+.
 
-<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
+<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='n',
@@ -251,14 +257,14 @@ four agents involved. DPCA*+ often does not have to solve more complex
 dialogues than DPCA* but it does use a more complex strategy and thus it is
 slightly slower.
 
-<<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=2,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
+<<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=1.5,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))
 plot(c(), c(),
      type='l',
      log='y',
      col='red',
      xlim=c(1,len.cache),
-     ylim=c(1, 2000),
+     ylim=c(10, 2000),
      xlab='Instance',
      ylab='Time (ms)',
      frame.plot=F,

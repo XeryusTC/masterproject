@@ -39,10 +39,14 @@ agents can evaluate a plan by voting. The table shows that our three algorithms 
 % TODO: extracting reasons for why solution was settled on
 % TODO: going back to previous conflicts
 
-The experimental outcomes in Figures~\ref{fig:perfgraph} and~\ref{fig:solved} show that PCA* took the most 
-time and solved the fewest problem instances of the algorithms compared, including OD+ID for most instances. An explanation is that the algorithm 
+The experimental outcomes in Figures~\ref{fig:perfgraph} and~\ref{fig:solved} 
+show that PCA* took longest and solved the fewest problem instances of the 
+algorithms compared, including OD+ID for most instances. An explanation is that 
+the algorithm 
 evaluates all permutations of partial priority orderings and selects one that has
-minimal cost, without considering side-effects. This finding led to the development of DPCA* and DPCA*+, in fact the fastest among those that were evaluated, showing the effectiveness of deliberation 
+minimal cost, without considering side-effects. This finding led to the 
+development of DPCA* and DPCA*+, the fastest among those that were evaluated, 
+showing the effectiveness of deliberation 
 dialogues in this setting.
 
 The slight difference between DPCA* and DPCA*+ in \autoref{fig:perfgraph} shows a tradeoff between computational resources and solution quality: DPCA* solves somewhat more problem 
@@ -57,9 +61,9 @@ is picked for a problem instance. For an outside observer, the agents' arguments
 solution. 
 
 The four stages of DPCA* and DPCA*+ dialogues are based on the 
-four stages of \textsc{TeamLog}. The extended dialogue model of 
+four stages of \textsc{TeamLog}. The dialogue model of 
 McBurney \emph{et al.}~\cite{mcburney2007} is less abstract and remains closer 
-to natural dialogues, but is not necessary to find 
+to natural dialogues, but is unnecessary to find 
 priority orders for the agents. 
 %By basing our algorithms on the decoupled method we separated 
 %finding paths from 

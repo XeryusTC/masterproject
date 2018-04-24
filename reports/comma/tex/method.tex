@@ -1,6 +1,5 @@
 \section{Family of algorithms}\label{sec:method}
-We now discuss the algorithms proposed in this paper connecting to work in 
-computational argumentation and multi-agent coordination. Each algorithm is 
+We now discuss the algorithms proposed in this paper. Each algorithm is 
 based on a variant of A*~\cite{hart1968} called Cooperative 
 A*~\cite{silver2005}, which disallows expanding graph nodes if that 
 causes a conflict with the path of a higher priority agent.
@@ -75,64 +74,69 @@ there is no partial priority ordering that resolves the conflict then PCA* has
 failed to find a solution.
 
 Conventional decoupled algorithms calculate a permutation of the full priority 
-ordering $a_1 > a_2 > \ldots > a_k$ that is assigned to all agents. The partial 
-priority orderings used by PCA* only include agents that are involved in a 
-single conflict. Because of this an agent only has to keep track of which 
+ordering $a_1 > a_2 > \ldots > a_k$ that is assigned to all agents.
+The partial priority orderings used by PCA* only include agents that are 
+involved in a single conflict.
+An agent only has to keep track of which 
 agents it has to yield to, it does not need to concern itself with the 
-relative ordering of other agents. A global priority ordering is implied by the 
-combination of the local views of the agents. Some agents may not be involved 
+relative ordering of other agents. 
+The local views of the agents imply a global priority ordering.
+%A global priority ordering is implied by the combination of the local views of 
+%the agents.
+Some agents may not be involved 
 in any conflict and are not part of any partial priority ordering, 
 they will also not be present in the implied global priority ordering. 
 Similarly 
 it is possible that disjoint subsets of partial priority orderings exist when 
 the 
 agents in one subset never had to resolve a conflict with the agents in the 
-other subset(s). Those disjoint subsets have never needed to communicate past 
+other subset(s). Those disjoint subsets do not communicate past 
 sharing their initial optimal paths.
 
 \subsection{Dialogue-based Partial Cooperative A* (DPCA*)}
 
 \begin{algorithm}[t]
-	\caption{Adding deliberation dialogue to PCA*+}
-	\label{alg:dpca}
-	\begin{algorithmic}[1]
-
-		%\State $permanent \gets \emptyset$
-		%\State $path \gets \Call{FindPath}{permanent}$
-		%\While{\Call{HasConflict}~}
-			%\State $conflict \gets \Call{EarliestConflict}$
-
-
-		\Require $topic$: conflict that is to be solved by the dialogue
-
-		\Comment{Stage 1: opening~~~~}
-		
-		\If{$topic \neq \Call{EarliestConflict}$}
-			\State $\Call{PutDialogueOnHold}$
-		\EndIf
-		
-		\Comment{Stage 2: proposal~~~}
-		
-		\Repeat
-			\State $\Call{Propose}$
-			
-		\Comment{Stage 3: evaluation}
-		
-			\ForAll{$proposal \in unevaluatedProposals$}
-				\State $path \gets \Call{FindPath}{permanent \cup proposal}$
-				\State $vote, expand \gets \Call{Evaluate}{path}$
-				\State $\Call{CastVote}{vote}$
-			\EndFor
-		\Until{$\lnot expand$}
-
-		\Comment{Stage 4: closing~~~~}
-		
-		\State $permanent \gets permanent \cup {\argmin \sum votes}$
-		\State $path \gets \Call{FindPath}{permanent}$
-
-		%\EndWhile
-
-	\end{algorithmic}
+    \caption{Dialogue-based Partial Cooperative A* (DPCA*)}
+    \label{alg:dpca}
+    \begin{algorithmic}[1]
+        \Require $topic$: conflict that is to be solved by the dialogue
+        
+        \State $Permanent \gets \emptyset$
+        \State $Path \gets FindPath(Permanent)$
+        \State $CommunicatePath(Path)$
+        
+        \State $Conflicts \gets \Call{FindConflicts}$
+        \ForAll{$conflict \in Conflicts$}
+            \Comment{Stage 1: Opening~~~~}
+%        \If{$topic \neq \Call{EarliestConflict}$}
+%        \State $\Call{PutDialogueOnHold}$
+%        \EndIf
+            \If{$conflict \neq \Call{EarliestConflict}$}
+                \State $\Call{PutDialogueOnHold}{conflict}$
+                \State continue
+             \EndIf
+        
+            \Comment{Stage 2: proposal~~~}
+            \Repeat
+                \State $\Call{Propose}$
+                
+            \Comment{Stage 3: evaluation}
+            
+            \ForAll{$proposal \in unevaluatedProposals$}
+            \State $path \gets \Call{FindPath}{permanent \cup proposal}$
+            \State $vote, expand \gets \Call{Evaluate}{path}$
+            \State $\Call{CastVote}{vote}$
+            \EndFor
+            \Until{$\lnot expand$}
+        
+            \Comment{Stage 4: closing~~~~}
+            
+            \State $permanent \gets permanent \cup {\argmin \sum votes}$
+            \State $Path \gets \Call{FindPath}{Permanent}$
+            \State $\Call{CommunicatePath}{Path}$
+            \State $Conflicts \gets \Call{FindConflicts}$
+        \EndFor
+    \end{algorithmic}
 \end{algorithm}
 
 %\begin{table}
@@ -149,18 +153,19 @@ sharing their initial optimal paths.
 %\end{table}
 
 Evaluating all possible permutations and on a single
-criterion is not an optimal method of finding a priority ordering. A path can 
-be 
+criterion is not an optimal method of finding a priority ordering. Intuitively, 
+a path may be 
 considered an argument for the usage of resources, namely being in a series of 
 positions at certain times, then a conflict means that two or more of these path 
 arguments are attacking each other. A 
-priority ordering $a_i > a_j$ is then an argument which supports the path 
+priority ordering $a_i > a_j$ would then be an argument which supports the path 
 argument 
 of $a_i$ by attacking that of $a_j$. To find the most appropriate priority 
-ordering the agents can engage in a conflict resolving deliberation dialogue. 
-This 
-dialogue replaces line~5 to line~12 of \autoref{alg:pca}.
-The algorithms this results in are called DPCA* and DPCA*+. Each deliberation 
+ordering the agents can engage in a conflict resolving dialogue. 
+%This 
+%dialogue replaces line~5 to line~12 of \autoref{alg:pca}.
+%The algorithms this results in are called DPCA* and DPCA*+.
+Each deliberation 
 dialogue consists of four stages that we have based on those of 
 \textsc{TeamLog}~\cite{dunin-keplicz2011}. An outline is given in \autoref{alg:dpca}. The dialogue 
 starts with the opening stage, during which agents can notify each other that 
@@ -169,20 +174,26 @@ hold, otherwise there is a propose stage. In \autoref{alg:dpca}
 this stage is encapsulated by \textsc{Propose}. Agents will always propose that 
 they receive the highest priority. It is valid for a proposal to assign agents 
 an equal rank if that is the lowest rank, so the proposal $a_i > a_j = a_k$ is 
-valid. Agents are 
-also allowed to decline to make a proposal.
+valid. In subsequent rounds agents can expand a proposal by assigning 
+themselves a rank higher than the lowest rank. Agents will decline to make a 
+proposal if they cannot expand on any proposal by assigning themselves a rank. 
+Agents will not make duplicate proposals.
 
 The dialogue enters the evaluation stage after all agents have made a 
-proposal or declined to make one, it is given from line~6 to line~10 in 
-\autoref{alg:dpca}. During this stage agents will indicate their preference for 
-each proposal by casting votes on them. A vote is based on the effects that a 
-proposal has on the paths of the agents. To determine this the agents 
+proposal or declined to make one (line~12 to line~17 in 
+\autoref{alg:dpca}).
+During this stage agents vote on each proposal to indicate their preference.
+%During this stage agents will indicate their preference for each proposal by 
+%casting votes on them.
+A vote is based on the effects of a 
+proposal on the paths of the agents. To determine this the agents 
 temporarily adapt a proposal and calculate a new path that adheres to the 
 constraints set by the proposal.
 The vote of an individual agent is calculated using
-\[ v = w_1 \cdot \Delta l + w_2 \cdot \Delta c + w_3 \cdot e \]
-where $\Delta l$ is the difference in path length, $\Delta c$ the difference in 
-number of conflicts the agent is involved in, $e$ represent the \emph{expand} 
+$ v = w_1 \cdot \Delta l + w_2 \cdot \Delta c + w_3 \cdot e $
+where $\Delta l$ is the difference in path length, $\Delta c$ the change in 
+number of conflicts the agent is involved in before and after adopting the 
+proposal, $e$ represent the \emph{expand} 
 flag, and $w_1, w_2, w_3$ are weights for each of these factors. The 
 \emph{expand} flag is a penalty that is applied when the agent still has a 
 conflict with another agent that is involved in 
@@ -193,13 +204,20 @@ directly attack a proposal if it was not able to find a path after adopting it.
 When this happens it is not possible to accept the proposal as a valid solution.
 
 If none of the agents have requested an additional proposal round then the 
-dialogue can move to the closing stage. Agents now permanently adapt the 
-priority ordering with the lowest sum of votes. The agents update their plan to 
+dialogue can move to the closing stage. 
+By summing the votes for each proposal agents form a consensus on what the best 
+solution is. The 
+proposal with the lowest sum of votes is accepted and permanently adopted.
+%Agents now permanently adapt the 
+%priority ordering with the lowest sum of votes.
+The agents update their plan to 
 satisfy the constraints set by the accepted partial priority ordering and 
 previously adapted priority orderings. These new 
 plans are communicated to all other agents so that they can find any new 
 occurring conflicts, and cancel dialogues for conflicts that have been 
-indirectly solved. The entire process of resolving dialogues 
+indirectly solved. Dialogues terminate because a finite amount of priority 
+order permutations are evaluated. The entire process of 
+resolving dialogues 
 continues until there are no more conflicts.
 
 Conflicts that involve more than two agents can be solved using two different

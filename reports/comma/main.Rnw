@@ -178,18 +178,18 @@ quality.aggr = aggregate(cbind(length, loops) ~ num.agents + algorithm,
 
 \markboth{}{September 2018\hb}
 
-\author[a]{\fnms{Xeryus} \snm{Stokkel}
-\thanks{Corresponding Author: \texttt{brontitall@dds.nl}}},
-\author[a]{\fnms{Bart} \snm{Verheij}}
+\author{\fnms{Xeryus} \snm{Stokkel}\thanks{Corresponding Author: 
+\texttt{brontitall@dds.nl}}},
+\author{\fnms{Bart} \snm{Verheij}}
 
 \runningauthor{Stokkel and Verheij}
-\address[a]{University of Groningen}
+\address{University of Groningen}
 
 %\maketitle
 
 \input{tex/abstract}
 \begin{keyword}
-Deliberation dialogues\sep cooperative pathfinding\sep multi-agent system\sep 
+Deliberation dialogues\sep cooperative pathfinding\sep multi-agent systems\sep 
 practical reasoning\sep partial global planning
 \end{keyword}
 \end{frontmatter}

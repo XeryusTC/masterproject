@@ -155,7 +155,7 @@ xtable(quality.table[c(1:4,8),],
 @
 
 <<lengths,echo=F,warning=F,cache=T,cache.beater=dat.lengths,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=lengths.title>>=
-op <- par(mar = c(3.8, 3.8, 1, 1))
+op <- par(mar = c(4, 3.8, 1, 1))
 plot(c(),
      type='n',
      xlim=c(5,40),
@@ -191,13 +191,13 @@ shows how long the paths found by each algorithm are. In general DPCA* and
 DPCA*+ find longer paths than OD+ID. DiMPP causes the largest detours of all 
 tested algorithms. PCA* finds the shortest paths of all algorithms.
 
-<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
+<<dialogues,echo=F,cache=T,cache.beater=conflicts.aggr,dev='tikz',fig.width=5,fig.height=1.5,fig.align='center',fig.pos='t',fig.cap=conflicts.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='l',
     xlim=c(0,40),
     ylim=c(0,30),
-    xlab='Number of agents',
+    xlab='Agents in problem instance',
     ylab='Dialogues',
     frame.plot = F,
     yaxs="i",
@@ -223,7 +223,7 @@ rises when the number of agents increases, but at some point this
 trend trails off. This point lies around 15 agents for PCA* and around 25
 agents for DPCA* and DPCA*+.
 
-<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=1.6,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
+<<conflict-sizes,echo=F,cache=T,cache.beater=sizes.aggr,dev='tikz',fig.width=5,fig.height=1.5,fig.align='center',fig.pos='t',fig.cap=sizes.title>>=
 op <- par(mar = c(4, 3.8, 1, 1))
 plot(1,
     type='n',
@@ -252,10 +252,12 @@ Results for DPCA* and DPCA*+ are rather close in the above graphs.
 \autoref{fig:conflict-sizes} shows how many agents participate in DPCA*+
 dialogues. It shows that most dialogues involve just two agents. There are on
 average $\Sexpr{signif(max(sizes.aggr$X3), 3)}$ dialogues per instance with
-three agents involved, and only $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ with
-four agents involved. DPCA*+ often does not have to solve more complex
-dialogues than DPCA* but it does use a more complex strategy and thus it is
-slightly slower.
+three agents, and only $\Sexpr{signif(max(sizes.aggr$X4), 3)}$ with
+four agents.
+DPCA*+ uses a more complex conflict solving strategy than DPCA* while it does 
+not have to solve more complex dialogues.
+%DPCA*+ often does not have to solve more complex dialogues than DPCA* but it 
+%does use a more complex strategy and thus it is slightly slower.
 
 <<cache,echo=F,warning=F,cache=T,cache.beater=dat.cache,dev='tikz',fig.width=5,fig.height=1.5,fig.align='center',fig.pos='t',fig.cap=cachegraph.title>>=
 op <- par(mar = c(3.8, 3.8, 1, 1))

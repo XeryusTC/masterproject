@@ -54,18 +54,20 @@ Multi-agent Path Planning (DiMPP) \cite{chouhan2017}.
 % Argumentation
 In the present paper we propose decentralized algorithms for cooperative 
 pathfinding in which agents engage in a problem solving dialogue when they 
-encounter a conflict. In this way, agents gradually adapt their individual 
+encounter conflicts. In this way, agents gradually adapt their individual 
 plans to arrive at a globally coherent solution. We use ideas developed in 
 computational argumentation~\cite{rahwanSimari2009} and in multi-agent 
 coordination~\cite[pp.~202--204]{wooldridge2009}.
 
 Computational argumentation has developed from the non-monotonic logics studied 
-in AI~\cite{dung1995} and has been applied in expert 
+in AI and has been applied in expert 
 systems, multi-agent systems and law~\cite{vanEemerenEtal2014ch11}. Early work in 
 computational argumentation studied individual planning~\cite{pollock1995} and 
 more recently also multi-agent planning has been 
-addressed~\cite{ferrando2012,pardo2011}. Our agents engage in a deliberation 
-dialogue aimed at finding a plan of action. Deliberation dialogues are one of 
+addressed~\cite{ferrando2012,pardo2011}. Our agents engage in a 
+consensus-forming deliberation
+dialogue aimed at finding a plan of action (without exchanging explicit 
+arguments, like~\cite{black2011}). Deliberation dialogues are one of 
 the argumentative dialogue types distinguished by Walton and 
 Krabbe~\cite{walton1995} and have been studied by 
 \cite{mcburney2007,walton2014}. We build specifically on the \textsc{TeamLog} 

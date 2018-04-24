@@ -21,15 +21,19 @@
     \end{tabular}
 \end{table*}
 
-A qualitative comparison of the features of various cooperative pathfinding algorithms from 
+A qualitative comparison of various cooperative pathfinding algorithms from 
 the literature (as discussed in Section~\ref{sec:intro}) and those presented here is given in 
 \autoref{tbl:planning-overview}. Algorithms come in three \emph{categories} of how  they 
 calculate a set of paths: centralized, decoupled or decentralized. 
 Algorithms can be \emph{complete} or not, depending on whether they find a solution if one exists. Some algorithms impose a \emph{priority} ordering on 
 the agents. The 
 \emph{communication} column indicates restrictions on which agents are allowed 
-to communicate with each other. Finally the \emph{evaluation} column indicates whether 
-agents can evaluate a plan by voting. The table shows that our three algorithms PCA*, DPCA* and DPCA*+ are decentralized, not complete, use a priority ordering and involve communication between all agents, while DPCA* and DPCA*+ allow the agents to evaluate plans.
+to communicate with each other. Finally the \emph{evaluation} column indicates 
+whether 
+agents can evaluate a plan by voting. The table shows that our three algorithms 
+PCA*, DPCA* and DPCA*+ are decentralized, not complete, use priority ordering 
+and involve communication between all agents, while DPCA* and DPCA*+ allow the 
+agents to evaluate plans.
 
 
 % TODO: scalability
@@ -53,11 +57,14 @@ The slight difference between DPCA* and DPCA*+ in \autoref{fig:perfgraph} shows 
 instances while DPCA*+ finds solutions with slightly shorter path lengths.
 The added computational cost of the more complex dialogues involving more than two agents that are available only in DPCA*+ leads to solutions with somewhat shorter paths. In~\autoref{fig:conflict-sizes} we see that these dialogues are much more rare than dialogues between 2 agents. 
 
-Conventional algorithms find an abstract solution for a pathfinding problem based on minimal cost. DPCA* and DPCA*+ add transparency to solution process by the dialogues in which agents can put forward arguments for or against 
-partial 
-priority orderings. Agents also evaluate and vote on each proposal based on several 
+Conventional cooperative pathfinding algorithms find an abstract solution for a 
+pathfinding problem based on minimal cost. DPCA* and DPCA*+ add transparency to 
+solution process by the consensus-forming deliberation dialogues. Agents
+evaluate and vote on each proposal based on several 
 criteria. This gives agents some influence over which solution 
-is picked for a problem instance. For an outside observer, the agents' arguments and evaluations provide an explanation why a group of agents have picked a particular 
+is picked for a problem instance. For an outside observer, the agents' 
+deliberation dialogues provide an explanation why a group of agents have picked 
+a particular 
 solution. 
 
 The four stages of DPCA* and DPCA*+ dialogues are based on the 
@@ -103,7 +110,8 @@ made during dialogues. Adapting our abstract algorithms to include domain-depend
 We have combined ideas from cooperative pathfinding, computational 
 argumentation and multi-agent planning to propose three algorithms that find 
 conflict-free paths for groups of mobile agents. Agents engage in 
-dialogues to resolve conflicts in their individually optimal plans. By 
+consensus-forming dialogues to resolve conflicts in their individually optimal 
+plans. By 
 deliberation dialogues between agents, the local views of 
 agents are incrementally combined to form a global well-coordinated plan.
 In contrast to other cooperative pathfinding algorithms it is possible for 

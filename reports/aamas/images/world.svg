@@ -14,7 +14,7 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="world.svg">
   <defs
      id="defs2" />
@@ -25,15 +25,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="362.34349"
-     inkscape:cy="588.25819"
+     inkscape:zoom="2"
+     inkscape:cx="464.1217"
+     inkscape:cy="655.08283"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="1200"
-     inkscape:window-height="1899"
-     inkscape:window-x="1440"
+     inkscape:window-width="1600"
+     inkscape:window-height="879"
+     inkscape:window-x="0"
      inkscape:window-y="21"
      inkscape:window-maximized="0">
     <inkscape:grid
@@ -252,45 +252,45 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="124"
+       x="125.1996"
        y="137.49962"
        id="text5147"><tspan
          sodipodi:role="line"
          id="tspan5145"
-         x="124"
+         x="125.1996"
          y="137.49962"
          style="font-size:4.23333311px;stroke-width:0.26458332">$a_1$</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="139"
+       x="140.19966"
        y="137.49962"
        id="text5875"><tspan
          sodipodi:role="line"
          id="tspan5873"
-         x="139"
+         x="140.19966"
          y="137.49962"
          style="font-size:4.23333311px;stroke-width:0.26458332">$a_2$</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="124"
+       x="125.1996"
        y="152.49962"
        id="text5879"><tspan
          sodipodi:role="line"
          id="tspan5877"
-         x="124"
+         x="125.1996"
          y="152.49962"
          style="font-size:4.23333311px;stroke-width:0.26458332">$a_4$</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="139"
+       x="140.19966"
        y="152.49962"
        id="text5883"><tspan
          sodipodi:role="line"
          id="tspan5881"
-         x="139"
+         x="140.19966"
          y="152.49962"
          style="stroke-width:0.26458332">$a_3$</tspan></text>
     <text
@@ -340,12 +340,12 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="49"
+       x="50.1996"
        y="81"
        id="text5903"><tspan
          sodipodi:role="line"
          id="tspan5901"
-         x="49"
+         x="50.1996"
          y="81"
          style="stroke-width:0.26458332">$a_5$</tspan></text>
     <text
@@ -362,34 +362,34 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="64"
+       x="65.199585"
        y="125.99999"
        id="text5911"><tspan
          sodipodi:role="line"
          id="tspan5909"
-         x="64"
+         x="65.199585"
          y="125.99999"
          style="stroke-width:0.26458332">$a_6$</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="94"
+       x="95.1996"
        y="96"
        id="text5915"><tspan
          sodipodi:role="line"
          id="tspan5913"
-         x="94"
+         x="95.1996"
          y="96"
          style="stroke-width:0.26458332">$a_7$</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="108.99999"
+       x="110.19958"
        y="96"
        id="text5919"><tspan
          sodipodi:role="line"
          id="tspan5917"
-         x="108.99999"
+         x="110.19958"
          y="96"
          style="stroke-width:0.26458332">$a_8$</tspan></text>
     <text
@@ -452,11 +452,11 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="94"
+       x="95.199585"
        y="170.49962"
        id="text5960"><tspan
          sodipodi:role="line"
-         x="94"
+         x="95.199585"
          y="170.49962"
          style="stroke-width:0.26458332"
          id="tspan5962">$a_9$</tspan></text>

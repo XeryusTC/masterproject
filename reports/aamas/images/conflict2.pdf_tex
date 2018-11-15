@@ -1,4 +1,4 @@
-%% Creator: Inkscape inkscape 0.92.2, www.inkscape.org
+%% Creator: Inkscape inkscape 0.92.3, www.inkscape.org
 %% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
 %% Accompanies image file 'conflict2.pdf' (pdf, eps, ps)
 %%
@@ -35,8 +35,10 @@
     \renewcommand\transparent[1]{}%
   }%
   \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{85.71118652bp}%
+    \setlength{\unitlength}{114.77515465bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -48,9 +50,11 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.50391901)%
+  \begin{picture}(1,0.6232878)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{conflict2.pdf}}%
-    \put(0.13620729,0.21985206){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
-    \put(0.63228822,0.21985206){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
+    \put(0.24990455,0.28766687){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25000012}\smash{\begin{tabular}[t]{l}$a_1$\end{tabular}}}}%
+    \put(0.62036521,0.28766687){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25000012}\smash{\begin{tabular}[t]{l}$a_2$\end{tabular}}}}%
   \end{picture}%
 \endgroup%

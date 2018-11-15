@@ -2,7 +2,8 @@
 We now discuss the algorithms proposed in this paper. Each algorithm is 
 based on a variant of A*~\cite{hart1968} called Cooperative 
 A*~\cite{silver2005}, which disallows expanding graph nodes if that 
-causes a conflict with the path of a higher priority agent.
+causes a conflict with the path of a higher priority agent. We also give an 
+example of the dialogue-based algorithm DPCA*.
 %Decoupled algorithms are able to solve cooperative pathfinding problems while
 %requiring only minimal computational resources. The agents calculate their path
 %individually so this is inherently distributed. Calculating a hierarchy needs
@@ -89,7 +90,7 @@ they will also not be present in the implied global priority ordering.
 Similarly 
 it is possible that disjoint subsets of partial priority orderings exist when 
 the 
-agents in one subset never had to resolve a conflict with the agents in the 
+agents in one subset never had to resolve a conflict with the agents in
 other subset(s). Those disjoint subsets do not communicate past 
 sharing their initial optimal paths.
 
@@ -232,9 +233,9 @@ described above is that of DPCA*+. DPCA* consists of one proposal and
 evaluation stage because only two priority orderings ($a_i > a_j$ and $a_j > 
 a_i$) 
 are valid when there 
-are just two agents participating in a dialogue.
+are two agents participating in a dialogue.
 This makes DPCA*+ more complex than DPCA*, but it also requires fewer dialogues 
-to find a solution and therefore it may be faster than DPCA*.
+to find a solution and thus it may be faster than DPCA*.
 
 Each time that agents evaluate a proposal they have to compute paths that
 satisfy the constraints imposed by the priority ordering, often recomputing
@@ -408,3 +409,227 @@ established a priority ordering.
 %This penalty weight is included in the evaluation if there are two or more
 %agents that still have a conflict with each other after adapting a priority
 %proposal. It is a penalty for when a proposal only partially solves a conflict.
+
+\subsection{Example of dialogue-based conflict resolution}
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}[t]{.3\textwidth}
+        \centering
+        \def\svgscale{.6}
+        \input{images/dpca-example1.pdf_tex}
+        \caption{Initial configuration showing $p_{a_1,1}$, $p_{a_2,1}$ and 
+            $p_{a_3,1}$.}
+        \label{fig:example-initial}
+    \end{subfigure}
+    \qquad
+    \begin{subfigure}[t]{.3\textwidth}
+        \centering
+        \def\svgscale{.6}
+        \input{images/dpca-example2.pdf_tex}
+        \caption{Configuration after proposal $a_1 > a_2$. Shown are paths 
+        $p_{a_1,1}$, $p_{a_2,2}$, $p_{a_3,1}$.}
+        \label{fig:example2}
+    \end{subfigure}
+    \qquad
+    \begin{subfigure}[t]{.3\textwidth}
+        \centering
+        \def\svgscale{.6}
+        \input{images/dpca-example3.pdf_tex}
+        \caption{Configuration after proposal $a_2 > a_1$. Shown are paths 
+        $p_{a_1,2}$, $p_{a_2,1}$, $p_{a_3,1}$.}
+        \label{fig:example3}
+    \end{subfigure}
+    
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \def\svgscale{.6}
+        \input{images/dpca-example4.pdf_tex}
+        \caption{Configuration after proposal $a_1 > a_3$. Shown are paths 
+        $p_{a_1,2}$, $p_{a_2,1}$, $p_{a_3,2}$.}
+        \label{fig:example4}
+    \end{subfigure}
+    \qquad
+    \begin{subfigure}[t]{.45\textwidth}
+        \centering
+        \def\svgscale{.6}
+        \input{images/dpca-example5.pdf_tex}
+        \caption{Configuration after proposal $a_3 > a_1$. Shown are paths 
+        $p_{a_1,3}$, $p_{a_2,1}$, $p_{a_3,1}$.}
+        \label{fig:example5}
+    \end{subfigure}
+    
+    \caption{Five stages of resolving a conflict using DPCA*. Agents are 
+    circles inscribed
+        by $a_i$, their respective goals are $g_i$. Paths that are followed are
+        indicated by the arrows. The circles indicate where agents have 
+        conflicting moves in their paths.}
+    \label{fig:example}
+\end{figure*}
+
+As an example, consider the configuration of agents shown in 
+\autoref{fig:example-initial}. It 
+shows a $4 \times 4$ grid that contains the agents $a_1, a_2$, and $a_3$ with 
+goal positions $g_1, g_2$, and $g_3$ respectively. The optimal paths to their 
+destinations are shown as arrows. Agent $a_1$ has a path that consists of three 
+\emph{south} moves, $p_{a_1,1} = \{\text{\emph{south, south, south}}\}$, while 
+both $a_2$ and $a_3$ have paths that consist of three consecutive \emph{east} 
+moves, $p_{a_2,1} = p_{a_3,1} = \{\text{\emph{east, east, east}}\}$. None of 
+the agents has a \emph{wait} action in their path. After the agents have 
+calculated and shared their optimal paths agents $a_1$ and $a_2$ find that they 
+have a conflict after their first action. They will have to resolve this 
+conflict to prevent the collision.
+
+The process of solving these conflicts is outlined using \autoref{fig:example}. 
+To allow agents to evaluate 
+proposals to solve the conflict we define $\vote_{a_n}(a_i > a_j)$ as 
+the vote of agent $a_n$ on the proposal $a_i > a_j$. This represents how 
+suitable an agent thinks that a particular proposal is. The evaluation  is 
+based on two effects which can be weighted
+differently. The first effect is the difference in path length before and after
+a proposal has been adopted. The second effect is the change in the number of
+conflicts that an agent is involved in, this effect is weighted three times
+heavier than the former effect. Qualitatively this means that $\vote_{a_n}(a_i
+> a_j) = 1 \cdot \Delta l + 3 \cdot \Delta c$ where $\Delta l$ is the
+difference in path cost and $\Delta c$ is the difference in the number of 
+conflicts. The 
+value of the weights have been arbitrarily picked for demonstration purposes. 
+Their value should be set empirically in an implementation.
+Agents only communicate their final vote and not how they arrived at it.
+
+Continuing with the example, after the agents have determined that they have a
+conflict they start a new dialogue. The dialogue starts in its initial stage;
+the opening. All messages are broadcast to all agents in the conflict dialogue,
+in this case $a_1$ and $a_2$:
+\\ \-\qquad $a_1$: no earlier conflicts
+\\ \-\qquad $a_2$: no earlier conflicts
+
+\noindent Because both agents don't have any conflicts that occur at an earlier 
+time
+(this is the first time step) the dialogue can move on to the proposal stage.
+Both agents make a proposal in which they go first:
+\\ \-\qquad $a_1$: propose $a_1 > a_2$
+\\ \-\qquad $a_2$: propose $a_2 > a_1$
+
+\noindent Both agents have made a proposal to resolve the conflict. The 
+dialogue can
+move to the evaluation stage. Proposals are evaluated in numerical order of the 
+agent that made the proposal so $a_1$'s proposal will be evaluated first. In 
+this proposal $a_1$ has the highest priority so it doesn't need to update its 
+plan and its path remains $p_{a_1,1}$. It updates $a_2$ of the fact that its 
+path hasn't changed and still consists of three consecutive \emph{south} 
+actions:
+\\ \-\qquad $a_1$: new path
+\\ \-\qquad\quad\,\; $p_{a_1,1} = \{\text{\emph{south, south, south}}\}$
+
+\noindent Agent $a_2$ does have to yield to $a_1$ so it will have to consider 
+possible 
+conflicts that arise with $p_{a_1,1}$ and plan around them. It finds a new path 
+$p_{a_2,2} = \{\text{\emph{south east, east, north east}}\}$ which is shown in 
+\autoref{fig:example2}. After finding the new path $a_2$ will evaluate its 
+quality so that it can send its vote to $a_1$. After adopting the proposal 
+$a_2$ now has two conflicts with $a_3$ so $\Delta c = 1$. There is no 
+difference in the length of the paths before and after temporarily adopting the 
+constraints of the proposal so $\Delta l = 0$. This means that $a_2$ can send 
+the vote to $a_1$. It will send its new path along with the evaluation:
+\\ \-\qquad $a_2$: new path
+\\ \-\qquad\quad\,\; $p_{a_2,2} = \{\text{\emph{south east, east, north 
+east}}\}$
+\\ \-\qquad $a_2$: $\vote_{a_2}(a_1 > a_2) = 3$
+
+\noindent Now that $a_1$ knows the new path of agent $a_2$ after adopting to 
+$a_1 > a_2$
+it can also vote on the proposal. This happens in a similar vein as $a_2$'s
+evaluation. Agent $a_1$ has no more conflicts while it had one previous 
+conflict so $\Delta c = -1$. The vote for this proposal can then be cast:
+\\ \-\qquad $a_1$: $\vote_{a_1}(a_1 > a_2) = -3$
+
+\noindent Now that this proposal has been evaluated by both agents they can 
+find the sum
+score of the proposal which is $\eval(a_2 > a_1) = \eval(a_1, a_1 > a_2) +
+\eval(a_2, a_1 > a_2) = 0$. Next the agents can evaluate $a_2 > a_1$. When 
+agent $a_1$ goes to evaluate this conflict if finds that it will have to wait 
+for $a_2$ to send a new path because $a_2$ currently has a temporary path. 
+Agent $a_2$ can use the path $p_{a_2,1}$ which is stored in its cache, it sends 
+this information to $a_1$:
+\\ \-\qquad $a_2$: new path
+\\ \-\qquad\quad\,\; $p_{a_2,1} = \{\text{\emph{east, east, east}}\}$
+
+\noindent Next $a_1$ can evaluate the proposal. First it needs to make a new 
+plan that 
+does not conflict with the path that $a_2$ has just sent. It finds the path 
+$p_{a_1,2} = \{\text{\emph{south east, south, south west}}\}$. This new 
+situation is shown in \autoref{fig:example3}. Agent $a_1$ can immediately 
+evaluate it, the lengths of $p_{a_1,1}$ and $p_{a_1,2}$ are equal and there is 
+an equal amount of conflicts. The new path and the evaluation are communicated 
+to $a_2$:
+\\ \-\qquad $a_1$: new path
+\\ \-\qquad\quad\,\; $p_{a_1,2} = \{\text{\emph{south east, south, south 
+west}}\}$
+\\ \-\qquad $a_1$: $\vote_{a_1}(a_2 > a_1) = 0$
+
+\noindent Now that $a_2$ knows $a_1$'s new plan it can also send its evaluation 
+which has 
+one fewer conflict than its original path:
+\\ \-\qquad $a_2$: $\vote_{a_2}(a_2 > a1) = -3$
+
+\noindent Now both agents have evaluated the proposal $a_2 > a_1$ they can find 
+the sum 
+of the evaluations which is $\vote(a_2 > a_1) = \vote_{a_1}(a_2 > a_1) + 
+\vote_{a_2} = -3$. All proposals have been evaluated so the agents can notify 
+each other if they want to make further proposals:
+\\ \-\qquad $a_1$: no further proposals
+\\ \-\qquad $a_2$: no further proposals
+
+\noindent Neither agent wants to make more priority ordering proposals. This is 
+because 
+there are no more possible priority orderings to make with these two agents. 
+The dialogue can then move to the closing stage. In the closing stage agents 
+will pick the best proposal, in this case that is the proposal with minimal 
+sum score which is the proposal $a_2 > a_1$ (\autoref{fig:example3}). To adapt 
+this proposal agents will need to use the respective paths that they used 
+during the evaluation of the proposal. So $a_1$'s path will be $p_{a_1,2}$ and 
+$a_2$'s path will be $p_{a_2,1}$. They also need to keep track of which agents 
+have a higher priority than themselves. Agent $a_1$ must now store that $a_2$ 
+has a higher priority while $a_2$ does not have to store anything. Both agents 
+also communicate their new path with all other agents, in \autoref{fig:example} 
+this is only agent $a_3$.
+
+After the new path has been evaluated $a_1$ and $a_3$ notice that they have a 
+conflict. Their dialogue is as follows:
+
+\noindent Opening stage:
+\\ \-\qquad $a_1$: no earlier conflicts
+\\ \-\qquad $a_3$: no earlier conflicts
+
+\noindent Proposal stage:
+\\ \-\qquad $a_1$: propose $a_1 > a_3$
+\\ \-\qquad $a_3$: propose $a_3 > a_1$
+
+\noindent Evaluation stage (starting with $a_1 > a_3$, new paths are shown in 
+\autoref{fig:example4}):
+\\ \-\qquad $a_1$: new path
+\\ \-\qquad\quad\,\; $p_{a_1,2} = \{\text{\emph{south east, south, south 
+west}}\}$
+\\ \-\qquad $a_3$: new path
+\\ \-\qquad\quad\,\; $p_{a_3,2} = \{\text{\emph{south east, east, north 
+east}}\}$
+\\ \-\qquad $a_3$: $\vote_{a_3}(a_1 > a_3) = -3$
+\\ \-\qquad $a_1$: $\vote_{a_1}(a_1 > a_3) = -3$
+
+\noindent Evaluation of $a_3 > a_1$ (new paths are shown in 
+\autoref{fig:example5}):
+\\ \-\qquad $a_3$: new path
+\\ \-\qquad\quad\,\; $p_{a_3,1} = \{\text{\emph{east, east, east}}\}$
+\\ \-\qquad $a_1$: new path
+\\ \-\qquad\quad\,\; $p_{a_1,3} = \{\text{\emph{south west, south, south 
+east}}\}$
+\\ \-\qquad $a_1$: $\vote_{a_1}(a_3 > a_1) = -3$
+\\ \-\qquad $a_3$: $\vote_{a_3}(a_3 > a_1) = -3$
+
+\noindent Both proposals have a sum score of $-6$ so we break the tie in favour 
+of $a_1$, 
+$a_1 > 
+a_3$ is permanently adapted by both agents. The final paths $p_{a_1,2}$ and 
+$p_{a_3,2}$ are communicated with $a_2$ and there are no more conflicts. A 
+valid solution as been found: $a_1 > a_3$ and $a_2 > a_1$.

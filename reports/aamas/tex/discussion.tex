@@ -62,7 +62,8 @@ pathfinding problem based on minimal cost. DPCA* and DPCA*+ add transparency to
 solution process by the consensus-forming deliberation dialogues. Agents
 evaluate and vote on each proposal based on several 
 criteria. This gives agents some influence over which solution 
-is picked for a problem instance. For an outside observer, the agents' 
+is picked for a problem instance. The dialogues can therefore be regarded as 
+explicit versions of a voting mechanism. For an outside observer, the agents' 
 deliberation dialogues provide an explanation why a group of agents have picked 
 a particular 
 solution. 
@@ -107,7 +108,8 @@ made during dialogues. Adapting our abstract algorithms to include domain-depend
 %extract reasons for why the solution is the most appropriate.
 
 \section{Conclusion}
-We have combined ideas from cooperative pathfinding, computational 
+We have taken inspiration from ideas in the fields of cooperative pathfinding, 
+computational 
 argumentation and multi-agent planning to propose three algorithms that find 
 conflict-free paths for groups of mobile agents. Agents engage in 
 consensus-forming dialogues to resolve conflicts in their individually optimal 
@@ -115,6 +117,6 @@ plans. By
 deliberation dialogues between agents, the local views of 
 agents are incrementally combined to form a global well-coordinated plan.
 In contrast to other cooperative pathfinding algorithms it is possible for 
-agents to motivate why they arrived at a particular solution.
+agents to indicate why they arrived at a particular solution.
 Our algorithms are generally faster and can solve instances with more agents than a 
 centralized state of the art algorithm and a recent decentralized algorithm.

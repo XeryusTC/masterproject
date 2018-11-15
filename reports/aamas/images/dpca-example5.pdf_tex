@@ -1,6 +1,6 @@
-%% Creator: Inkscape inkscape 0.92.3, www.inkscape.org
+%% Creator: Inkscape inkscape 0.92.2, www.inkscape.org
 %% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
-%% Accompanies image file 'conflict3.pdf' (pdf, eps, ps)
+%% Accompanies image file 'dpca-example5.pdf' (pdf, eps, ps)
 %%
 %% To include the image in your LaTeX document, write
 %%   \input{<filename>.pdf_tex}
@@ -35,10 +35,8 @@
     \renewcommand\transparent[1]{}%
   }%
   \providecommand\rotatebox[2]{#2}%
-  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
-  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{114.05764396bp}%
+    \setlength{\unitlength}{170.75055119bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -51,10 +49,13 @@
   \global\let\svgscale\undefined%
   \makeatother%
   \begin{picture}(1,1)%
-    \lineheight{1}%
-    \setlength\tabcolsep{0pt}%
-    \put(0,0){\includegraphics[width=\unitlength,page=1]{conflict3.pdf}}%
-    \put(0.2514837,0.66226771){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$a_1$\end{tabular}}}}%
-    \put(0.62427489,0.66226771){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$a_2$\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{dpca-example5.pdf}}%
+    \put(0.33398908,0.85740769){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_1$}}}%
+    \put(0.08497269,0.60839131){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_2$}}}%
+    \put(0.08497269,0.35937499){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$a_3$}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{dpca-example5.pdf}}%
+    \put(0.33398908,0.10157378){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_1$}}}%
+    \put(0.83202185,0.35937499){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_3$}}}%
+    \put(0.83202185,0.60839131){\color[rgb]{0,0,0}\makebox(0,0)[lb]{\smash{$g_2$}}}%
   \end{picture}%
 \endgroup%

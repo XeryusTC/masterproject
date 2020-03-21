@@ -1,0 +1,85 @@
+\section{Related Work}\label{sec:related}
+A straightforward but computationally inefficient solution to the problem is to 
+search the Cartesian products of the state spaces of the individual 
+agents~\cite{hopcroft1984}. Alternative algorithms for cooperative pathfinding 
+are typically either \emph{centralized} or \emph{decoupled}~\cite{latombe1991}.
+\emph{Centralized} algorithms try to control the state space explosion by 
+efficiently calculating paths for each agent individually in on a single 
+processor. One example is Operator Decomposition and Independence Detection 
+(OD+ID)~\cite{standley2010,standley2011} which assign actions to agents 
+individually instead of search the Cartesian product of their state spaces. 
+This algorithm is both complete and 
+optimal: it will always find a solution to the problem if one exists, and this 
+solution will be of minimal cost.
+Another centralized method is the Increasing Cost Tree 
+Search (ICTS) \cite{sharon2013} which searches combinations of increasingly 
+longer paths for all agents. ICTS is faster than OD+ID in situations when the 
+number of agents relative to the number of nodes is high.
+In \emph{decoupled} algorithms each agent individually finds an optimal path 
+for itself. Conflicts can for instance be resolved by imposing a priority 
+ordering on the agents, where agents wwith a higher priority are considered 
+moving obstacles~\cite{bennewitz2002}.
+
+Often finding the priority scheme is done on a central 
+processor but the agents can calculate their path on their own processor. This 
+approach is taken by Interruptible Asynchronous Decentralized Path Planning 
+(IADPP)~\cite{cap2012}.
+In these examples planning and execution are separated. Online algorithms 
+interleave planning and execution. Windowed Hierarchical Cooperative A* 
+(WHCA*)~\cite{silver2005} employs a moving time window which limits the 
+conflicts an agent takes into account while planning and replanning. This 
+algorithm has been successful in the gaming industry.
+Algorithms that do not use a central processor include Decentralized 
+Multi-Robot Cooperative Pathfinding (DMRCP)~\cite{wei2016} and Distributed 
+Multi-agent Path Planning (DiMPP) \cite{chouhan2017}.
+
+% Argumentation
+In the present paper we propose decentralized algorithms for cooperative 
+pathfinding in which agents engage in a problem solving dialogue when they 
+encounter a conflict. In this way, agents gradually adapt their individual 
+plans to arrive at a globally coherent solution. We use ideas developed in 
+computational argumentation~\cite{modgil2013} and in multi-agent 
+coordination~\cite[pp.~202--204]{woodridge2009}.
+
+Computational argumentation has developed from the non-monotonic logics studied 
+in Artificial Intelligence~\cite{dung1995} and has been applied in expert 
+systems, multi-agent systems and law~\cite{vaneemeren2014}. Early work in 
+computational argumentation studied individual planning~\cite{pollock1995} and 
+more recently also multi-agent planning has been 
+addressed~\cite{ferrando2012,pardo2011}. Our agents engage in a deliberation 
+dialogue aimed at finding a plan of action. Deliberation dialogues are one of 
+the argumentative dialogue types distinguished by Walton and 
+Krabbe~\shortcite{walton1995} and have been studied by 
+\cite{mcburney2007,walton2014,dunin-keplicz2011}.
+
+% PGP
+Multi-agent coordination is needed when the actions of agents can interact. 
+WWooldridge~\shortcite[pp.~202--204]{wooldridge2009} distinguishes several 
+approaches to address multi-agent coordination, including Partial Global 
+Planning (PGP)~\cite{durfee1991}. Nodes create their individual plans without 
+regard for each other. They will then exchange information on their plans and
+adapt them to better coordinate their activities. They do this by incrementally 
+adapting their plans to those of other agents.
+%Coordination is not rigid and
+%nodes are free to change their plan when circumstances change without the need 
+%to re-coordinate with the other nodes. None of the involved nodes ever has a 
+%global view, but the end result is a plan that is globally well
+%coordinated with each node holding the part of the global plan that is relevant
+%to it.
+Generalized PGP \cite{decker1992} extends this with real-time planning, 
+negotiation and coordination relationships between goals. This allows the 
+framework to be used in other multi-agent coordination tasks.
+
+% describe how to combine these three views
+Dialogues can be used in cooperative pathfinding by applying techniques from
+partial global planning. Agents can resolve conflicts by starting a dialogue in
+which they share and evaluate different hypothesis to solve the conflict. A
+hypothesis consists of a priority ordering for the agents that are involved in
+the conflict. The hypotheses offered will be discussed and evaluated in the
+dialogue and the agents will select the best proposal as the solution
+to the conflict. All agents involved in the dialogue adapt the priority
+ordering and adopt their plan to it. This means that there are many small local
+changes to an agent's position in the global hierarchy and therefore also in
+their plans. The end result is a global solution to the cooperative pathfinding
+problem without any agent having known it explicitly. There is also no single
+agent which has been vital to its calculation like in a centralized approach.
